@@ -6,6 +6,70 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  userID       String    @id @default(uuid())
+  phoneNumber  String    @unique
+  passwordHash String
+  name         String
+  address      String
+  role         Int
+  customer     Customer?
+  driver       Driver?
+  mitra        Mitra?
+  nasabah      Nasabah?
+  createdAt    DateTime  @default(now())
+}
+
+model Customer {
+  customerID String @id @default(uuid())
+  balance    Int
+  userID     String @unique
+  user       User   @relation(fields: [userID], references: [userID])
+}
+
+model Driver {
+  driverID     String @id @default(uuid())
+  driverStatus String
+  userID       String @unique
+  user         User   @relation(fields: [userID], references: [userID])
+}
+
+model Mitra {
+  mitraID     String @id @default(uuid())
+  mitraStatus String
+  userID      String @unique
+  user        User   @relation(fields: [userID], references: [userID])
+}
+
+model Nasabah {
+  nasabahID String @id @default(uuid())
+  balance   Int
+  userID    String @unique
+  user      User   @relation(fields: [userID], references: [userID])
+}
+
+model Transaction {
+  transactionID   String   @id @default(uuid())
+  status          String
+  source          Int
+  transactionDate DateTime @default(now())
+}
+
+model Waste {
+  wasteID   String @id @default(uuid())
+  name      String
+  price     Float
+  wasteType String
+}
+
+model Waste_Submission {
+  wasteSubmissionID String @id @default(uuid())
+  transactionID     String @unique
+  wasteID           String @unique
+  totalWeight       Float
+  totalPrice        Float
 }
