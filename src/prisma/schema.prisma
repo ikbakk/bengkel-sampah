@@ -11,16 +11,16 @@ datasource db {
 }
 
 model User {
-  userID       String        @id @default(uuid())
-  phoneNumber  Int           @unique
+  userID       String    @id @default(uuid())
+  phoneNumber  Int       @unique
   passwordHash String
   name         String
   address      String
-  role         Role          @default(CUSTOMER)
+  role         Role      @default(CUSTOMER)
   customer     Customer?
   driver       Driver?
-  mitra        Mitra?
-  nasabah      Nasabah?
+
+  member       Member?
   transactions Transaction[]
   createdAt    DateTime      @default(now())
 }
@@ -39,18 +39,20 @@ model Driver {
   user         User   @relation(fields: [userID], references: [userID], onDelete: Cascade)
 }
 
-model Mitra {
-  mitraID     String @id @default(uuid())
-  mitraStatus String
-  userID      String @unique
-  user        User   @relation(fields: [userID], references: [userID], onDelete: Cascade)
+model Partner {
+  partnerID   String @id @default(uuid())
+  address     String
+  phoneNumber Int
+  name        String
 }
 
-model Nasabah {
-  nasabahID String @id @default(uuid())
-  balance   Int
-  userID    String @unique
-  user      User   @relation(fields: [userID], references: [userID], onDelete: Cascade)
+model Member {
+  memberID    String     @id @default(uuid())
+  wasteBankID String
+  wasteBank   Waste_Bank @relation(fields: [wasteBankID], references: [wasteBankID], onDelete: Cascade)
+  balance     Int
+  userID      String     @unique
+  user        User       @relation(fields: [userID], references: [userID], onDelete: Cascade)
 }
 
 model Transaction {
@@ -75,6 +77,13 @@ model Waste_Submission {
   wasteID           String @unique
   totalWeight       Float
   totalPrice        Float
+}
+
+model Waste_Bank {
+  wasteBankID String   @id @default(uuid())
+  name        String
+  address     String
+  members     Member[]
 }
 
 enum Role {
