@@ -21,6 +21,7 @@ model User {
   driver       Driver?
   mitra        Mitra?
   nasabah      Nasabah?
+  transactions Transaction[]
   createdAt    DateTime  @default(now())
 }
 
@@ -56,6 +57,8 @@ model Transaction {
   transactionID   String   @id @default(uuid())
   status          String
   source          Int
+  userID          String
+  user            User     @relation(fields: [userID], references: [userID], onDelete: Cascade)
   transactionDate DateTime @default(now())
 }
 
