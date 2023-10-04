@@ -11,18 +11,18 @@ datasource db {
 }
 
 model User {
-  userID       String    @id @default(uuid())
-  phoneNumber  Int    @unique
+  userID       String        @id @default(uuid())
+  phoneNumber  Int           @unique
   passwordHash String
   name         String
   address      String
-  role         Int
+  role         Role          @default(CUSTOMER)
   customer     Customer?
   driver       Driver?
   mitra        Mitra?
   nasabah      Nasabah?
   transactions Transaction[]
-  createdAt    DateTime  @default(now())
+  createdAt    DateTime      @default(now())
 }
 
 model Customer {
@@ -75,4 +75,11 @@ model Waste_Submission {
   wasteID           String @unique
   totalWeight       Float
   totalPrice        Float
+}
+
+enum Role {
+  ADMIN
+  CUSTOMER
+  MITRA
+  DRIVER
 }
