@@ -19,7 +19,7 @@ model User {
   role         Role      @default(CUSTOMER)
   customer     Customer?
   driver       Driver?
-
+  email        String    @unique
   member       Member?
   transactions Transaction[]
   createdAt    DateTime      @default(now())
@@ -34,7 +34,7 @@ model Customer {
 
 model Driver {
   driverID     String @id @default(uuid())
-  driverStatus String
+  driverStatus Driver_Status @default(ACTIVE)
   userID       String @unique
   user         User   @relation(fields: [userID], references: [userID], onDelete: Cascade)
 }
@@ -91,4 +91,20 @@ enum Role {
   CUSTOMER
   MITRA
   DRIVER
+}
+
+enum Driver_Status {
+  ACTIVE
+  INACTIVE
+}
+
+enum Transaction_Status {
+  READY
+  PROCESSING
+  COMPLETED
+}
+
+enum Transaction_Source {
+  PARTNER
+  WASTE_BANK
 }
