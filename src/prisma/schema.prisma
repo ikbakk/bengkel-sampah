@@ -11,15 +11,15 @@ datasource db {
 }
 
 model User {
-  userID       String    @id @default(uuid())
-  phoneNumber  Int       @unique
+  userID       String        @id @default(uuid())
+  phoneNumber  Int           @unique
   passwordHash String
   name         String
   address      String
-  role         Role      @default(CUSTOMER)
+  role         Role          @default(CUSTOMER)
   customer     Customer?
   driver       Driver?
-  email        String    @unique
+  email        String        @unique
   member       Member?
   transactions Transaction[]
   createdAt    DateTime      @default(now())
@@ -33,10 +33,10 @@ model Customer {
 }
 
 model Driver {
-  driverID     String @id @default(uuid())
+  driverID     String        @id @default(uuid())
   driverStatus Driver_Status @default(ACTIVE)
-  userID       String @unique
-  user         User   @relation(fields: [userID], references: [userID], onDelete: Cascade)
+  userID       String        @unique
+  user         User          @relation(fields: [userID], references: [userID], onDelete: Cascade)
 }
 
 model Partner {
@@ -44,6 +44,8 @@ model Partner {
   address     String
   phoneNumber Int
   name        String
+
+  transactions Transaction[]
 }
 
 model Member {
@@ -56,41 +58,55 @@ model Member {
 }
 
 model Transaction {
-  transactionID   String   @id @default(uuid())
-  status          Int
-  source          Int
+  transactionID   String             @id @default(uuid())
+  status          Transaction_Status @default(READY)
   userID          String
-  user            User     @relation(fields: [userID], references: [userID], onDelete: Cascade)
-  transactionDate DateTime @default(now())
+  user            User               @relation(fields: [userID], references: [userID], onDelete: Cascade)
+  transactionDate DateTime           @default(now())
+
+  wasteSubmission Waste_Submission?
+
+  source      Transaction_Source
+  partner     Partner?           @relation(fields: [partnerID], references: [partnerID], onDelete: Cascade)
+  partnerID   String?
+  wasteBank   Waste_Bank?        @relation(fields: [wasteBankID], references: [wasteBankID], onDelete: Cascade)
+  wasteBankID String?
 }
 
 model Waste {
-  wasteID   String @id @default(uuid())
+  wasteID   String     @id @default(uuid())
   name      String
   price     Float
-  wasteType String
+  wasteType Waste_Type
+  unit      String
+
+  wasteSubmission Waste_Submission[]
 }
 
 model Waste_Submission {
-  wasteSubmissionID String @id @default(uuid())
-  transactionID     String @unique
-  wasteID           String @unique
+  wasteSubmissionID String      @id @default(uuid())
+  transactionID     String      @unique
+  transaction       Transaction @relation(fields: [transactionID], references: [transactionID])
+  wasteID           String
+  waste             Waste       @relation(fields: [wasteID], references: [wasteID])
   totalWeight       Float
   totalPrice        Float
 }
 
 model Waste_Bank {
-  wasteBankID String   @id @default(uuid())
-  name        String
-  address     String
-  members     Member[]
+  wasteBankID  String        @id @default(uuid())
+  name         String
+  address      String
+  members      Member[]
+  transactions Transaction[]
 }
 
 enum Role {
   ADMIN
   CUSTOMER
-  MITRA
+  PARTNER
   DRIVER
+  MEMBER
 }
 
 enum Driver_Status {
@@ -107,4 +123,9 @@ enum Transaction_Status {
 enum Transaction_Source {
   PARTNER
   WASTE_BANK
+}
+
+enum Waste_Type {
+  ORGANIC
+  INORGANIC
 }
