@@ -5,7 +5,7 @@ export async function POST(req) {
   const {
     userID,
     source,
-    wasteID,
+    wasteName,
     partnerID,
     wasteBankID,
     totalPrice,
@@ -27,6 +27,12 @@ export async function POST(req) {
       wasteBankID,
     };
   }
+
+  const { wasteID } = await prisma.waste.findFirst({
+    where: {
+      name: wasteName,
+    },
+  });
 
   const { transactionID } = await prisma.transaction.create({
     data: transactionData,
