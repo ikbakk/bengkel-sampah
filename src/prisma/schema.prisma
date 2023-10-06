@@ -42,7 +42,7 @@ model Driver {
 model Partner {
   partnerID   String @id @default(uuid())
   address     String
-  phoneNumber Int
+  phoneNumber String
   name        String
 
   transactions Transaction[]
