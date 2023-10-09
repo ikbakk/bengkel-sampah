@@ -1,58 +1,48 @@
 import { NextResponse } from "next/server";
-import prisma from "@/utils/prismaClient";
+import {
+  bankMembers,
+  createBankMember,
+} from "@/utils/prismaQueries/bankRoutes";
 
 export async function GET(req, { params }) {
-  const bankMembers = await prisma.waste_Bank.findUnique({
-    where: {
-      wasteBankID: params.bankID,
-    },
-    select: {
-      members: {
-        include: {
-          user: true,
-        },
-      },
-    },
-  });
+  try {
+    const { bankID } = params;
+    const members = await bankMembers(bankID);
 
-  const response = bankMembers.members.map((member) => {
-    return {
-      id: member.userID,
-      name: member.user.name,
-      address: member.user.address,
-      email: member.user.email,
-      phoneNumber: member.user.phoneNumber,
-      balance: member.balance,
-    };
-  });
-
-  return NextResponse.json(response);
+    const response = members.members.map((member) => {
+      return {
+        userID: member.userID,
+        name: member.user.name,
+        address: member.user.address,
+        email: member.user.email,
+        phoneNumber: member.user.phoneNumber,
+        balance: member.balance,
+      };
+    });
+    return NextResponse.json({
+      message: "Bank members found",
+      data: response,
+    });
+  } catch (error) {
+    return NextResponse.json({
+      message: "Bank ID not found",
+    });
+  }
 }
 
 export async function POST(req, { params }) {
-  const { name, address, email, phoneNumber, passwordHash } = await req.json();
+  try {
+    const body = await req.json();
+    const { bankID } = params;
 
-  const { userID } = await prisma.user.create({
-    data: {
-      name,
-      address,
-      email,
-      phoneNumber,
-      passwordHash,
-      role: "MEMBER",
-    },
-  });
+    const { name } = await createBankMember(body, bankID);
 
-  const newMember = await prisma.member.create({
-    data: {
-      balance: 0,
-      wasteBankID: params.bankID,
-      userID,
-    },
-  });
-
-  return NextResponse.json({
-    message: "New member created succesfully",
-    data: newMember,
-  });
+    return NextResponse.json({
+      message: `${name} created succesfully`,
+    });
+  } catch (error) {
+    return NextResponse.json({
+      message: "New member not created",
+    });
+  }
 }

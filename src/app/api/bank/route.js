@@ -2,22 +2,37 @@ import { NextResponse } from "next/server";
 import prisma from "@/utils/prismaClient";
 
 export async function GET() {
-  const banks = await prisma.waste_Bank.findMany();
-  return NextResponse.json(banks);
+  try {
+    const banks = await prisma.waste_Bank.findMany();
+    return NextResponse.json({
+      message: "Waste banks found",
+      data: banks,
+    });
+  } catch (error) {
+    return NextResponse.json({
+      message: "Waste banks not found",
+    });
+  }
 }
 
 export async function POST(req) {
-  const { name, address } = await req.json();
+  try {
+    const { name, address } = await req.json();
 
-  const newBank = await prisma.waste_Bank.create({
-    data: {
-      address,
-      name,
-    },
-  });
+    const newBank = await prisma.waste_Bank.create({
+      data: {
+        address,
+        name,
+      },
+    });
 
-  return NextResponse.json({
-    message: "Success",
-    data: newBank,
-  });
+    return NextResponse.json({
+      message: "New waste bank created successfully",
+      data: newBank,
+    });
+  } catch (error) {
+    return NextResponse.json({
+      message: "Waste banks not created",
+    });
+  }
 }

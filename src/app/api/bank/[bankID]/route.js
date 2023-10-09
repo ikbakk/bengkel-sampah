@@ -1,26 +1,24 @@
 import { NextResponse } from "next/server";
-import prisma from "@/utils/prismaClient";
+import { bankDetails } from "@/utils/prismaQueries/bankRoutes";
 
 export async function GET(req, { params }) {
-  const bank = await prisma.waste_Bank.findUnique({
-    where: {
-      wasteBankID: params.bankID,
-    },
-    include: {
-      _count: {
-        select: {
-          members: true,
-        },
-      },
-    },
-  });
+  try {
+    const { bankID } = params;
+    const bank = await bankDetails(bankID);
+    const response = {
+      id: bank.wasteBankID,
+      name: bank.name,
+      address: bank.address,
+      members: bank._count.members,
+    };
 
-  const response = {
-    id: bank.wasteBankID,
-    name: bank.name,
-    address: bank.address,
-    members: bank._count.members,
-  };
-
-  return NextResponse.json(response);
+    return NextResponse.json({
+      message: "Waste bank found",
+      data: response,
+    });
+  } catch (error) {
+    return NextResponse.json({
+      message: "Waste bank not found",
+    });
+  }
 }

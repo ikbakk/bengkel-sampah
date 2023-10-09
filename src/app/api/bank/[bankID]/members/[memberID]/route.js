@@ -1,51 +1,40 @@
 import { NextResponse } from "next/server";
-import prisma from "@/utils/prismaClient";
+import { memberDetails } from "@/utils/prismaQueries/bankRoutes";
 
 export async function GET(req, { params }) {
-  const member = await prisma.member.findUnique({
-    where: {
-      userID: params.memberID,
-      wasteBankID: params.bankID,
-    },
-    select: {
-      memberID: true,
-      balance: true,
-      user: {
-        include: {
-          transactions: {
-            select: {
-              status: true,
-              transactionDate: true,
-              wasteSubmission: {
-                select: {
-                  totalPrice: true,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
+  try {
+    const { memberID, bankID } = params;
+    const member = await memberDetails(memberID, bankID);
 
-  const transactions = member.user.transactions.map((transaction) => {
-    return {
-      status: transaction.status,
-      transactionDate: transaction.transactionDate,
-      totalPrice: transaction.wasteSubmission.totalPrice,
+    const transactions = member.user.transactions.map((transaction) => {
+      return {
+        status: transaction.status,
+        transactionDate: transaction.transactionDate,
+        totalPrice: transaction.wasteSubmission.totalPrice,
+        wasteName: transaction.wasteSubmission.waste.name,
+        weight: transaction.wasteSubmission.totalWeight,
+        unit: transaction.wasteSubmission.waste.unit,
+      };
+    });
+
+    const response = {
+      memberID: member.memberID,
+      name: member.user.name,
+      address: member.user.address,
+      email: member.user.email,
+      phoneNumber: member.user.phoneNumber,
+      balance: member.balance,
+      createdAt: member.user.createdAt,
+      transactions,
     };
-  });
 
-  const response = {
-    memberID: member.memberID,
-    name: member.user.name,
-    address: member.user.address,
-    email: member.user.email,
-    phoneNumber: member.user.phoneNumber,
-    balance: member.balance,
-    createdAt: member.user.createdAt,
-    transactions,
-  };
-
-  return NextResponse.json(response);
+    return NextResponse.json({
+      message: "Member found",
+      data: response,
+    });
+  } catch (error) {
+    return NextResponse.json({
+      message: "Member not found",
+    });
+  }
 }
