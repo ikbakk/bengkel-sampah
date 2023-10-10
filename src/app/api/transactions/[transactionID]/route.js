@@ -1,20 +1,23 @@
 import { NextResponse } from "next/server";
-import prisma from "@/utils/prismaClient";
+import { updateTransactionStatus } from "@/utils/prismaQueries/transactionsRoutes";
 
 export async function PUT(req, { params }) {
-  const { status } = await req.json();
+  try {
+    const { status } = await req.json();
+    const { transactionID } = params;
 
-  const updatedTransaction = await prisma.transaction.update({
-    where: {
-      transactionID: params.transactionID,
-    },
-    data: {
+    const updatedTransaction = await updateTransactionStatus(
+      transactionID,
       status,
-    },
-  });
+    );
 
-  return NextResponse.json({
-    message: "Update success",
-    data: updatedTransaction,
-  });
+    return NextResponse.json({
+      message: "Transaction status update success",
+      data: updatedTransaction,
+    });
+  } catch (error) {
+    return NextResponse.json({
+      message: "Transaction status update failed",
+    });
+  }
 }

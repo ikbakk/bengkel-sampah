@@ -1,56 +1,43 @@
 import { NextResponse } from "next/server";
-import prisma from "@/utils/prismaClient";
+import {
+  getTransactions,
+  newTransaction,
+} from "@/utils/prismaQueries/transactionsRoutes";
+
+export async function GET(req) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const status = searchParams.get("status");
+    const transactions = await getTransactions(status);
+    const resMessage = status
+      ? `Transactions with status ${status}: ${transactions.length}`
+      : "Transactions found ";
+
+    return NextResponse.json({
+      message: resMessage,
+      data: transactions,
+    });
+  } catch (error) {
+    return NextResponse.json({
+      message: "Transactions not found",
+    });
+  }
+}
 
 export async function POST(req) {
-  const {
-    userID,
-    source,
-    wasteName,
-    partnerID,
-    wasteBankID,
-    totalPrice,
-    totalWeight,
-  } = await req.json();
-  let transactionData = {
-    userID,
-    source,
-  };
+  try {
+    const body = await req.json();
+    const transaction = await newTransaction(body);
 
-  if (source === "PARTNER" && partnerID) {
-    transactionData = {
-      ...transactionData,
-      partnerID,
-    };
-  } else {
-    transactionData = {
-      ...transactionData,
-      wasteBankID,
-    };
+    return NextResponse.json({
+      message: "New transaction created",
+      data: {
+        transaction,
+      },
+    });
+  } catch (error) {
+    return NextResponse.json({
+      message: "New transaction not created",
+    });
   }
-
-  const { wasteID } = await prisma.waste.findFirst({
-    where: {
-      name: wasteName,
-    },
-  });
-
-  const { transactionID } = await prisma.transaction.create({
-    data: transactionData,
-  });
-
-  const newSubmission = await prisma.waste_Submission.create({
-    data: {
-      wasteID,
-      transactionID: transactionID,
-      totalPrice,
-      totalWeight,
-    },
-  });
-
-  return NextResponse.json({
-    message: "Success",
-    data: {
-      newSubmission,
-    },
-  });
 }
