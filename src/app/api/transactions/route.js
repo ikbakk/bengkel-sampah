@@ -31,9 +31,7 @@ export async function POST(req) {
 
     return NextResponse.json({
       message: "New transaction created",
-      data: {
-        transaction,
-      },
+      data: transaction,
     });
   } catch (error) {
     return NextResponse.json({

@@ -106,3 +106,51 @@ export const getTransactions = async (status) => {
 
   return response;
 };
+
+export const getTransaction = async (transactionID) => {
+  const transaction = await prisma.transaction.findUnique({
+    where: {
+      transactionID,
+    },
+    include: {
+      user: {
+        select: {
+          name: true,
+          address: true,
+          phoneNumber: true,
+        },
+      },
+      wasteSubmission: {
+        select: {
+          totalPrice: true,
+          totalWeight: true,
+          waste: {
+            select: {
+              name: true,
+              price: true,
+              unit: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const response = {
+    transactionID: transaction.transactionID,
+    transactionDate: transaction.transactionDate,
+    name: transaction.user.name,
+    address: transaction.user.address,
+    phoneNumber: transaction.user.phoneNumber,
+    status: transaction.status,
+    source: transaction.source,
+    partnerID: transaction.partnerID,
+    wasteBankID: transaction.wasteBankID,
+    wasteName: transaction.wasteSubmission.waste.name,
+    totalPrice: transaction.wasteSubmission.totalPrice,
+    weight: transaction.wasteSubmission.totalWeight,
+    unit: transaction.wasteSubmission.waste.unit,
+  };
+
+  return response;
+};
