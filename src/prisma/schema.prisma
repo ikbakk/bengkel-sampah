@@ -12,14 +12,14 @@ datasource db {
 
 model User {
   userID       String        @id @default(uuid())
-  phoneNumber  String           @unique
+  phone        String        @unique
   passwordHash String
   name         String
-  address      String
+  address      String?
   role         Role          @default(CUSTOMER)
-  customer     Customer?
+  customer     Customer?    
   driver       Driver?
-  email        String        @unique
+  email        String?       @unique 
   member       Member?
   transactions Transaction[]
   createdAt    DateTime      @default(now())
@@ -27,7 +27,7 @@ model User {
 
 model Customer {
   customerID String @id @default(uuid())
-  balance    Int
+  balance    Int    @default(0)
   userID     String @unique
   user       User   @relation(fields: [userID], references: [userID], onDelete: Cascade)
 }
@@ -129,3 +129,5 @@ enum Waste_Type {
   ORGANIC
   INORGANIC
 }
+
+
