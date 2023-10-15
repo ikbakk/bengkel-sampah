@@ -43,3 +43,17 @@ export async function PUT(req, { params }) {
     data: newDataUser,
   });
 }
+
+export async function DELETE(req, { params }) {
+  const { customerID } = params;
+  
+  await prisma.user.delete({
+    where: {
+      userID: customerID,
+    },
+  });
+
+  return NextResponse.json({
+    message: "Success",
+  });
+}

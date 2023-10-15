@@ -24,18 +24,43 @@ export async function GET(req, { params }) {
 
 export async function PUT(req, { params }) {
   const { id } = params;
-  const { driverStatus } = await req.json();
-  const res = await prisma.driver.update({
+  const { name, address, phoneNumber, email, driverStatus } = await req.json();
+  const res = await prisma.user.update({
     where: {
       userID: id,
     },
     data: {
-      driverStatus: driverStatus,
+      name: name,
+      address: address,
+      phoneNumber: phoneNumber,
+      email: email,
+      driver: {
+        update: {
+          driverStatus: driverStatus,
+        },
+      },
+    },
+    include: {
+      driver: true,
     },
   });
 
   return NextResponse.json({
     message: "Success",
     data: res,
+  });
+}
+
+export async function DELETE(req, { params }) {
+  const { id } = params;
+
+  await prisma.driver.delete({
+    where: {
+      userID: id,
+    },
+  });
+
+  return NextResponse.json({
+    message: "Success",
   });
 }

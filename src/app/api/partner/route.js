@@ -24,16 +24,4 @@ export async function POST(req) {
   });
 }
 
-export async function DELETE(req) {
-  const { partnerID } = await req.json();
 
-  await prisma.partner.delete({
-    where: {
-      partnerID: partnerID,
-    },
-  });
-
-  return NextResponse.json({
-    message: "Sucess",
-  });
-}
