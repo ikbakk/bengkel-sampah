@@ -33,3 +33,17 @@ export async function PUT(req, { params }) {
     data: newData,
   });
 }
+
+export async function DELETE(req, { params }) {
+  const { partnerID } = params;
+
+  await prisma.partner.delete({
+    where: {
+      partnerID: partnerID,
+    },
+  });
+
+  return NextResponse.json({
+    message: "Sucess",
+  });
+}

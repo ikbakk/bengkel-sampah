@@ -51,22 +51,8 @@ export async function POST(req) {
   return NextResponse.json({
     message: "Success",
     data: {
-      newCustomer,
+      ...newCustomer,
       ...newUser,
     },
-  });
-}
-
-export async function DELETE(req) {
-  const { userID } = await req.json();
-
-  await prisma.user.delete({
-    where: {
-      userID: userID,
-    },
-  });
-
-  return NextResponse.json({
-    message: "Success",
   });
 }

@@ -50,43 +50,8 @@ export async function POST(req) {
   return NextResponse.json({
     message: "Success",
     data: {
-      newDriver,
+      ...newDriver,
       ...newUser,
     },
-  });
-}
-
-export async function PUT(req) {
-  const { name, address, phoneNumber, userID, email } = await req.json();
-
-  const newDataDriver = await prisma.user.update({
-    where: {
-      userID: userID,
-    },
-    data: {
-      name: name,
-      address: address,
-      phoneNumber: phoneNumber,
-      email: email,
-    },
-  });
-
-  return NextResponse.json({
-    message: "Success",
-    data: newDataDriver,
-  });
-}
-
-export async function DELETE(req) {
-  const { userID } = await req.json();
-
-  await prisma.driver.delete({
-    where: {
-      userID: userID,
-    },
-  });
-
-  return NextResponse.json({
-    message: "Success",
   });
 }
