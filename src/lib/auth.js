@@ -9,17 +9,17 @@ export const authOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        phone: { label: "Phone", type: "text" },
+        phoneNumber: { label: "Phone", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials.phone || !credentials.password) {
+        if (!credentials.phoneNumber || !credentials.password) {
           throw new Error("Please enter an phone and password");
         }
 
         const user = await prisma.user.findUnique({
           where: {
-            phone: credentials.phone,
+            phoneNumber: credentials.phoneNumber,
           },
         });
 
@@ -50,7 +50,7 @@ export const authOptions = {
         token.user = {
           id: user.userID,
           name: user.name,
-          phone: user.phone,
+          phone: user.phoneNumber,
           role: user.role,
         };
       }
