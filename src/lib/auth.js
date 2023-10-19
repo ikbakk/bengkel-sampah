@@ -9,22 +9,22 @@ export const authOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        phoneNumber: { label: "Phone", type: "text" },
+        phone: { label: "Phone", type: "text" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials.phoneNumber || !credentials.password) {
+        if (!credentials.phone || !credentials.password) {
           throw new Error("Please enter an phone and password");
         }
 
         const user = await prisma.user.findUnique({
           where: {
-            phoneNumber: credentials.phoneNumber,
+            phoneNumber: credentials.phone,
           },
         });
 
         if (!user || !user.passwordHash) {
-          throw new Error("No user found");
+          throw new Error("Please enter a valid phone and password");
         }
 
         const passwordMatch = await bcrypt.compare(
