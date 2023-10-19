@@ -2,26 +2,45 @@ import { NextResponse } from "next/server";
 import prisma from "@/utils/prismaClient";
 
 export async function GET() {
-  const partners = await prisma.partner.findMany();
+  try {
+    const partners = await prisma.partner.findMany();
 
-  return NextResponse.json(partners);
+    return NextResponse.json(partners);
+  } catch (error) {
+    return NextResponse(error, { status: 500 });
+  }
 }
 
 export async function POST(req) {
-  const { name, phoneNumber, address } = await req.json();
+  try {
+    const { name, phoneNumber, address } = await req.json();
 
-  const newPartner = await prisma.partner.create({
-    data: {
-      name: name,
-      phoneNumber: phoneNumber,
-      address: address,
-    },
-  });
+    if (!name || !address || !phoneNumber) {
+      return NextResponse.json(
+        {
+          error: "Validation Error",
+          message: "Please fill in all required fields.",
+        },
+        { status: 422 },
+      );
+    }
 
-  return NextResponse.json({
-    message: "Success",
-    data: newPartner,
-  });
+    const newPartner = await prisma.partner.create({
+      data: {
+        name: name,
+        phoneNumber: phoneNumber,
+        address: address,
+      },
+    });
+
+    return NextResponse.json({
+      message: "Success",
+      data: newPartner,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Partner Not Created!" },
+      { status: 500 },
+    );
+  }
 }
-
-
