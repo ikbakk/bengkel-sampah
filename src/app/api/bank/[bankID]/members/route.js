@@ -3,6 +3,7 @@ import {
   bankMembers,
   createBankMember,
 } from "@/utils/prismaQueries/bankRoutes";
+import bcrypt from "bcrypt";
 
 export async function GET(req, { params }) {
   try {
@@ -32,17 +33,27 @@ export async function GET(req, { params }) {
 
 export async function POST(req, { params }) {
   try {
-    const body = await req.json();
+    const { name, address, email, phoneNumber, password } = await req.json();
     const { bankID } = params;
 
-    const { name } = await createBankMember(body, bankID);
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const body = {
+      name,
+      address,
+      email,
+      phoneNumber,
+      passwordHash: hashedPassword,
+    };
+
+    const { newName } = await createBankMember(body, bankID);
 
     return NextResponse.json({
-      message: `${name} created succesfully`,
+      message: `Member with the name ${newName} created succesfully`,
     });
   } catch (error) {
     return NextResponse.json({
-      message: "New member not created",
+      message: error.message,
     });
   }
 }

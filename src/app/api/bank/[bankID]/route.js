@@ -5,6 +5,9 @@ export async function GET(req, { params }) {
   try {
     const { bankID } = params;
     const bank = await bankDetails(bankID);
+
+    if (!bank) throw new Error("Waste bank not found");
+
     const response = {
       id: bank.wasteBankID,
       name: bank.name,
@@ -18,7 +21,7 @@ export async function GET(req, { params }) {
     });
   } catch (error) {
     return NextResponse.json({
-      message: "Waste bank not found",
+      message: error.message,
     });
   }
 }

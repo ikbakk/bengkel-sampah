@@ -42,23 +42,6 @@ export const newTransaction = async (data) => {
     };
   }, {});
 
-  // const transaction = await prisma.transaction.create({
-  //   data: {
-  //     ...transactionData,
-  //     wasteSubmission: {
-  //       create: waste.map((waste) => ({
-  //         waste: {
-  //           connect: {
-  //             wasteID: waste.wasteID,
-  //           },
-  //         },
-  //         totalWeight: waste.total,
-  //         totalPrice: waste.total * wastePriceObject[waste.wasteID].price,
-  //       })),
-  //     },
-  //   },
-  // });
-
   const transactions = await prisma.$transaction(async (prisma) => {
     const transaction = await prisma.transaction.create({
       data: {
