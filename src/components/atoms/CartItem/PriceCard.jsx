@@ -4,7 +4,10 @@ import { Card, CardBody, Typography } from "@material-tailwind/react";
 
 const PriceCard = ({ title, value }) => {
   return (
-    <Card className="w-[350px] scale-75 text-center md:scale-100">
+    <Card
+      variant="filled"
+      className="w-[350px] scale-75 text-center outline outline-bs-secondary md:scale-100"
+    >
       <CardBody>
         <Typography variant="h5" className="font-normal text-bs-secondary">
           {title}
