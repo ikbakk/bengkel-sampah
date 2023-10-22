@@ -1,6 +1,6 @@
 import ContentHeader from "@/components/atoms/ContentHeader";
-import CartHeaderTitle from "@/components/atoms/CartItem/Title";
-import PriceCard from "@/components/atoms/CartItem/PriceCard";
+import CartHeaderTitle from "@/components/atoms/CartHeaderItem/Title";
+import PriceCard from "@/components/atoms/CartHeaderItem/PriceCard";
 const CartHeader = () => {
   return (
     <ContentHeader>
