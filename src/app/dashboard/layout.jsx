@@ -19,7 +19,9 @@ const LayoutAdmin = ({ children, title }) => {
           <Sidebar />
         </div>
       </div>
-      <div className="col-span-8 px-10">{children}</div>
+      <div className="col-span-8 max-h-screen overflow-y-scroll px-10">
+        {children}
+      </div>
     </div>
   );
 };
