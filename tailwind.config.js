@@ -10,6 +10,7 @@ module.exports = withMT({
     extend: {
       colors: {
         bs: {
+          font_primary: "#5F5D5D",
           primary: "#FFAB2A",
           secondary: "#29C4B4",
           tertiary: "#F6FAFF",
