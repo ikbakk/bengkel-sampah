@@ -98,7 +98,6 @@ export const getTransactions = async (filterBy, filterValue) => {
   const transactions = await prisma.transaction.findMany(query);
 
   const response = transactions.map((transaction) => {
-    const { name, address, phoneNumber } = transaction.user;
     const wasteSubmissions = transaction.wasteSubmission.map((submission) => ({
       wasteName: submission.waste.name,
       unit: submission.waste.unit,
@@ -107,15 +106,13 @@ export const getTransactions = async (filterBy, filterValue) => {
     }));
 
     return {
-      name,
-      address,
-      phoneNumber,
       transactionID: transaction.transactionID,
+      status: transaction.status,
       transactionDate: transaction.transactionDate,
       source: transaction.source,
       partnerID: transaction.partnerID,
       wasteBankID: transaction.wasteBankID,
-      status: transaction.status,
+      user: transaction.user,
       wasteSubmissions,
     };
   });
