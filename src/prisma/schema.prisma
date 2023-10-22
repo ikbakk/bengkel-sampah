@@ -64,7 +64,7 @@ model Transaction {
   user            User               @relation(fields: [userID], references: [userID], onDelete: Cascade)
   transactionDate DateTime           @default(now())
 
-  wasteSubmission Waste_Submission?
+  wasteSubmission Waste_Submission[]
 
   source      Transaction_Source
   partner     Partner?           @relation(fields: [partnerID], references: [partnerID], onDelete: Cascade)
