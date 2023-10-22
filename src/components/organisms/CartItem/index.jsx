@@ -1,7 +1,7 @@
 "use client";
 
 import { Typography, Card, CardBody } from "@material-tailwind/react";
-import CartQuantityItemCounter from "@/components/atoms/CartQuantityItemCounter";
+import CartQuantityItemCounter from "@/components/molecules/CartQuantityItemCounter";
 import CartQuantityItem from "@/components/atoms/CartQuantityItem";
 
 const CartItem = ({ price, pricePerUnit, wasteName, unit, totalWeight }) => {

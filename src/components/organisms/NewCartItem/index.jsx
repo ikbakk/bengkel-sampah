@@ -7,7 +7,7 @@ import {
   Card,
   CardBody,
 } from "@material-tailwind/react";
-import CartQuantityItemCounter from "@/components/atoms/CartQuantityItemCounter";
+import CartQuantityItemCounter from "@/components/molecules/CartQuantityItemCounter";
 
 const NewCartItem = () => {
   return (

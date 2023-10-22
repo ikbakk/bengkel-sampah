@@ -1,6 +1,6 @@
 import CartHeader from "@/components/molecules/CartHeader";
-import CartItem from "@/components/molecules/CartItem";
-import NewCartItem from "@/components/molecules/NewCartItem";
+import CartItem from "@/components/organisms/CartItem";
+import NewCartItem from "@/components/organisms/NewCartItem";
 
 export default function Cart() {
   return (
