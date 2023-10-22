@@ -3,6 +3,16 @@
 import { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import {
+  Card,
+  Input,
+  Checkbox,
+  Button,
+  Typography,
+} from "@material-tailwind/react";
+import Link from "next/link";
+import logo from "public/logo-bengkel-sampah-warna.png";
+import Image from "next/image";
 
 export default function Login() {
   const session = useSession();
@@ -15,7 +25,7 @@ export default function Login() {
 
   useEffect(() => {
     if (session?.status === "authenticated") {
-      router.push("/");
+      router.push("/dashboard");
     }
   });
 
@@ -32,84 +42,128 @@ export default function Login() {
     });
   };
 
+  const [isRevealed, setIsRevealed] = useState(false);
+
+  const revealPassword = (e) => {
+    e.preventDefault();
+    setIsRevealed(!isRevealed);
+  };
+
   return (
-    <>
-      <div className="flex min-h-full flex-1 flex-col justify-center bg-white px-6 py-12 lg:px-8">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          <img
-            className="mx-auto h-10 w-auto"
-            src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=600"
+    <section className="flex min-h-screen">
+      <div className="hidden bg-primaryimage lg:block lg:w-1/2"></div>
+      <Card
+        color="transparent"
+        shadow={false}
+        className="flex flex-col items-center justify-center w-full min-h-screen px-4 lg:w-1/2"
+      >
+        <Image
+          src={logo}
+          alt="logo bengkel sampah"
+          width={160}
+          height={80}
+          placeholder="blur"
+        />
+        <Typography variant="h4" color="blue-gray">
+          Sign In
+        </Typography>
+        <Typography
+          color="gray"
+          className="px-4 mt-1 font-normal text-center w-80 sm:w-96"
+        >
+          Hello! Please Login First to Use Our Service
+        </Typography>
+        <form
+          className="max-w-screen-lg px-4 mt-8 mb-2 w-80 sm:w-96"
+          required
+          onSubmit={loginUser}
+        >
+          <div className="flex flex-col gap-6 mb-1">
+            <label
+              className="-mb-3 font-bold text-blue-gray-800"
+              htmlFor="phone"
+            >
+              Phone Number
+            </label>
+            <Input
+              id="phone"
+              name="phone"
+              size="lg"
+              type="number"
+              placeholder="name@mail.com"
+              className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
+              labelProps={{
+                className: "before:content-none after:content-none hidden",
+              }}
+              onChange={(e) => setData({ ...data, phone: e.target.value })}
+              required
+            />
+            <label
+              className="-mb-3 font-bold text-blue-gray-800"
+              htmlFor="password"
+            >
+              Password
+            </label>
+            <Input
+              id="password"
+              name="password"
+              type={isRevealed === false ? "password" : "text"}
+              size="lg"
+              placeholder="********"
+              className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
+              labelProps={{
+                className: "before:content-none after:content-none hidden",
+              }}
+              onChange={(e) => setData({ ...data, password: e.target.value })}
+              icon={<RevealIcon onClick={revealPassword} />}
+              required
+            />
+          </div>
+          <Checkbox
+            label={
+              <Typography
+                variant="small"
+                color="gray"
+                className="flex items-center font-normal"
+              >
+                Remember me
+              </Typography>
+            }
+            containerProps={{ className: "-ml-2.5" }}
           />
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-            Sign in to your account
-          </h2>
-        </div>
-
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form
-            className="space-y-6"
-            onSubmit={(e) => {
-              console.log("masuk");
-              loginUser(e);
-            }}
+          <Button className="mt-6 bg-bs-secondary" type="submit" fullWidth>
+            Sign In
+          </Button>
+          <Typography
+            color="gray"
+            className="mt-4 text-xs font-normal text-center"
           >
-            <div>
-              <label
-                htmlFor="phone"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                Phone Number
-              </label>
-              <div className="mt-2">
-                <input
-                  id="phone"
-                  name="phone"
-                  type="text"
-                  autoComplete="phone"
-                  value={data.phone}
-                  onChange={(e) => setData({ ...data, phone: e.target.value })}
-                  required
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between">
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Password
-                </label>
-              </div>
-              <div className="mt-2">
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={data.password}
-                  onChange={(e) =>
-                    setData({ ...data, password: e.target.value })
-                  }
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                />
-              </div>
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
-                Sign in
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </>
+            I dont have an account,
+            <br />
+            <Link
+              href="/register"
+              className="ml-1 font-medium text-gray-900 hover:underline"
+            >
+              Please Take Me to Register Page
+            </Link>
+          </Typography>
+        </form>
+      </Card>
+    </section>
   );
 }
+
+const RevealIcon = ({ onClick }) => {
+  return (
+    <button role="show-password" onClick={onClick}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        width="16"
+        height="16"
+      >
+        <path d="M12.0003 3C17.3924 3 21.8784 6.87976 22.8189 12C21.8784 17.1202 17.3924 21 12.0003 21C6.60812 21 2.12215 17.1202 1.18164 12C2.12215 6.87976 6.60812 3 12.0003 3ZM12.0003 19C16.2359 19 19.8603 16.052 20.7777 12C19.8603 7.94803 16.2359 5 12.0003 5C7.7646 5 4.14022 7.94803 3.22278 12C4.14022 16.052 7.7646 19 12.0003 19ZM12.0003 16.5C9.51498 16.5 7.50026 14.4853 7.50026 12C7.50026 9.51472 9.51498 7.5 12.0003 7.5C14.4855 7.5 16.5003 9.51472 16.5003 12C16.5003 14.4853 14.4855 16.5 12.0003 16.5ZM12.0003 14.5C13.381 14.5 14.5003 13.3807 14.5003 12C14.5003 10.6193 13.381 9.5 12.0003 9.5C10.6196 9.5 9.50026 10.6193 9.50026 12C9.50026 13.3807 10.6196 14.5 12.0003 14.5Z"></path>
+      </svg>
+    </button>
+  );
+};
