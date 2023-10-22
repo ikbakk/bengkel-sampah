@@ -1,8 +1,8 @@
 import prisma from "../prismaClient";
 
 export const newTransaction = async (data) => {
-  const { userID, source, wasteName, partnerID, wasteBankID, totalWeight } =
-    data;
+  const { userID, source, partnerID, wasteBankID, wasteSubmissions } = data;
+
   let transactionData = {
     userID,
     source,
@@ -20,9 +20,11 @@ export const newTransaction = async (data) => {
     };
   }
 
-  const { wasteID, price } = await prisma.waste.findFirst({
+  const wasteItems = await prisma.waste.findMany({
     where: {
-      name: wasteName,
+      name: {
+        in: wasteSubmissions.map((submission) => submission.wasteName),
+      },
     },
   });
 
@@ -30,16 +32,19 @@ export const newTransaction = async (data) => {
     data: transactionData,
   });
 
-  const newSubmission = await prisma.waste_Submission.create({
-    data: {
-      wasteID,
-      transactionID: transactionID,
-      totalPrice: price * totalWeight,
-      totalWeight,
-    },
+  const newSubmissions = await prisma.waste_Submission.createMany({
+    data: wasteSubmissions.map((submission) => ({
+      transactionID,
+      wasteID: wasteItems.find((waste) => waste.name === submission.wasteName)
+        .wasteID,
+      totalPrice:
+        wasteItems.find((waste) => waste.name === submission.wasteName).price *
+        submission.totalWeight,
+      totalWeight: submission.totalWeight,
+    })),
   });
 
-  return newSubmission;
+  return newSubmissions;
 };
 
 export const updateTransactionStatus = async (transactionID, newStatus) => {
@@ -54,9 +59,21 @@ export const updateTransactionStatus = async (transactionID, newStatus) => {
   return updatedTransaction;
 };
 
-export const getTransactions = async (status) => {
-  let query = {
+export const getTransactions = async (filterBy, filterValue) => {
+  const baseQuery = {
     include: {
+      wasteSubmission: {
+        select: {
+          totalPrice: true,
+          totalWeight: true,
+          waste: {
+            select: {
+              name: true,
+              unit: true,
+            },
+          },
+        },
+      },
       user: {
         select: {
           name: true,
@@ -64,46 +81,35 @@ export const getTransactions = async (status) => {
           phoneNumber: true,
         },
       },
-      wasteSubmission: {
-        select: {
-          waste: {
-            select: {
-              name: true,
-              price: true,
-              unit: true,
-            },
-          },
-        },
-      },
     },
   };
 
-  if (status) {
-    query = {
-      ...query,
-      where: {
-        status,
-      },
-    };
-  }
-
+  const filter = filterBy && filterValue ? { [filterBy]: filterValue } : false;
+  const query = filter ? { where: filter, ...baseQuery } : baseQuery;
   const transactions = await prisma.transaction.findMany(query);
-  const response = transactions.map((transaction) => ({
-    name: transaction.user.name,
-    address: transaction.user.address,
-    phoneNumber: transaction.user.phoneNumber,
-    transactionID: transaction.transactionID,
-    status: transaction.status,
-    transactionDate: transaction.transactionDate,
-    source: transaction.source,
-    partnerID: transaction.partnerID,
-    wasteBankID: transaction.wasteBankID,
-    totalPrice: transaction.wasteSubmission.totalPrice,
-    wasteName: transaction.wasteSubmission.waste.name,
-    weight: transaction.wasteSubmission.totalWeight,
-    unit: transaction.wasteSubmission.waste.unit,
-  }));
 
+  const response = transactions.map((transaction) => {
+    const { name, address, phoneNumber } = transaction.user;
+    const wasteSubmissions = transaction.wasteSubmission.map((submission) => ({
+      wasteName: submission.waste.name,
+      unit: submission.waste.unit,
+      totalPrice: submission.totalPrice,
+      totalWeight: submission.totalWeight,
+    }));
+
+    return {
+      name,
+      address,
+      phoneNumber,
+      transactionID: transaction.transactionID,
+      transactionDate: transaction.transactionDate,
+      source: transaction.source,
+      partnerID: transaction.partnerID,
+      wasteBankID: transaction.wasteBankID,
+      status: transaction.status,
+      wasteSubmissions,
+    };
+  });
   return response;
 };
 
