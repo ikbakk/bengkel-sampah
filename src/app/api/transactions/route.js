@@ -46,7 +46,6 @@ export async function POST(req) {
       },
     );
   } catch (error) {
-    console.log(error);
     return NextResponse.json(
       {
         message: "New transaction not created",

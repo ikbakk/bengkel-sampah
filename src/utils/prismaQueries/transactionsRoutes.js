@@ -1,7 +1,7 @@
 import prisma from "../prismaClient";
 
 export const newTransaction = async (data) => {
-  const { userID, source, waste, partnerID, wasteBankID } = data;
+  const { userID, source, wastes, partnerID, wasteBankID } = data;
   let transactionData = {
     userID,
     source,
@@ -21,14 +21,14 @@ export const newTransaction = async (data) => {
     };
   }
 
-  const wastePrice = await prisma.waste.findMany({
+  const foundWastes = await prisma.waste.findMany({
     select: {
       wasteID: true,
       price: true,
     },
     where: {
       wasteID: {
-        in: waste.map((waste) => waste.wasteID),
+        in: wastes.map((waste) => waste.wasteID),
       },
     },
   });
@@ -37,16 +37,18 @@ export const newTransaction = async (data) => {
     data: transactionData,
   });
 
+  const submissionData = wastes.map((waste) => ({
+    transactionID,
+    wasteID: foundWastes.find((waste) => waste.wasteID === waste.wasteID)
+      .wasteID,
+    totalPrice:
+      foundWastes.find((waste) => waste.wasteID === waste.wasteID).price *
+      waste.totalWeight,
+    totalWeight: waste.totalWeight,
+  }));
+
   const newSubmissions = await prisma.waste_Submission.createMany({
-    data: wasteSubmissions.map((submission) => ({
-      transactionID,
-      wasteID: wasteItems.find((waste) => waste.name === submission.wasteName)
-        .wasteID,
-      totalPrice:
-        wasteItems.find((waste) => waste.name === submission.wasteName).price *
-        submission.totalWeight,
-      totalWeight: submission.totalWeight,
-    })),
+    data: submissionData,
   });
 
   return newSubmissions;
