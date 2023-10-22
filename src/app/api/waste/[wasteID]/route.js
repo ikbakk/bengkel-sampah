@@ -17,6 +17,7 @@ export async function PUT(req, { params }) {
   } catch (error) {
     return NextResponse.json({
       message: "Price update failed",
+      error: error.message,
     });
   }
 }

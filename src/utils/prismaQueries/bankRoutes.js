@@ -25,24 +25,61 @@ export const memberDetails = async (userID, wasteBankID) => {
       memberID: true,
       balance: true,
       user: {
-        include: {
-          transactions: {
+        select: {
+          userID: true,
+          name: true,
+          address: true,
+          email: true,
+          phoneNumber: true,
+          passwordHash: false,
+          createdAt: true,
+        },
+      },
+    },
+  });
+};
+
+export const getMemberTransactions = async (userID) => {
+  const transactions = await prisma.transaction.findMany({
+    where: {
+      userID,
+    },
+    include: {
+      wasteSubmission: {
+        select: {
+          totalPrice: true,
+          totalWeight: true,
+          waste: {
             select: {
-              status: true,
-              transactionDate: true,
-              wasteSubmission: {
-                select: {
-                  totalWeight: true,
-                  totalPrice: true,
-                  waste: true,
-                },
-              },
+              name: true,
+              price: true,
+              unit: true,
             },
           },
         },
       },
     },
   });
+
+  const response = transactions.map((transaction) => {
+    return {
+      transactionID: transaction.transactionID,
+      status: transaction.status,
+      transactionDate: transaction.transactionDate,
+      source: transaction.source,
+      partnerID: transaction.partnerID,
+      wasteBankID: transaction.wasteBankID,
+      waste: transaction.wasteSubmission.map((waste) => {
+        return {
+          ...waste.waste,
+          totalPrice: waste.totalPrice,
+          totalWeight: waste.totalWeight,
+        };
+      }),
+    };
+  });
+
+  return response;
 };
 
 export const bankMembers = async (wasteBankID) => {
@@ -61,29 +98,51 @@ export const bankMembers = async (wasteBankID) => {
 };
 
 export const createBankMember = async (data, wasteBankID) => {
-  const { name, address, email, phoneNumber, passwordHash } = data;
+  const {
+    name,
+    address = null,
+    email = null,
+    phoneNumber,
+    passwordHash,
+  } = data;
 
-  const { userID, name: newName } = await prisma.user.create({
-    data: {
-      name,
-      address,
-      email,
+  const phoneExist = await prisma.user.findUnique({
+    where: {
       phoneNumber,
-      passwordHash,
-      role: "MEMBER",
     },
   });
 
-  await prisma.member.create({
-    data: {
-      balance: 0,
+  const bankExist = await prisma.waste_Bank.findUnique({
+    where: {
       wasteBankID,
-      userID: userID,
     },
+  });
+
+  if (!bankExist) throw new Error("Bank ID not found");
+  if (phoneExist) throw new Error("Phone number already registered");
+
+  const newUser = await prisma.$transaction(async (prisma) => {
+    const user = await prisma.user.create({
+      data: {
+        name,
+        address,
+        email,
+        phoneNumber,
+        passwordHash,
+      },
+    });
+
+    await prisma.member.create({
+      data: {
+        userID: user.userID,
+        wasteBankID,
+      },
+    });
+
+    return user;
   });
 
   return {
-    name: newName,
-    userID,
+    newName: newUser.name,
   };
 };

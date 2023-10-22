@@ -20,9 +20,14 @@ export async function GET(req) {
       data: transactions,
     });
   } catch (error) {
-    return NextResponse.json({
-      message: "Transactions not found",
-    });
+    return NextResponse.json(
+      {
+        message: "Get transactions failed",
+      },
+      {
+        status: 400,
+      },
+    );
   }
 }
 
@@ -31,13 +36,25 @@ export async function POST(req) {
     const body = await req.json();
     const transaction = await newTransaction(body);
 
-    return NextResponse.json({
-      message: "New transaction created",
-      data: transaction,
-    });
+    return NextResponse.json(
+      {
+        message: "New transaction created",
+        data: transaction,
+      },
+      {
+        status: 201,
+      },
+    );
   } catch (error) {
-    return NextResponse.json({
-      message: "New transaction not created",
-    });
+    console.log(error);
+    return NextResponse.json(
+      {
+        message: "New transaction not created",
+        error,
+      },
+      {
+        status: 400,
+      },
+    );
   }
 }

@@ -1,8 +1,7 @@
 import prisma from "../prismaClient";
 
 export const newTransaction = async (data) => {
-  const { userID, source, partnerID, wasteBankID, wasteSubmissions } = data;
-
+  const { userID, source, waste, partnerID, wasteBankID } = data;
   let transactionData = {
     userID,
     source,
@@ -13,17 +12,23 @@ export const newTransaction = async (data) => {
       ...transactionData,
       partnerID,
     };
-  } else {
+  }
+
+  if (source === "WASTE_BANK" && wasteBankID) {
     transactionData = {
       ...transactionData,
       wasteBankID,
     };
   }
 
-  const wasteItems = await prisma.waste.findMany({
+  const wastePrice = await prisma.waste.findMany({
+    select: {
+      wasteID: true,
+      price: true,
+    },
     where: {
-      name: {
-        in: wasteSubmissions.map((submission) => submission.wasteName),
+      wasteID: {
+        in: waste.map((waste) => waste.wasteID),
       },
     },
   });
@@ -64,6 +69,8 @@ export const getTransactions = async (filterBy, filterValue) => {
     include: {
       wasteSubmission: {
         select: {
+          totalPrice: true,
+          totalWeight: true,
           totalPrice: true,
           totalWeight: true,
           waste: {
@@ -144,18 +151,24 @@ export const getTransaction = async (transactionID) => {
 
   const response = {
     transactionID: transaction.transactionID,
-    transactionDate: transaction.transactionDate,
-    name: transaction.user.name,
-    address: transaction.user.address,
-    phoneNumber: transaction.user.phoneNumber,
     status: transaction.status,
+    transactionDate: transaction.transactionDate,
+    user: {
+      userID: transaction.userID,
+      name: transaction.user.name,
+      address: transaction.user.address,
+      phoneNumber: transaction.user.phoneNumber,
+    },
     source: transaction.source,
     partnerID: transaction.partnerID,
     wasteBankID: transaction.wasteBankID,
-    wasteName: transaction.wasteSubmission.waste.name,
-    totalPrice: transaction.wasteSubmission.totalPrice,
-    weight: transaction.wasteSubmission.totalWeight,
-    unit: transaction.wasteSubmission.waste.unit,
+    waste: transaction.wasteSubmission.map((waste) => {
+      return {
+        ...waste.waste,
+        totalPrice: waste.totalPrice,
+        totalWeight: waste.totalWeight,
+      };
+    }),
   };
 
   return response;
