@@ -1,8 +1,7 @@
 import prisma from "../prismaClient";
 
 export const newTransaction = async (data) => {
-  const { userID, source, wasteName, partnerID, wasteBankID, totalWeight } =
-    data;
+  const { userID, source, waste, partnerID, wasteBankID } = data;
   let transactionData = {
     userID,
     source,
@@ -13,33 +12,59 @@ export const newTransaction = async (data) => {
       ...transactionData,
       partnerID,
     };
-  } else {
+  }
+
+  if (source === "WASTE_BANK" && wasteBankID) {
     transactionData = {
       ...transactionData,
       wasteBankID,
     };
   }
 
-  const { wasteID, price } = await prisma.waste.findFirst({
+  const wastePrice = await prisma.waste.findMany({
+    select: {
+      wasteID: true,
+      price: true,
+    },
     where: {
-      name: wasteName,
+      wasteID: {
+        in: waste.map((waste) => waste.wasteID),
+      },
     },
   });
 
-  const { transactionID } = await prisma.transaction.create({
-    data: transactionData,
+  const wastePriceObject = wastePrice.reduce((acc, waste) => {
+    return {
+      ...acc,
+      [waste.wasteID]: {
+        price: waste.price,
+      },
+    };
+  }, {});
+
+  const transactions = await prisma.$transaction(async (prisma) => {
+    const transaction = await prisma.transaction.create({
+      data: {
+        ...transactionData,
+      },
+    });
+
+    const wasteSubmission = waste.map((waste) => ({
+      transactionID: transaction.transactionID,
+      wasteID: waste.wasteID,
+      totalWeight: waste.total,
+      totalPrice: waste.total * wastePriceObject[waste.wasteID].price,
+    }));
+    console.log(wasteSubmission);
+
+    await prisma.waste_Submission.createMany({
+      data: wasteSubmission,
+    });
+
+    return transaction;
   });
 
-  const newSubmission = await prisma.waste_Submission.create({
-    data: {
-      wasteID,
-      transactionID: transactionID,
-      totalPrice: price * totalWeight,
-      totalWeight,
-    },
-  });
-
-  return newSubmission;
+  return transactions;
 };
 
 export const updateTransactionStatus = async (transactionID, newStatus) => {
@@ -66,6 +91,8 @@ export const getTransactions = async (status) => {
       },
       wasteSubmission: {
         select: {
+          totalPrice: true,
+          totalWeight: true,
           waste: {
             select: {
               name: true,
@@ -88,21 +115,29 @@ export const getTransactions = async (status) => {
   }
 
   const transactions = await prisma.transaction.findMany(query);
-  const response = transactions.map((transaction) => ({
-    name: transaction.user.name,
-    address: transaction.user.address,
-    phoneNumber: transaction.user.phoneNumber,
-    transactionID: transaction.transactionID,
-    status: transaction.status,
-    transactionDate: transaction.transactionDate,
-    source: transaction.source,
-    partnerID: transaction.partnerID,
-    wasteBankID: transaction.wasteBankID,
-    totalPrice: transaction.wasteSubmission.totalPrice,
-    wasteName: transaction.wasteSubmission.waste.name,
-    weight: transaction.wasteSubmission.totalWeight,
-    unit: transaction.wasteSubmission.waste.unit,
-  }));
+  const response = transactions.map((transaction) => {
+    return {
+      transactionID: transaction.transactionID,
+      status: transaction.status,
+      transactionDate: transaction.transactionDate,
+      user: {
+        userID: transaction.userID,
+        name: transaction.user.name,
+        address: transaction.user.address,
+        phoneNumber: transaction.user.phoneNumber,
+      },
+      source: transaction.source,
+      partnerID: transaction.partnerID,
+      wasteBankID: transaction.wasteBankID,
+      waste: transaction.wasteSubmission.map((waste) => {
+        return {
+          ...waste.waste,
+          totalPrice: waste.totalPrice,
+          totalWeight: waste.totalWeight,
+        };
+      }),
+    };
+  });
 
   return response;
 };
@@ -138,18 +173,24 @@ export const getTransaction = async (transactionID) => {
 
   const response = {
     transactionID: transaction.transactionID,
-    transactionDate: transaction.transactionDate,
-    name: transaction.user.name,
-    address: transaction.user.address,
-    phoneNumber: transaction.user.phoneNumber,
     status: transaction.status,
+    transactionDate: transaction.transactionDate,
+    user: {
+      userID: transaction.userID,
+      name: transaction.user.name,
+      address: transaction.user.address,
+      phoneNumber: transaction.user.phoneNumber,
+    },
     source: transaction.source,
     partnerID: transaction.partnerID,
     wasteBankID: transaction.wasteBankID,
-    wasteName: transaction.wasteSubmission.waste.name,
-    totalPrice: transaction.wasteSubmission.totalPrice,
-    weight: transaction.wasteSubmission.totalWeight,
-    unit: transaction.wasteSubmission.waste.unit,
+    waste: transaction.wasteSubmission.map((waste) => {
+      return {
+        ...waste.waste,
+        totalPrice: waste.totalPrice,
+        totalWeight: waste.totalWeight,
+      };
+    }),
   };
 
   return response;

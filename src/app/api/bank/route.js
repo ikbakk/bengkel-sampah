@@ -26,10 +26,15 @@ export async function POST(req) {
       },
     });
 
-    return NextResponse.json({
-      message: "New waste bank created successfully",
-      data: newBank,
-    });
+    return NextResponse.json(
+      {
+        message: "New waste bank created successfully",
+        data: newBank,
+      },
+      {
+        status: 201,
+      },
+    );
   } catch (error) {
     return NextResponse.json({
       message: "Waste banks not created",

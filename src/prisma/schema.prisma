@@ -52,7 +52,7 @@ model Member {
   memberID    String     @id @default(uuid())
   wasteBankID String
   wasteBank   Waste_Bank @relation(fields: [wasteBankID], references: [wasteBankID], onDelete: Cascade)
-  balance     Int
+  balance     Int        @default(0)
   userID      String     @unique
   user        User       @relation(fields: [userID], references: [userID], onDelete: Cascade)
 }
@@ -64,7 +64,7 @@ model Transaction {
   user            User               @relation(fields: [userID], references: [userID], onDelete: Cascade)
   transactionDate DateTime           @default(now())
 
-  wasteSubmission Waste_Submission?
+  wasteSubmission Waste_Submission[]
 
   source      Transaction_Source
   partner     Partner?           @relation(fields: [partnerID], references: [partnerID], onDelete: Cascade)
@@ -85,7 +85,7 @@ model Waste {
 
 model Waste_Submission {
   wasteSubmissionID String      @id @default(uuid())
-  transactionID     String      @unique
+  transactionID     String      
   transaction       Transaction @relation(fields: [transactionID], references: [transactionID])
   wasteID           String
   waste             Waste       @relation(fields: [wasteID], references: [wasteID])
@@ -121,6 +121,7 @@ enum Transaction_Status {
 }
 
 enum Transaction_Source {
+  DIRECT
   PARTNER
   WASTE_BANK
 }

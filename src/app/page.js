@@ -20,9 +20,11 @@ export default function Home() {
       <p>
         Hi {session?.data?.user?.name}, you are {session?.status}
       </p>
-      <button onClick={() => signOut()} className="w-fit">
-        Sign Out
-      </button>
+      {session.status === "authenticated" && (
+        <button onClick={() => signOut()} className="w-fit">
+          Sign Out
+        </button>
+      )}
       <Link href="/login">Login</Link>
       <Link href="/register">Register</Link>
     </div>

@@ -19,12 +19,12 @@ export const authOptions = {
 
         const user = await prisma.user.findUnique({
           where: {
-            phone: credentials.phone,
+            phoneNumber: credentials.phone,
           },
         });
 
         if (!user || !user.passwordHash) {
-          throw new Error("No user found");
+          throw new Error("Please enter a valid phone and password");
         }
 
         const passwordMatch = await bcrypt.compare(
@@ -50,7 +50,7 @@ export const authOptions = {
         token.user = {
           id: user.userID,
           name: user.name,
-          phone: user.phone,
+          phone: user.phoneNumber,
           role: user.role,
         };
       }
