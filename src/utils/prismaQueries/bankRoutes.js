@@ -143,6 +143,10 @@ export const createBankMember = async (data, wasteBankID) => {
   });
 
   return {
-    newName: newUser.name,
+    userID: newUser.userID,
+    phoneNumber: newUser.phoneNumber,
+    name: newUser.name,
+    address: newUser.address,
+    email: newUser.email,
   };
 };

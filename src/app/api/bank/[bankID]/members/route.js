@@ -46,10 +46,11 @@ export async function POST(req, { params }) {
       passwordHash: hashedPassword,
     };
 
-    const { newName } = await createBankMember(body, bankID);
+    const member = await createBankMember(body, bankID);
 
     return NextResponse.json({
-      message: `Member with the name ${newName} created succesfully`,
+      message: `Member created succesfully`,
+      data: member,
     });
   } catch (error) {
     return NextResponse.json({

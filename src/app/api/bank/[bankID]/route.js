@@ -9,7 +9,7 @@ export async function GET(req, { params }) {
     if (!bank) throw new Error("Waste bank not found");
 
     const response = {
-      id: bank.wasteBankID,
+      wasteBankID: bank.wasteBankID,
       name: bank.name,
       address: bank.address,
       members: bank._count.members,
