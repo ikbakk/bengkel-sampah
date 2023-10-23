@@ -10,6 +10,7 @@ module.exports = withMT({
     extend: {
       colors: {
         bs: {
+          font_primary: "#5F5D5D",
           primary: "#FFAB2A",
           secondary: "#29C4B4",
           tertiary: "#F6FAFF",
@@ -19,6 +20,7 @@ module.exports = withMT({
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+        primaryimage: "url('/images/bengkel-sampah-bg.png')",
       },
     },
   },
