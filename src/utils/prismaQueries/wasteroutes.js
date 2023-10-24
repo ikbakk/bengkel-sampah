@@ -30,7 +30,7 @@ export const updateWastePrice = async (wasteID, price) => {
       wasteID,
     },
     data: {
-      price,
+      price: price,
     },
   });
 

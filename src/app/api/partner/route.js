@@ -1,27 +1,31 @@
 import { NextResponse } from "next/server";
-import prisma from "@/utils/prismaClient";
+import {
+  createPartner,
+  getPartners,
+} from "@/utils/prismaQueries/partnerRoutes";
 
 export async function GET() {
-  const partners = await prisma.partner.findMany();
+  const partners = await getPartners();
 
-  return NextResponse.json(partners);
+  return NextResponse.json({
+    message: "Success retrieved partners",
+    data: partners,
+  });
 }
 
 export async function POST(req) {
-  const { name, phoneNumber, address } = await req.json();
+  try {
+    const { name, phoneNumber, address } = await req.json();
 
-  const newPartner = await prisma.partner.create({
-    data: {
-      name: name,
-      phoneNumber: phoneNumber,
-      address: address,
-    },
-  });
+    const newPartner = await createPartner({ name, phoneNumber, address });
 
-  return NextResponse.json({
-    message: "Success",
-    data: newPartner,
-  });
+    return NextResponse.json({
+      message: "New partner created successfully",
+      data: newPartner,
+    });
+  } catch (error) {
+    return NextResponse.json({
+      message: error.message,
+    });
+  }
 }
-
-
