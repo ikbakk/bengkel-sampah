@@ -6,12 +6,14 @@ import {
 
 export async function GET(req) {
   try {
-    const { searchParams } = new URL(req.url);
-    const status = searchParams.get("status");
-    const transactions = await getTransactions(status);
-    const resMessage = status
-      ? `Transactions with status ${status}: ${transactions.length}`
-      : "Transactions found ";
+    const searchParams = req.nextUrl.searchParams;
+    const filterBy = searchParams.get("filterBy");
+    const filterValue = searchParams.get("filterValue");
+    const transactions = await getTransactions(filterBy, filterValue);
+    const resMessage =
+      filterBy && filterValue
+        ? `Transactions with ${filterBy} ${filterValue}: ${transactions.length}`
+        : "Transactions found ";
 
     return NextResponse.json({
       message: resMessage,
@@ -44,7 +46,6 @@ export async function POST(req) {
       },
     );
   } catch (error) {
-    console.log(error);
     return NextResponse.json(
       {
         message: "New transaction not created",

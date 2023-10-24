@@ -22,6 +22,7 @@ model User {
   email        String?       @unique 
   member       Member?
   transactions Transaction[]
+  cart Cart?
   createdAt    DateTime      @default(now())
 }
 
@@ -81,6 +82,7 @@ model Waste {
   unit      String
 
   wasteSubmission Waste_Submission[]
+  cartItem Cart_Item?
 }
 
 model Waste_Submission {
@@ -99,6 +101,28 @@ model Waste_Bank {
   address      String
   members      Member[]
   transactions Transaction[]
+}
+
+model Cart {
+  cartID String @id @default(uuid())
+  userID String @unique
+  user   User @relation(fields: [userID], references: [userID])
+  cartItems Cart_Item[]
+  createdAt DateTime @default(now())
+}
+
+model Cart_Item {
+  cartItemID String @id @default(uuid())
+  cartID     String
+  cart       Cart    @relation(fields: [cartID], references: [cartID])
+  price Float
+  weight Float
+  createdAt  DateTime @default(now())
+
+  wasteID String @unique
+  waste   Waste @relation(fields: [wasteID], references: [wasteID])
+
+  @@unique([cartID, wasteID])
 }
 
 enum Role {
