@@ -55,30 +55,30 @@ export default function Login() {
       <Card
         color="transparent"
         shadow={false}
-        className="flex flex-col items-center justify-center w-full min-h-screen px-4 lg:w-1/2"
+        className="flex min-h-screen w-full flex-col items-center justify-center px-4 lg:w-1/2"
       >
         <Image
           src={logo}
           alt="logo bengkel sampah"
           width={160}
           height={80}
-          placeholder="blur"
+          placeholder="empty"
         />
         <Typography variant="h4" color="blue-gray">
           Sign In
         </Typography>
         <Typography
           color="gray"
-          className="px-4 mt-1 font-normal text-center w-80 sm:w-96"
+          className="mt-1 w-80 px-4 text-center font-normal sm:w-96"
         >
           Hello! Please Login First to Use Our Service
         </Typography>
         <form
-          className="max-w-screen-lg px-4 mt-8 mb-2 w-80 sm:w-96"
+          className="mb-2 mt-8 w-80 max-w-screen-lg px-4 sm:w-96"
           required
           onSubmit={loginUser}
         >
-          <div className="flex flex-col gap-6 mb-1">
+          <div className="mb-1 flex flex-col gap-6">
             <label
               className="-mb-3 font-bold text-blue-gray-800"
               htmlFor="phone"
@@ -90,7 +90,7 @@ export default function Login() {
               name="phone"
               size="lg"
               type="number"
-              placeholder="name@mail.com"
+              placeholder="08123456789"
               className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
               labelProps={{
                 className: "before:content-none after:content-none hidden",
@@ -136,7 +136,7 @@ export default function Login() {
           </Button>
           <Typography
             color="gray"
-            className="mt-4 text-xs font-normal text-center"
+            className="mt-4 text-center text-xs font-normal"
           >
             I dont have an account,
             <br />

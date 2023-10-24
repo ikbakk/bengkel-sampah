@@ -15,7 +15,7 @@ import Link from "next/link";
 import logo from "public/logo-bengkel-sampah-warna.png";
 import Image from "next/image";
 
-export default function SimpleRegistrationForm() {
+export default function SignUp() {
   const session = useSession();
   const router = useRouter();
 
@@ -54,30 +54,30 @@ export default function SimpleRegistrationForm() {
       <Card
         color="transparent"
         shadow={false}
-        className="flex flex-col items-center justify-center w-full min-h-screen px-4 lg:w-1/2"
+        className="flex min-h-screen w-full flex-col items-center justify-center px-4 lg:w-1/2"
       >
         <Image
           src={logo}
           alt="logo bengkel sampah"
           width={160}
           height={80}
-          placeholder="blur"
+          placeholder="empty"
         />
         <Typography variant="h4" color="blue-gray">
           Sign Up
         </Typography>
         <Typography
           color="gray"
-          className="px-4 mt-1 font-normal text-center w-80 sm:w-96"
+          className="mt-1 w-80 px-4 text-center font-normal sm:w-96"
         >
           Before Using Our Services Please Register with Your Credentials First
         </Typography>
         <form
-          className="max-w-screen-lg px-4 mt-8 mb-2 w-80 sm:w-96"
+          className="mb-2 mt-8 w-80 max-w-screen-lg px-4 sm:w-96"
           required
           onSubmit={registerUser}
         >
-          <div className="flex flex-col gap-6 mb-1">
+          <div className="mb-1 flex flex-col gap-6">
             <label
               htmlFor="name"
               className="-mb-3 font-bold text-blue-gray-800"
@@ -107,7 +107,7 @@ export default function SimpleRegistrationForm() {
               name="phone"
               size="lg"
               type="number"
-              placeholder="name@mail.com"
+              placeholder="08123456789"
               className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
               labelProps={{
                 className: "before:content-none after:content-none hidden",
@@ -160,7 +160,7 @@ export default function SimpleRegistrationForm() {
           </Button>
           <Typography
             color="gray"
-            className="mt-4 text-xs font-normal text-center"
+            className="mt-4 text-center text-xs font-normal"
           >
             Already have an account?{" "}
             <Link
