@@ -17,9 +17,9 @@ model User {
   name         String
   address      String?
   role         Role          @default(CUSTOMER)
-  customer     Customer?    
+  customer     Customer?
   driver       Driver?
-  email        String?       @unique 
+  email        String?       @unique
   member       Member?
   transactions Transaction[]
   createdAt    DateTime      @default(now())
@@ -101,6 +101,16 @@ model Waste_Bank {
   transactions Transaction[]
 }
 
+model News {
+  newsID    String   @id @default(uuid())
+  title     String
+  imageUrl  String
+  imageDesc String
+  content   String
+  author    String   @default("ADMIN")
+  createdAt DateTime @default(now())
+}
+
 enum Role {
   ADMIN
   CUSTOMER
@@ -129,5 +139,3 @@ enum Waste_Type {
   ORGANIC
   INORGANIC
 }
-
-
