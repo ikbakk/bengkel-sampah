@@ -6,13 +6,19 @@ const PriceCard = ({ title, value }) => {
   return (
     <Card
       variant="filled"
-      className="w-[350px] scale-75 text-center outline outline-bs-secondary md:scale-100"
+      className="w-[200px] text-center outline outline-bs-secondary lg:w-[350px]"
     >
       <CardBody>
-        <Typography variant="h5" className="font-normal text-bs-secondary">
+        <Typography
+          variant="h5"
+          className="text-sm font-normal text-bs-secondary lg:text-lg"
+        >
           {title}
         </Typography>
-        <Typography variant="h4" className="font-bold text-bs-secondary">
+        <Typography
+          variant="h4"
+          className="text-base font-bold text-bs-secondary lg:text-2xl"
+        >
           {value}
         </Typography>
       </CardBody>
