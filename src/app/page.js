@@ -2,11 +2,17 @@
 
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
+import Loading from "@/components/templates/Loading";
 
 export default function Home() {
   const session = useSession();
 
-  if (session.status === "loading") return <div>Loading...</div>;
+  if (session.status === "loading")
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
 
   return (
     <div className="justify-left flex flex-col gap-2 text-left">
@@ -14,9 +20,11 @@ export default function Home() {
       <p>
         Hi {session?.data?.user?.name}, you are {session?.status}
       </p>
-      <button onClick={() => signOut()} className="w-fit">
-        Sign Out
-      </button>
+      {session.status === "authenticated" && (
+        <button onClick={() => signOut()} className="w-fit">
+          Sign Out
+        </button>
+      )}
       <Link href="/login">Login</Link>
       <Link href="/register">Register</Link>
     </div>

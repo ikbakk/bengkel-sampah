@@ -22,6 +22,7 @@ model User {
   email        String?       @unique
   member       Member?
   transactions Transaction[]
+  cart Cart?
   createdAt    DateTime      @default(now())
 }
 
@@ -52,7 +53,7 @@ model Member {
   memberID    String     @id @default(uuid())
   wasteBankID String
   wasteBank   Waste_Bank @relation(fields: [wasteBankID], references: [wasteBankID], onDelete: Cascade)
-  balance     Int
+  balance     Int        @default(0)
   userID      String     @unique
   user        User       @relation(fields: [userID], references: [userID], onDelete: Cascade)
 }
@@ -64,7 +65,7 @@ model Transaction {
   user            User               @relation(fields: [userID], references: [userID], onDelete: Cascade)
   transactionDate DateTime           @default(now())
 
-  wasteSubmission Waste_Submission?
+  wasteSubmission Waste_Submission[]
 
   source      Transaction_Source
   partner     Partner?           @relation(fields: [partnerID], references: [partnerID], onDelete: Cascade)
@@ -81,11 +82,12 @@ model Waste {
   unit      String
 
   wasteSubmission Waste_Submission[]
+  cartItem Cart_Item?
 }
 
 model Waste_Submission {
   wasteSubmissionID String      @id @default(uuid())
-  transactionID     String      @unique
+  transactionID     String      
   transaction       Transaction @relation(fields: [transactionID], references: [transactionID])
   wasteID           String
   waste             Waste       @relation(fields: [wasteID], references: [wasteID])
@@ -101,6 +103,7 @@ model Waste_Bank {
   transactions Transaction[]
 }
 
+
 model News {
   newsID    String   @id @default(uuid())
   title     String
@@ -109,6 +112,29 @@ model News {
   content   String
   author    String   @default("ADMIN")
   createdAt DateTime @default(now())
+}
+
+
+model Cart {
+  cartID String @id @default(uuid())
+  userID String @unique
+  user   User @relation(fields: [userID], references: [userID])
+  cartItems Cart_Item[]
+  createdAt DateTime @default(now())
+}
+
+model Cart_Item {
+  cartItemID String @id @default(uuid())
+  cartID     String
+  cart       Cart    @relation(fields: [cartID], references: [cartID])
+  price Float
+  weight Float
+  createdAt  DateTime @default(now())
+
+  wasteID String @unique
+  waste   Waste @relation(fields: [wasteID], references: [wasteID])
+
+  @@unique([cartID, wasteID])
 }
 
 enum Role {
@@ -131,6 +157,7 @@ enum Transaction_Status {
 }
 
 enum Transaction_Source {
+  DIRECT
   PARTNER
   WASTE_BANK
 }

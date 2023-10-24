@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
 import prisma from "@/utils/prismaClient";
+import {
+  updatePartner,
+  getPartner,
+  deletePartner,
+} from "@/utils/prismaQueries/partnerRoutes";
 
 export async function GET(req, { params }) {
   try {
     const { partnerID } = params;
+
 
     const partner = await prisma.partner.findUnique({
       where: {
@@ -24,6 +30,7 @@ export async function GET(req, { params }) {
 
     return NextResponse.json(partner);
   } catch (error) {}
+
 }
 
 export async function PUT(req, { params }) {
@@ -72,7 +79,7 @@ export async function PUT(req, { params }) {
       data: newData,
     });
   } catch (error) {
-    console.log(error);
+    console.log(error);    
   }
 }
 

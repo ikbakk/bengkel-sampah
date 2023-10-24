@@ -6,17 +6,6 @@ export async function GET(req, { params }) {
     const { memberID, bankID } = params;
     const member = await memberDetails(memberID, bankID);
 
-    const transactions = member.user.transactions.map((transaction) => {
-      return {
-        status: transaction.status,
-        transactionDate: transaction.transactionDate,
-        totalPrice: transaction.wasteSubmission.totalPrice,
-        wasteName: transaction.wasteSubmission.waste.name,
-        weight: transaction.wasteSubmission.totalWeight,
-        unit: transaction.wasteSubmission.waste.unit,
-      };
-    });
-
     const response = {
       memberID: member.memberID,
       name: member.user.name,
@@ -25,7 +14,6 @@ export async function GET(req, { params }) {
       phoneNumber: member.user.phoneNumber,
       balance: member.balance,
       createdAt: member.user.createdAt,
-      transactions,
     };
 
     return NextResponse.json({
@@ -34,7 +22,7 @@ export async function GET(req, { params }) {
     });
   } catch (error) {
     return NextResponse.json({
-      message: "Member not found",
+      message: error.message,
     });
   }
 }

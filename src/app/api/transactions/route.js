@@ -6,21 +6,28 @@ import {
 
 export async function GET(req) {
   try {
-    const { searchParams } = new URL(req.url);
-    const status = searchParams.get("status");
-    const transactions = await getTransactions(status);
-    const resMessage = status
-      ? `Transactions with status ${status}: ${transactions.length}`
-      : "Transactions found ";
+    const searchParams = req.nextUrl.searchParams;
+    const filterBy = searchParams.get("filterBy");
+    const filterValue = searchParams.get("filterValue");
+    const transactions = await getTransactions(filterBy, filterValue);
+    const resMessage =
+      filterBy && filterValue
+        ? `Transactions with ${filterBy} ${filterValue}: ${transactions.length}`
+        : "Transactions found ";
 
     return NextResponse.json({
       message: resMessage,
       data: transactions,
     });
   } catch (error) {
-    return NextResponse.json({
-      message: "Transactions not found",
-    });
+    return NextResponse.json(
+      {
+        message: "Get transactions failed",
+      },
+      {
+        status: 400,
+      },
+    );
   }
 }
 
@@ -29,13 +36,24 @@ export async function POST(req) {
     const body = await req.json();
     const transaction = await newTransaction(body);
 
-    return NextResponse.json({
-      message: "New transaction created",
-      data: transaction,
-    });
+    return NextResponse.json(
+      {
+        message: "New transaction created",
+        data: transaction,
+      },
+      {
+        status: 201,
+      },
+    );
   } catch (error) {
-    return NextResponse.json({
-      message: "New transaction not created",
-    });
+    return NextResponse.json(
+      {
+        message: "New transaction not created",
+        error,
+      },
+      {
+        status: 400,
+      },
+    );
   }
 }

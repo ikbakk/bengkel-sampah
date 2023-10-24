@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
-import prisma from "@/utils/prismaClient";
+import {
+  createPartner,
+  getPartners,
+} from "@/utils/prismaQueries/partnerRoutes";
 
 export async function GET() {
   try {
