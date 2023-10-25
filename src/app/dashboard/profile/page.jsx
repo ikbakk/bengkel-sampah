@@ -9,10 +9,20 @@ import {
   KETENTUAN_PRIVASI,
   KEBIJAKAN_PRIVASI,
 } from "@/utils/constant/ketentuanPrivasi";
+import { BsWhatsapp } from "react-icons/bs";
 
 const DashboardProfile = () => {
   const [open, setOpen] = useState(false);
+  const [openPusatBantuan, setOpenPusatBantuan] = useState(false);
+  const [openLogout, setOpenLogout] = useState(false);
+
   const handleOpen = () => setOpen(!open);
+  const handleOpenPusatBantuan = () => {
+    setOpenPusatBantuan(!openPusatBantuan);
+  };
+  const handleOpenLogout = () => {
+    setOpenLogout(!openLogout);
+  };
   return (
     <div className="text-bs-font_primary">
       <NavTop label={"Profil"} />
@@ -41,12 +51,15 @@ const DashboardProfile = () => {
             Ketentuan Privasi
           </button>
           <button
+            onClick={handleOpenPusatBantuan}
             className={`text-black" "text-[#CACED8] hover:bg-[#EAF8F5]hover:text-bs-font_primary w-full  rounded-lg  p-3 text-start font-semibold transition-all`}
           >
             Pusat Bantuan
           </button>
 
-          <Button color="red">Logout</Button>
+          <Button color="red" onClick={handleOpenLogout}>
+            Logout
+          </Button>
         </div>
         <div className="col-span-3">
           <EditProfile />
@@ -82,6 +95,47 @@ const DashboardProfile = () => {
                   Mengerti
                 </Button>
               </div>
+            </div>
+          </ModalComponent>
+          <ModalComponent
+            handlerOpen={handleOpenPusatBantuan}
+            open={openPusatBantuan}
+          >
+            <div className="m-3 flex flex-col gap-3 text-black">
+              <p className="font-semibold">Pusat Bantuan</p>
+              <p>
+                Kami ingin memberitahukan bahwa saat ini kami lebih memilih
+                menerima dan menangani pertanyaan serta permintaan melalui
+                layanan WhatsApp kami. Kami percaya bahwa ini akan membantu kami
+                memberikan dukungan yang lebih efisien dan responsif kepada
+                pelanggan kami.
+              </p>
+              <div>
+                <Button
+                  color="green"
+                  className="mx-auto flex items-center gap-3"
+                >
+                  <BsWhatsapp />
+                  Hubungi Kami Melalui WhatsApp
+                </Button>
+              </div>
+
+              <div className="flex justify-center">
+                <Button onClick={handleOpenPusatBantuan} color="green">
+                  Mengerti
+                </Button>
+              </div>
+            </div>
+          </ModalComponent>
+          <ModalComponent handlerOpen={handleOpenLogout} open={openLogout}>
+            <div>
+              <h1 className="text-center font-semibold">
+                Apakah anda yakin ingin{" "}
+                <span className="font-semibold">Keluar</span> dari akun anda
+              </h1>
+            </div>
+            <div className="mt-5 flex items-center justify-center">
+              <Button color="red">Logout</Button>
             </div>
           </ModalComponent>
         </div>
