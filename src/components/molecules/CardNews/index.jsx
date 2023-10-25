@@ -1,9 +1,13 @@
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 const CardNews = () => {
   return (
-    <div className="grid grid-cols-1 items-center gap-5 rounded-lg bg-white p-3 shadow-lg lg:grid-cols-6">
+    <Link
+      href={"#"}
+      className="block grid grid-cols-1 items-center gap-5 rounded-lg bg-white p-3 shadow-lg lg:grid-cols-6"
+    >
       <div>
         <Image
           src={"/assets/images/dummy.png"}
@@ -40,7 +44,7 @@ const CardNews = () => {
           praesentium!
         </p>
       </div>
-    </div>
+    </Link>
   );
 };
 
