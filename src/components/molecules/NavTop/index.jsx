@@ -1,5 +1,7 @@
+"use client";
 import Image from "next/image";
 import React from "react";
+import ProfileMenu from "@/components/atoms/ProfileMenu";
 
 export const NavTop = ({ label }) => {
   return (
@@ -9,13 +11,7 @@ export const NavTop = ({ label }) => {
       </h1>
 
       <div>
-        <Image
-          src="/dummy-photo.png"
-          className="h-10 w-10 rounded-full"
-          alt="photo"
-          width={100}
-          height={100}
-        />
+        <ProfileMenu />
       </div>
     </div>
   );
