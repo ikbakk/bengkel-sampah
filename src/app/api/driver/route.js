@@ -1,77 +1,60 @@
 import { NextResponse } from "next/server";
-import prisma from "@/utils/prismaClient";
+import { getDrivers, createDriver } from "@/utils/prismaQueries/driverRoutes";
+
+import bcrypt from "bcrypt";
 
 export async function GET() {
   try {
-    const drivers = await prisma.driver.findMany({
-      include: {
-        user: {
-          select: {
-            userID: true,
-            name: true,
-            address: true,
-            phoneNumber: true,
-            role: true,
-          },
-        },
-      },
-    });
+    const drivers = await getDrivers();
 
-    const res = drivers.map((driver) => ({
+    const response = drivers.map((driver) => ({
       driverID: driver.driverID,
       driverStatus: driver.driverStatus,
       ...driver.user,
     }));
 
-    return NextResponse.json(res);
+    return NextResponse.json(
+      { message: "Success", data: response },
+      { status: 200 },
+    );
   } catch (error) {
-    console.log(error);
+    return NextResponse.json(
+      { message: error.message },
+      { status: error.code },
+    );
   }
 }
 
 export async function POST(req) {
   try {
-    const { name, address, phoneNumber, passwordHash, role, balance, email } =
+    const { name, address, phoneNumber, password, role, email } =
       await req.json();
 
-    if (!name || !address || !phoneNumber || !passwordHash || !role || !email) {
-      return NextResponse.json(
-        {
-          error: "Validation Error",
-          message: "Please fill in all required fields.",
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const body = {
+      name,
+      address,
+      phoneNumber,
+      email,
+      role,
+      passwordHash: hashedPassword,
+    };
+
+    const newDriver = await createDriver(body);
+
+    return NextResponse.json(
+      {
+        message: "Success create Driver",
+        data: {
+          newDriver,
         },
-        { status: 422 },
-      );
-    }
-
-    const newUser = await prisma.user.create({
-      data: {
-        name: name,
-        address: address,
-        phoneNumber: phoneNumber,
-        passwordHash: passwordHash,
-        email: email,
-        role: role,
       },
-    });
-
-    const newDriver = await prisma.driver.create({
-      data: {
-        balance: balance,
-        userID: newUser.userID,
-      },
-    });
-
-    return NextResponse.json({
-      message: "Success",
-      data: {
-        ...newDriver,
-        ...newUser,
-      },
-    });
+      { status: 201 },
+    );
   } catch (error) {
     return NextResponse.json(
-      { message: "Driver Not Created!" },
+      { message: "Driver Not Created" },
       { status: 500 },
     );
   }
