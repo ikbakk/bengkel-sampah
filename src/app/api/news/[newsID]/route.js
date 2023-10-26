@@ -1,30 +1,28 @@
 import { NextResponse } from "next/server";
-import prisma from "@/utils/prismaClient";
+import {
+  getNewsDetail,
+  updateNews,
+  deleteNews,
+} from "@/utils/prismaQueries/newsRoutes";
+import { NotFoundError } from "@/utils/errors";
 
 export async function GET(req, { params }) {
   try {
     const { newsID } = params;
 
-    const news = await prisma.news.findUnique({
-      where: {
-        newsID: newsID,
-      },
-    });
+    const news = await getNewsDetail(newsID);
 
-    if (!news) {
-      return NextResponse.json(
-        {
-          Error: "News not found",
-          Message:
-            "The requested news does not exist in the system. Please verify the news ID and try again.",
-        },
-        { status: 404 },
-      );
-    }
+    if (!news) throw new NotFoundError("News not found!");
 
-    return NextResponse.json(news);
+    return NextResponse.json(
+      { message: "News found!", data: news },
+      { status: 200 },
+    );
   } catch (error) {
-    return NextResponse.json({ message: error }, { status: 500 });
+    return NextResponse.json(
+      { message: error.message },
+      { status: error.code },
+    );
   }
 }
 
@@ -33,50 +31,42 @@ export async function PUT(req, { params }) {
     const { newsID } = params;
     const { title, imageUrl, imageDesc, content, author } = await req.json();
 
-    if (!title || !imageUrl || !imageDesc || !content) {
-      return NextResponse.json(
-        {
-          error: "Validation Error",
-          message: "Please fill in all required fields.",
-        },
-        { status: 422 },
-      );
-    }
+    // if (!title || !imageUrl || !imageDesc || !content) {
+    //   return NextResponse.json(
+    //     {
+    //       error: "Validation Error",
+    //       message: "Please fill in all required fields.",
+    //     },
+    //     { status: 422 },
+    //   );
+    // }
 
-    const news = await prisma.news.findUnique({
-      where: { newsID: newsID },
-    });
+    const news = await getNewsDetail(newsID);
 
-    if (!news) {
-      return NextResponse.json(
-        {
-          Error: "News not found",
-          Message:
-            "The requested news does not exist in the system. Please verify the news ID and try again.",
-        },
-        { status: 404 },
-      );
-    }
+    if (!news) throw new NotFoundError("News not found!");
 
-    const newData = await prisma.news.update({
-      where: {
-        newsID: newsID,
+    const newsData = {
+      title,
+      imageUrl,
+      imageDesc,
+      content,
+      author,
+    };
+
+    const updatedNews = await updateNews(newsID, newsData);
+
+    return NextResponse.json(
+      {
+        message: "Success update news",
+        data: updatedNews,
       },
-      data: {
-        title: title,
-        imageUrl: imageUrl,
-        imageDesc: imageDesc,
-        content: content,
-        author: author,
-      },
-    });
-
-    return NextResponse.json({
-      message: "Success",
-      data: newData,
-    });
+      { status: 200 },
+    );
   } catch (error) {
-    return NextResponse.json({ message: error }, { status: 500 });
+    return NextResponse.json(
+      { message: error.message },
+      { status: error.code },
+    );
   }
 }
 
@@ -84,33 +74,22 @@ export async function DELETE(req, { params }) {
   try {
     const { newsID } = params;
 
-    const news = await prisma.news.findUnique({
-      where: {
-        newsID: newsID,
+    const news = await getNewsDetail(newsID);
+
+    if (!news) throw new NotFoundError("News not found!");
+
+    const deletedNews = await deleteNews(newsID);
+
+    return NextResponse.json(
+      {
+        message: "Sucess delete news",
       },
-    });
-
-    if (!news) {
-      return NextResponse.json(
-        {
-          Error: "News not found",
-          Message:
-            "The requested news does not exist in the system. Please verify the news ID and try again.",
-        },
-        { status: 404 },
-      );
-    }
-
-    await prisma.news.delete({
-      where: {
-        newsID: newsID,
-      },
-    });
-
-    return NextResponse.json({
-      message: "Sucess delete news",
-    });
+      { status: 200 },
+    );
   } catch (error) {
-    return NextResponse.json({ message: error }, { status: 500 });
+    return NextResponse.json(
+      { message: error.message },
+      { status: error.code },
+    );
   }
 }
