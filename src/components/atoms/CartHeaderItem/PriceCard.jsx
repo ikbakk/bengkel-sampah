@@ -1,28 +1,18 @@
 "use client";
 
-import { Card, CardBody, Typography } from "@material-tailwind/react";
+import { Typography } from "@material-tailwind/react";
 
-const PriceCard = ({ title, value }) => {
+const PriceCard = ({ title, value, icon }) => {
   return (
-    <Card
-      variant="filled"
-      className="w-[200px] text-center outline outline-bs-secondary lg:w-[350px]"
-    >
-      <CardBody>
-        <Typography
-          variant="h5"
-          className="text-sm font-normal text-bs-secondary lg:text-lg"
-        >
-          {title}
-        </Typography>
-        <Typography
-          variant="h4"
-          className="text-base font-bold text-bs-secondary lg:text-2xl"
-        >
+    <div className="flex w-[200px] flex-col items-center text-bs-font_primary">
+      <div className=" flex flex-col text-left text-sm font-normal lg:text-lg">
+        <Typography>{title}</Typography>
+        <Typography className="flex items-center justify-center gap-2 text-base font-bold lg:text-2xl">
+          <span>{icon}</span>
           {value}
         </Typography>
-      </CardBody>
-    </Card>
+      </div>
+    </div>
   );
 };
 

@@ -25,7 +25,6 @@ export default async function CartPage() {
         totalWeight={cart.data.totalWeight}
         fetchedCartItems={cart.data.cartItems}
       />
-      ;
     </CartProvider>
   );
 }

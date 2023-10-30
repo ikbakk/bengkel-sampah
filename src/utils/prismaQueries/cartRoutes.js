@@ -112,3 +112,16 @@ export const newCartItem = async (cartID, wasteID, weight) => {
 
   return newCartItem;
 };
+
+export const deleteCartItems = async (cartID, wasteIDs) => {
+  await prisma.cart_Item.deleteMany({
+    where: {
+      cartID,
+      wasteID: {
+        in: wasteIDs,
+      },
+    },
+  });
+
+  return true;
+};
