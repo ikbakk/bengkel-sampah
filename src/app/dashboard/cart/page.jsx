@@ -1,11 +1,12 @@
 import { NavTop } from "@/components/molecules/NavTop";
 import Cart from "@/components/templates/Cart";
-import { CartProvider } from "@/context/CartContext";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import axios from "axios";
 
-const baseURL = process.env.NEXTAUTH_URL;
+export const revalidate = "1s";
+
+const baseURL = process.env.BASEURL;
 
 export default async function CartPage() {
   const { user } = await getServerSession(authOptions);
@@ -16,7 +17,7 @@ export default async function CartPage() {
   });
 
   return (
-    <CartProvider>
+    <>
       <NavTop label="Keranjang Sampah" />
       <Cart
         wastes={wastes.data}
@@ -25,6 +26,6 @@ export default async function CartPage() {
         totalWeight={cart.data.totalWeight}
         fetchedCartItems={cart.data.cartItems}
       />
-    </CartProvider>
+    </>
   );
 }

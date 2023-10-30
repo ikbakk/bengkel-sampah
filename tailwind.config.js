@@ -15,6 +15,7 @@ module.exports = withMT({
           primary: "#FFAB2A",
           secondary: "#29C4B4",
           tertiary: "#F6FAFF",
+          outline: "#C4C4C4",
         },
       },
       backgroundImage: {

@@ -1,25 +1,24 @@
 "use client";
 
-import { Input } from "@material-tailwind/react";
-import { useState } from "react";
+import { Card, CardBody, Input } from "@material-tailwind/react";
 import CustomDatePicker from "@/components/atoms/DatePicker";
 import SellFormInput from "@/components/molecules/SellFormInput";
 
+import { SellContext } from "@/context/SellContext";
+import { useContext } from "react";
+
 const SellForm = () => {
-  const [val, setVal] = useState({
-    startDate: new Date(),
-    endDate: null,
-  });
+  const { date, setDate } = useContext(SellContext);
 
   const handleValChange = (newVal) => {
-    setVal(newVal);
+    setDate(newVal);
   };
 
   const formInputs = [
     {
       id: "input1",
       label: "Tanggal Penjemputan",
-      children: <CustomDatePicker value={val} onChange={handleValChange} />,
+      children: <CustomDatePicker value={date} onChange={handleValChange} />,
     },
     {
       id: "input2",
@@ -38,13 +37,17 @@ const SellForm = () => {
   ];
 
   return (
-    <form className="mt-4 flex flex-col gap-3 text-bs-font_primary">
-      {formInputs.map((input) => (
-        <SellFormInput key={input.id} label={input.label}>
-          {input.children}
-        </SellFormInput>
-      ))}
-    </form>
+    <Card className="w-full shadow-none">
+      <CardBody>
+        <form className="flex flex-col gap-3 text-bs-font_primary">
+          {formInputs.map((input) => (
+            <SellFormInput key={input.id} label={input.label}>
+              {input.children}
+            </SellFormInput>
+          ))}
+        </form>
+      </CardBody>
+    </Card>
   );
 };
 

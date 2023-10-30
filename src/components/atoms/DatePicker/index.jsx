@@ -3,6 +3,7 @@ import Datepicker from "react-tailwindcss-datepicker";
 const CustomDatePicker = ({ value, onChange }) => {
   return (
     <Datepicker
+      toggleClassName="hidden"
       containerClassName="outline outline-1 rounded-md mx-[0.1rem]"
       placeholder=""
       asSingle
@@ -10,7 +11,11 @@ const CustomDatePicker = ({ value, onChange }) => {
       useRange={false}
       primaryColor="amber"
       value={value}
-      onChange={onChange}
+      separator="/"
+      displayFormat="DD/MM/YYYY"
+      onChange={(value) => {
+        onChange(value);
+      }}
     />
   );
 };
