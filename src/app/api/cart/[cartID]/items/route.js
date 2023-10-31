@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { newCartItem } from "@/utils/prismaQueries/cartRoutes";
+import { newCartItem, deleteCartItems } from "@/utils/prismaQueries/cartRoutes";
 
 export async function POST(req, { params }) {
   try {
@@ -13,6 +13,30 @@ export async function POST(req, { params }) {
       data: cartItem,
     });
   } catch (error) {
+    return NextResponse.json(
+      {
+        message: error.name,
+        error: error.message,
+      },
+      {
+        status: 500,
+      },
+    );
+  }
+}
+
+export async function DELETE(req, { params }) {
+  try {
+    const { cartID } = params;
+    const { wasteIDs } = await req.json();
+
+    await deleteCartItems(cartID, wasteIDs);
+
+    return NextResponse.json({
+      message: "Cart items deleted",
+    });
+  } catch (error) {
+    console.log(error);
     return NextResponse.json(
       {
         message: error.name,

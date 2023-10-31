@@ -1,12 +1,8 @@
 "use client";
 
-import { Typography, Card, CardBody } from "@material-tailwind/react";
+import { Typography, Card, CardBody, Checkbox } from "@material-tailwind/react";
 import CartQuantityItemCounter from "@/components/molecules/CartQuantityItemCounter";
-import { useContext } from "react";
-import { CartContext } from "@/context/CartContext";
-import axios from "axios";
-
-const baseURL = process.env.NEXT_PUBLIC_BASEURL;
+import useCartActions from "@/hooks/useCartActions";
 
 const CartItem = ({
   cartID,
@@ -16,99 +12,48 @@ const CartItem = ({
   wasteName,
   unit,
   totalWeight,
+  onSelect,
+  selected,
 }) => {
-  const { cartItems, setCartItems, setCartTotal } = useContext(CartContext);
-  const cartItem = cartItems.find((item) => item?.waste?.wasteID === wasteID);
-
-  const handleAdd = async () => {
-    try {
-      setCartItems((prevCartItems) =>
-        prevCartItems.map((item) => {
-          if (item.waste.wasteID === wasteID) {
-            return {
-              ...item,
-              weight: item.weight + 1,
-              price: item.price + item.waste.price,
-            };
-          }
-
-          return item;
-        }),
-      );
-
-      setCartTotal((prevCartTotal) => ({
-        totalPrice: prevCartTotal.totalPrice + pricePerUnit,
-        totalWeight: prevCartTotal.totalWeight + 1,
-      }));
-
-      await axios.put(
-        `${baseURL}/api/cart/${cartID}/items/${cartItem.cartItemID}`,
-        {
-          newWeight: cartItem.weight + 1,
-        },
-      );
-    } catch (error) {
-      console.log(error);
-    }
+  const hooksParams = {
+    wasteID,
+    pricePerUnit,
+    cartID,
   };
 
-  const handleReduce = async () => {
-    try {
-      setCartItems((prevCartItems) =>
-        prevCartItems.map((item) => {
-          if (item.waste.wasteID === wasteID) {
-            return {
-              ...item,
-              weight: item.weight - 1,
-              price: item.price - item.waste.price,
-            };
-          }
+  const { handleAdd, handleReduce } = useCartActions(hooksParams);
 
-          return item;
-        }),
-      );
-
-      setCartTotal((prevCartTotal) => ({
-        totalPrice: prevCartTotal.totalPrice - pricePerUnit,
-        totalWeight: prevCartTotal.totalWeight - 1,
-      }));
-
-      await axios.put(
-        `${baseURL}/api/cart/${cartID}/items/${cartItem.cartItemID}`,
-        {
-          newWeight: cartItem.weight - 1,
-        },
-      );
-    } catch (error) {
-      console.log(error);
-    }
+  const handleChange = () => {
+    onSelect(wasteID);
   };
 
   return (
-    <Card>
-      <CardBody>
-        <Typography variant="h5" className="text-md capitalize md:text-xl">
-          {wasteName}
-        </Typography>
-        <section className="flex flex-col items-center justify-between gap-2 md:flex-row md:items-end">
-          <div className="flex w-full items-center justify-start gap-2">
-            <p className="text-md font-bold text-[#519B37] md:text-xl">
-              {price}
-            </p>
-            <p>|</p>
-            <p>
-              @{pricePerUnit}/{unit}
-            </p>
-          </div>
-          <CartQuantityItemCounter
-            handleAdd={handleAdd}
-            handleReduce={handleReduce}
-            totalWeight={totalWeight}
-            unit={unit}
-          />
-        </section>
-      </CardBody>
-    </Card>
+    <div className="flex w-full items-center gap-4">
+      <Checkbox color="red" checked={selected} onChange={handleChange} />
+      <Card className="w-full">
+        <CardBody>
+          <Typography variant="h5" className="text-md capitalize md:text-xl">
+            {wasteName}
+          </Typography>
+          <section className="flex flex-col items-center justify-between gap-2 md:flex-row md:items-end">
+            <div className="flex w-full items-center justify-start gap-2">
+              <p className="text-md font-bold text-[#519B37] md:text-xl">
+                {price}{" "}
+                <span className="text-sm font-normal text-bs-font_primary">
+                  | @{pricePerUnit}/{unit}
+                </span>
+              </p>
+            </div>
+            <CartQuantityItemCounter
+              handleAdd={handleAdd}
+              handleReduce={handleReduce}
+              totalWeight={totalWeight}
+              unit={unit}
+            />
+          </section>
+        </CardBody>
+      </Card>
+    </div>
   );
 };
 

@@ -7,22 +7,31 @@ import PriceCard from "@/components/atoms/CartHeaderItem/PriceCard";
 import { convertToIDR } from "@/lib/convertToIDR";
 import { useContext } from "react";
 import { CartContext } from "@/context/CartContext";
+import { Card, CardBody } from "@material-tailwind/react";
+import { CiMoneyBill } from "react-icons/ci";
+import { TbWeight } from "react-icons/tb";
 
 const CartHeader = () => {
   const { cartTotal } = useContext(CartContext);
   return (
     <ContentHeader>
-      <CartHeaderTitle title="Total Estimasi :" />
-      <div className="flex flex-col items-center justify-center gap-2 md:flex-row md:gap-8">
-        <PriceCard
-          title="Estimasi Harga"
-          value={convertToIDR(cartTotal.totalPrice)}
-        />
-        <PriceCard
-          title="Estimasi Berat"
-          value={`${cartTotal.totalWeight} kg`}
-        />
-      </div>
+      <Card>
+        <CardBody>
+          <CartHeaderTitle title="Estimasi Penjualan" />
+          <div className="flex flex-row items-center gap-4">
+            <PriceCard
+              title="Berat"
+              icon={<TbWeight className="text-bs-secondary" size={24} />}
+              value={`${cartTotal.totalWeight} kg`}
+            />
+            <PriceCard
+              title="Harga"
+              icon={<CiMoneyBill className="text-bs-secondary" size={24} />}
+              value={convertToIDR(cartTotal.totalPrice)}
+            />
+          </div>
+        </CardBody>
+      </Card>
     </ContentHeader>
   );
 };

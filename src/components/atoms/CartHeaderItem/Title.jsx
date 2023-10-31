@@ -4,9 +4,8 @@ import { Typography } from "@material-tailwind/react";
 const CartHeaderTitle = ({ title }) => {
   return (
     <Typography
-      className="z-10 text-center md:text-left"
+      className="z-10 mb-4 w-full text-center text-bs-font_primary md:text-left"
       variant="h4"
-      color="white"
     >
       {title}
     </Typography>
