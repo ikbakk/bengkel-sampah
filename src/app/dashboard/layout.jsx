@@ -1,8 +1,9 @@
 import Sidebar from "@/components/molecules/Sidebar";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import React from "react";
 
-const LayoutAdmin = ({ children, title }) => {
+const LayoutAdmin = ({ children }) => {
   return (
     <div className="grid h-screen grid-cols-10">
       <div className="col-span-2 max-h-screen  overflow-y-scroll  bg-bs-tertiary">
