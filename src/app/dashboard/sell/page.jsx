@@ -1,20 +1,17 @@
 import Sell from "@/components/templates/Sell";
-import { NavTop } from "@/components/molecules/NavTop";
 import { SellProvider } from "@/context/SellContext";
-import { getServerSession } from "next-auth";
+import { NavTop } from "@/components/molecules/NavTop";
+
 import { authOptions } from "@/lib/auth";
-import axios from "axios";
-
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
-const baseUrl = process.env.BASEURL;
+import { getServerSession } from "next-auth";
+import { fetchItemsWithParams } from "@/utils/fetchItems";
 
 export default async function SellPage() {
   const { user } = await getServerSession(authOptions);
-  const { data: cart } = await axios.get(`${baseUrl}/api/cart`, {
-    params: { userID: user.id },
-  });
+  const params = {
+    userID: user.id,
+  };
+  const cart = await fetchItemsWithParams("/api/cart", params);
 
   return (
     <SellProvider>
