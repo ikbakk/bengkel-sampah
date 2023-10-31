@@ -82,7 +82,7 @@ model Waste {
   unit      String
 
   wasteSubmission Waste_Submission[]
-  cartItem Cart_Item?
+  cartItem Cart_Item[]
 }
 
 model Waste_Submission {
@@ -131,7 +131,7 @@ model Cart_Item {
   weight Float
   createdAt  DateTime @default(now())
 
-  wasteID String @unique
+  wasteID String 
   waste   Waste @relation(fields: [wasteID], references: [wasteID])
 
   @@unique([cartID, wasteID])

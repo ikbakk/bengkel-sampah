@@ -4,7 +4,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import axios from "axios";
 
-export const revalidate = "1s";
+export const dynamic = "force-dynamic";
 
 const baseURL = process.env.BASEURL;
 
@@ -24,7 +24,7 @@ export default async function CartPage() {
         cartID={cart.data.cartID}
         totalPrice={cart.data.totalPrice}
         totalWeight={cart.data.totalWeight}
-        fetchedCartItems={cart.data.cartItems}
+        fetchedCartItems={cart.data.cartItems ?? []}
       />
     </>
   );
