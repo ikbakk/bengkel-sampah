@@ -27,7 +27,7 @@ export default async function CartPage() {
         cartID={cart.data.cartID}
         totalPrice={cart.data.totalPrice}
         totalWeight={cart.data.totalWeight}
-        fetchedCartItems={cart.data.cartItems}
+        fetchedCartItems={cart.data.cartItems ?? []}
       />
     </CartProvider>
   );
