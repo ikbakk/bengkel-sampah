@@ -17,6 +17,9 @@ module.exports = withMT({
           tertiary: "#F6FAFF",
           outline: "#C4C4C4",
         },
+        bsHome: {
+          primary: "#1CBFC0",
+        },
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

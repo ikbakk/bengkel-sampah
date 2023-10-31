@@ -7,6 +7,7 @@ import {
   MenuList,
   Typography,
 } from "@material-tailwind/react";
+import { signOut } from "next-auth/react";
 import React from "react";
 import { AiFillCaretDown } from "react-icons/ai";
 
@@ -68,6 +69,17 @@ const ProfileMenu = () => {
                 variant="small"
                 className="font-normal"
                 color={isLastItem ? "red" : "inherit"}
+                onClick={
+                  isLastItem
+                    ? () => {
+                        console.log("awww");
+                        signOut({
+                          callbackUrl:
+                            process.env.NEXT_PUBLIC_BASEURL + "/login",
+                        });
+                      }
+                    : null
+                }
               >
                 {label}
               </Typography>
