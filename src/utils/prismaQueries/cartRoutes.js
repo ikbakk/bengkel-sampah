@@ -26,6 +26,11 @@ export const findCartByUserID = async (userID) => {
     },
   });
 
+  if (!cart) {
+    const cart = await newCart(userID);
+    return cart;
+  }
+
   const totalPrice = cart.cartItems.reduce((acc, cartItem) => {
     return acc + cartItem.price;
   }, 0);
@@ -39,6 +44,7 @@ export const findCartByUserID = async (userID) => {
     totalPrice,
     totalWeight,
   };
+
   return response;
 };
 
@@ -47,9 +53,34 @@ export const newCart = async (userID) => {
     data: {
       userID,
     },
+    select: {
+      cartID: true,
+      createdAt: true,
+      cartItems: {
+        select: {
+          cartItemID: true,
+          price: true,
+          weight: true,
+          waste: {
+            select: {
+              wasteID: true,
+              name: true,
+              price: true,
+              unit: true,
+            },
+          },
+        },
+      },
+    },
   });
 
-  return newCart;
+  const response = {
+    ...newCart,
+    totalPrice: 0,
+    totalWeight: 0,
+  };
+
+  return response;
 };
 
 export const updateCartItemWeight = async (cartItemID, newWeight) => {

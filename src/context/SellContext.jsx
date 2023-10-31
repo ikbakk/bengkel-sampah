@@ -1,7 +1,6 @@
 "use client";
 
 import { createContext, useState } from "react";
-import { CartProvider } from "./CartContext";
 
 export const SellContext = createContext(null);
 

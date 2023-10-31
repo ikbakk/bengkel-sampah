@@ -1,7 +1,6 @@
 import Sidebar from "@/components/molecules/Sidebar";
 import Image from "next/image";
 import React from "react";
-import { CartProvider } from "../../context/CartContext";
 
 const LayoutAdmin = ({ children, title }) => {
   return (
@@ -21,7 +20,7 @@ const LayoutAdmin = ({ children, title }) => {
         </div>
       </div>
       <div className="col-span-8 max-h-screen overflow-y-scroll px-10">
-        <CartProvider>{children}</CartProvider>
+        {children}
       </div>
     </div>
   );

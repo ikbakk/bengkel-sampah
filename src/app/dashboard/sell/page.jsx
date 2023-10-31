@@ -5,7 +5,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import axios from "axios";
 
-export const revalidate = "1s";
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 const baseUrl = process.env.BASEURL;
 
