@@ -22,7 +22,7 @@ model User {
   email        String?       @unique
   member       Member?
   transactions Transaction[]
-  cart Cart?
+  cart         Cart?
   createdAt    DateTime      @default(now())
 }
 
@@ -43,7 +43,7 @@ model Driver {
 model Partner {
   partnerID   String @id @default(uuid())
   address     String
-  phoneNumber String
+  phoneNumber String @unique
   name        String
 
   transactions Transaction[]
@@ -87,7 +87,7 @@ model Waste {
 
 model Waste_Submission {
   wasteSubmissionID String      @id @default(uuid())
-  transactionID     String      
+  transactionID     String
   transaction       Transaction @relation(fields: [transactionID], references: [transactionID])
   wasteID           String
   waste             Waste       @relation(fields: [wasteID], references: [wasteID])
@@ -103,7 +103,6 @@ model Waste_Bank {
   transactions Transaction[]
 }
 
-
 model News {
   newsID    String   @id @default(uuid())
   title     String
@@ -114,21 +113,20 @@ model News {
   createdAt DateTime @default(now())
 }
 
-
 model Cart {
-  cartID String @id @default(uuid())
-  userID String @unique
-  user   User @relation(fields: [userID], references: [userID])
+  cartID    String      @id @default(uuid())
+  userID    String      @unique
+  user      User        @relation(fields: [userID], references: [userID])
   cartItems Cart_Item[]
-  createdAt DateTime @default(now())
+  createdAt DateTime    @default(now())
 }
 
 model Cart_Item {
-  cartItemID String @id @default(uuid())
+  cartItemID String   @id @default(uuid())
   cartID     String
-  cart       Cart    @relation(fields: [cartID], references: [cartID])
-  price Float
-  weight Float
+  cart       Cart     @relation(fields: [cartID], references: [cartID])
+  price      Float
+  weight     Float
   createdAt  DateTime @default(now())
 
   wasteID String 

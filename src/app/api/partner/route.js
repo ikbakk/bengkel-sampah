@@ -6,7 +6,7 @@ import {
 
 export async function GET() {
   try {
-    const partners = await prisma.partner.findMany();
+    const partners = await getPartners();
 
     return NextResponse.json(partners);
   } catch (error) {
@@ -18,32 +18,26 @@ export async function POST(req) {
   try {
     const { name, phoneNumber, address } = await req.json();
 
-    if (!name || !address || !phoneNumber) {
-      return NextResponse.json(
-        {
-          error: "Validation Error",
-          message: "Please fill in all required fields.",
-        },
-        { status: 422 },
-      );
-    }
+    const data = {
+      name,
+      phoneNumber,
+      address,
+    };
 
-    const newPartner = await prisma.partner.create({
-      data: {
-        name: name,
-        phoneNumber: phoneNumber,
-        address: address,
-      },
-    });
+    const newPartner = await createPartner(data);
 
-    return NextResponse.json({
-      message: "Success",
-      data: newPartner,
-    });
-  } catch (error) {
     return NextResponse.json(
-      { message: "Partner Not Created!" },
-      { status: 500 },
+      {
+        message: "Success created new partner",
+        data: newPartner,
+      },
+      { status: 201 },
+    );
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: error.message },
+      { status: error.code },
     );
   }
 }

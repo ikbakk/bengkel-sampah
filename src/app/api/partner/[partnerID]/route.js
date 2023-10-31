@@ -1,36 +1,30 @@
 import { NextResponse } from "next/server";
-import prisma from "@/utils/prismaClient";
 import {
   updatePartner,
   getPartner,
   deletePartner,
 } from "@/utils/prismaQueries/partnerRoutes";
+import { NotFoundError } from "@/utils/errors";
 
 export async function GET(req, { params }) {
   try {
     const { partnerID } = params;
 
+    const partner = await getPartner(partnerID);
 
-    const partner = await prisma.partner.findUnique({
-      where: {
-        partnerID: partnerID,
-      },
-    });
+    if (!partner) throw new NotFoundError("Partner not found");
 
-    if (!partner) {
-      return NextResponse.json(
-        {
-          Error: "Partner not found",
-          Message:
-            "The requested partner does not exist in the system. Please verify the partner's ID and try again.",
-        },
-        { status: 404 },
-      );
-    }
-
-    return NextResponse.json(partner);
-  } catch (error) {}
-
+    return NextResponse.json(
+      { message: "Success get partner", data: partner },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: error.message },
+      { status: error.code },
+    );
+  }
 }
 
 export async function PUT(req, { params }) {
@@ -38,48 +32,27 @@ export async function PUT(req, { params }) {
     const { partnerID } = params;
     const { name, phoneNumber, address } = await req.json();
 
-    if (!name || !address || !phoneNumber) {
-      return NextResponse.json(
-        {
-          error: "Validation Error",
-          message: "Please fill in all required fields.",
-        },
-        { status: 422 },
-      );
-    }
+    const partner = await getPartner(partnerID);
+    if (!partner) throw new NotFoundError("Partner not found");
 
-    const partner = await prisma.partner.findUnique({
-      where: { partnerID: partnerID },
-    });
+    const data = {
+      name,
+      phoneNumber,
+      address,
+    };
 
-    if (!partner) {
-      return NextResponse.json(
-        {
-          Error: "Partner not found",
-          Message:
-            "The requested partner does not exist in the system. Please verify the partner's ID and try again.",
-        },
-        { status: 404 },
-      );
-    }
-
-    const newData = await prisma.partner.update({
-      where: {
-        partnerID: partnerID,
-      },
-      data: {
-        name: name,
-        phoneNumber: phoneNumber,
-        address: address,
-      },
-    });
+    const newData = await updatePartner(partnerID, data);
 
     return NextResponse.json({
       message: "Success",
       data: newData,
     });
   } catch (error) {
-    console.log(error);    
+    console.error(error);
+    return NextResponse.json(
+      { message: error.message },
+      { status: error.code },
+    );
   }
 }
 
@@ -87,31 +60,23 @@ export async function DELETE(req, { params }) {
   try {
     const { partnerID } = params;
 
-    const partner = await prisma.partner.findUnique({
-      where: { partnerID: partnerID },
-    });
+    const partner = await getPartner(partnerID);
 
-    if (!partner) {
-      return NextResponse.json(
-        {
-          Error: "Partner not found",
-          Message:
-            "The requested partner does not exist in the system. Please verify the partner's ID and try again.",
-        },
-        { status: 404 },
-      );
-    }
+    if (!partner) throw new NotFoundError("Partner not found");
 
-    await prisma.partner.delete({
-      where: {
-        partnerID: partnerID,
+    await deletePartner(partnerID);
+
+    return NextResponse.json(
+      {
+        message: "Sucess delete partner",
       },
-    });
-
-    return NextResponse.json({
-      message: "Sucess delete partner",
-    });
+      { status: 200 },
+    );
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return NextResponse.json(
+      { message: error.message },
+      { status: error.code },
+    );
   }
 }

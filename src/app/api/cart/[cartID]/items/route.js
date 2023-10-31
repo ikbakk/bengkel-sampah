@@ -1,26 +1,34 @@
 import { NextResponse } from "next/server";
-import { newCartItem, deleteCartItems } from "@/utils/prismaQueries/cartRoutes";
+import {
+  newCartItem,
+  deleteCartItems,
+  findCart,
+} from "@/utils/prismaQueries/cartRoutes";
+import { NotFoundError } from "@/utils/errors";
 
 export async function POST(req, { params }) {
   try {
     const { cartID } = params;
     const { wasteID, weight } = await req.json();
 
+    const cart = await findCart(cartID);
+
+    if (!cart) throw new NotFoundError("Cart Not Found!");
+
     const cartItem = await newCartItem(cartID, wasteID, weight);
 
-    return NextResponse.json({
-      message: "Cart item created",
-      data: cartItem,
-    });
-  } catch (error) {
     return NextResponse.json(
       {
-        message: error.name,
-        error: error.message,
+        message: "Cart item created",
+        data: cartItem,
       },
-      {
-        status: 500,
-      },
+      { status: 201 },
+    );
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: error.message },
+      { status: error.code },
     );
   }
 }
@@ -32,19 +40,17 @@ export async function DELETE(req, { params }) {
 
     await deleteCartItems(cartID, wasteIDs);
 
-    return NextResponse.json({
-      message: "Cart items deleted",
-    });
-  } catch (error) {
-    console.log(error);
     return NextResponse.json(
       {
-        message: error.name,
-        error: error.message,
+        message: "Cart items deleted",
       },
-      {
-        status: 500,
-      },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json(
+      { message: error.message },
+      { status: error.code },
     );
   }
 }
