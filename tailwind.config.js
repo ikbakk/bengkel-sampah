@@ -5,6 +5,7 @@ module.exports = withMT({
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "./node_modules/react-tailwindcss-datepicker/dist/index.esm.js",
   ],
   theme: {
     extend: {
@@ -14,6 +15,7 @@ module.exports = withMT({
           primary: "#FFAB2A",
           secondary: "#29C4B4",
           tertiary: "#F6FAFF",
+          outline: "#C4C4C4",
         },
         bsHome: {
           primary: "#1CBFC0",

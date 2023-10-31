@@ -6,7 +6,7 @@ const CardNews = () => {
   return (
     <Link
       href={"#"}
-      className="block grid grid-cols-1 items-center gap-5 rounded-lg bg-white p-3 shadow-lg lg:grid-cols-6"
+      className=" grid grid-cols-1 items-center gap-5 rounded-lg bg-white p-3 shadow-lg lg:grid-cols-6"
     >
       <div>
         <Image

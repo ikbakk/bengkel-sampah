@@ -6,6 +6,7 @@ export const CartContext = createContext(null);
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
+  const [selectedCartItems, setSelectedCartItems] = useState([]);
   const [newCartItem, setNewCartItem] = useState({
     wasteID: "",
     totalWeight: 0,
@@ -23,6 +24,8 @@ export const CartProvider = ({ children }) => {
     setNewCartItem,
     cartTotal,
     setCartTotal,
+    selectedCartItems,
+    setSelectedCartItems,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
