@@ -36,7 +36,7 @@ export const NAVBAR_ITEM = [
   {
     icon: <BsBagPlusFill size={20} />,
     label: "Jual Sampah",
-    href: "/sell",
+    href: "/dashboard/sell",
   },
   {
     icon: <BsCartPlus size={20} />,
