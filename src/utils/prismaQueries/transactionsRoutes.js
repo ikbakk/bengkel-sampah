@@ -1,10 +1,12 @@
 import prisma from "../prismaClient";
 
 export const newTransaction = async (data) => {
-  const { userID, source, wastes, partnerID, wasteBankID } = data;
+  const { userID, source, wastes, partnerID, wasteBankID, transactionDate } =
+    data;
   let transactionData = {
     userID,
     source,
+    transactionDate,
   };
 
   if (source === "PARTNER" && partnerID) {

@@ -3,25 +3,38 @@
 import { Card, CardBody, Input } from "@material-tailwind/react";
 import CustomDatePicker from "@/components/atoms/DatePicker";
 import SellFormInput from "@/components/molecules/SellFormInput";
+import SellSelectDestination from "@/components/molecules/SellSelectDestination";
 
-import { SellContext } from "@/context/SellContext";
-import { useContext } from "react";
+import { useState } from "react";
+import useSellConfirm from "@/hooks/useSellConfirm";
 
-const SellForm = () => {
-  const { date, setDate } = useContext(SellContext);
+const SellForm = ({ partners }) => {
+  const { handleDateChange } = useSellConfirm();
+  const [date, setDate] = useState({
+    startDate: new Date(),
+    endDate: null,
+  });
 
-  const handleValChange = (newVal) => {
-    setDate(newVal);
+  const handleChange = (e) => {
+    setDate(e);
+    handleDateChange(e.startDate);
   };
 
   const formInputs = [
     {
       id: "input1",
-      label: "Tanggal Penjemputan",
-      children: <CustomDatePicker value={date} onChange={handleValChange} />,
+      label: "Tempat Pengiriman",
+      children: <SellSelectDestination partners={partners} />,
     },
     {
       id: "input2",
+      label: "Tanggal Penjemputan",
+      children: (
+        <CustomDatePicker value={date} onChange={(e) => handleChange(e)} />
+      ),
+    },
+    {
+      id: "input3",
       label: "Alamat Penjemputan",
       children: (
         <Input
