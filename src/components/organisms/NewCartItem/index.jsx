@@ -7,58 +7,28 @@ import {
   Card,
   CardBody,
   Button,
+  Spinner,
 } from "@material-tailwind/react";
-import { useContext, useState } from "react";
 import CartQuantityItemCounter from "@/components/molecules/CartQuantityItemCounter";
-import { CartContext } from "@/context/CartContext";
-import axios from "axios";
 
-const baseURL = process.env.NEXT_PUBLIC_BASEURL;
+import useCartAddItem from "@/hooks/useCartAddItem";
+import { useContext } from "react";
+import { CartContext } from "@/context/CartContext";
 
 const NewCartItem = ({ wastes, cartID }) => {
-  const { setCartItems } = useContext(CartContext);
-  const [newCartItem, setNewCartItem] = useState({
-    wasteID: "",
-    totalWeight: 0,
-  });
+  const { cartItems } = useContext(CartContext);
+  const filteredWaste = wastes.filter(
+    (waste) => !cartItems.some((item) => item.waste.wasteID === waste.wasteID),
+  );
 
-  const handleSubmit = async () => {
-    try {
-      const { data: newItem } = await axios.post(
-        `${baseURL}/api/cart/${cartID}/items`,
-        {
-          wasteID: newCartItem.wasteID,
-          weight: newCartItem.totalWeight,
-        },
-      );
-
-      setCartItems((prevCartItems) => [...prevCartItems, newItem.data]);
-    } catch (error) {
-      console.log(error.response);
-    }
-  };
-
-  const handleChange = (e) => {
-    setNewCartItem({
-      ...newCartItem,
-      wasteID: e,
-    });
-  };
-
-  const handleAdd = () => {
-    setNewCartItem((prev) => ({
-      ...prev,
-      totalWeight: prev.totalWeight + 1,
-    }));
-  };
-
-  const handleReduce = () => {
-    setNewCartItem((prev) => ({
-      ...prev,
-      totalWeight: prev.totalWeight - 1,
-    }));
-  };
-
+  const {
+    handleAdd,
+    handleChange,
+    handleReduce,
+    handleSubmit,
+    newCartItem,
+    loading,
+  } = useCartAddItem(wastes, cartID);
   return (
     <Card>
       <CardBody className="flex flex-col gap-8">
@@ -70,7 +40,7 @@ const NewCartItem = ({ wastes, cartID }) => {
           className="capitalize"
           label="Pilih jenis sampah"
         >
-          {wastes?.map((waste) => {
+          {filteredWaste?.map((waste) => {
             return (
               <Option
                 value={waste.wasteID}
@@ -87,8 +57,12 @@ const NewCartItem = ({ wastes, cartID }) => {
           handleReduce={handleReduce}
           totalWeight={newCartItem.totalWeight}
         />
-        <Button onClick={handleSubmit} className="bg-bs-primary">
-          Submit
+
+        <Button
+          onClick={handleSubmit}
+          className="flex w-full justify-center bg-bs-primary"
+        >
+          {loading ? <Spinner className="h-4 w-4" /> : "Submit"}
         </Button>
       </CardBody>
     </Card>

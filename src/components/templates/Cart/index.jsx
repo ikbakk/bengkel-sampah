@@ -5,9 +5,10 @@ import CartItem from "@/components/organisms/CartItem";
 import NewCartItem from "@/components/organisms/NewCartItem";
 import CartSelectAll from "@/components/molecules/CartSelectAll";
 
-import { useContext, useEffect, useState } from "react";
-import { CartContext } from "@/context/CartContext";
 import { convertToIDR } from "@/lib/convertToIDR";
+import { Spinner } from "@material-tailwind/react";
+import { CartContext } from "@/context/CartContext";
+import { useContext, useEffect, useState } from "react";
 
 const Cart = ({
   wastes,
@@ -60,7 +61,7 @@ const Cart = ({
   const hideButton = isHidden ? "hidden" : "";
 
   return (
-    <div className="">
+    <div className="pb-8">
       <CartHeader />
       <div className="mt-4 flex w-full flex-col-reverse gap-4 lg:flex-row">
         <div className="flex flex-col gap-4 lg:w-[70%]">

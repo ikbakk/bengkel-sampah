@@ -9,7 +9,8 @@ const CartQuantityItemCounter = ({
   handleReduce,
   loading,
 }) => {
-  const disableButton = totalWeight <= 0 ? true : false;
+  const disableButton =
+    (totalWeight <= 0 ? true : false) || (loading ? true : false);
   return (
     <div>
       <Typography className="text-center">Estimasi Berat</Typography>
