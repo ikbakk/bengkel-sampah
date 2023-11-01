@@ -21,7 +21,7 @@ const CartItem = ({
     cartID,
   };
 
-  const { handleAdd, handleReduce } = useCartActions(hooksParams);
+  const { handleAdd, handleReduce, loading } = useCartActions(hooksParams);
 
   const handleChange = () => {
     onSelect(wasteID);
@@ -48,6 +48,7 @@ const CartItem = ({
               handleAdd={handleAdd}
               handleReduce={handleReduce}
               totalWeight={totalWeight}
+              loading={loading}
               unit={unit}
             />
           </section>

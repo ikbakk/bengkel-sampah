@@ -1,10 +1,16 @@
 "use client";
 
-import { Button, Typography } from "@material-tailwind/react";
+import { Button, Typography, Spinner } from "@material-tailwind/react";
 import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
 
-const CartQuantityItemCounter = ({ totalWeight, handleAdd, handleReduce }) => {
-  const disableButton = totalWeight <= 0 ? true : false;
+const CartQuantityItemCounter = ({
+  totalWeight,
+  handleAdd,
+  handleReduce,
+  loading,
+}) => {
+  const disableButton =
+    (totalWeight <= 0 ? true : false) || (loading ? true : false);
   return (
     <div>
       <Typography className="text-center">Estimasi Berat</Typography>
@@ -16,7 +22,11 @@ const CartQuantityItemCounter = ({ totalWeight, handleAdd, handleReduce }) => {
           variant="filled"
           className="bg-gray-400"
         >
-          <AiOutlineMinus className="h-4 w-4" />
+          {loading ? (
+            <Spinner className="h-4 w-4" />
+          ) : (
+            <AiOutlineMinus className="h-4 w-4" />
+          )}
         </Button>
         <p className="font-bold">{totalWeight}</p>
         <Button
@@ -25,7 +35,11 @@ const CartQuantityItemCounter = ({ totalWeight, handleAdd, handleReduce }) => {
           variant="filled"
           className="bg-bs-primary"
         >
-          <AiOutlinePlus className="h-4 w-4" />
+          {loading ? (
+            <Spinner className="h-4 w-4" />
+          ) : (
+            <AiOutlinePlus className="h-4 w-4" />
+          )}
         </Button>
       </div>
     </div>

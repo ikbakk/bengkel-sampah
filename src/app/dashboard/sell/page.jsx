@@ -4,7 +4,7 @@ import { NavTop } from "@/components/molecules/NavTop";
 
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
-import { fetchItemsWithParams } from "@/utils/fetchItems";
+import { fetchItemsWithParams, fetchItems } from "@/utils/fetchItems";
 
 export default async function SellPage() {
   const { user } = await getServerSession(authOptions);
@@ -12,11 +12,12 @@ export default async function SellPage() {
     userID: user.id,
   };
   const cart = await fetchItemsWithParams("/api/cart", params);
+  const partners = await fetchItems("/api/partner");
 
   return (
     <SellProvider>
       <NavTop label="Jual Sampah" />
-      <Sell cart={cart.data} />
+      <Sell cart={cart.data} userID={user.id} partners={partners} />
     </SellProvider>
   );
 }
