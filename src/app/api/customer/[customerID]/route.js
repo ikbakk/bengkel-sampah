@@ -1,40 +1,27 @@
 import { NextResponse } from "next/server";
-import prisma from "@/utils/prismaClient";
+import {
+  getDetailCustomer,
+  updateCustomer,
+  deleteCustomer,
+} from "@/utils/prismaQueries/customerRoutes";
+import { NotFoundError } from "@/utils/errors";
 
 export async function GET(req, { params }) {
   try {
     const { customerID } = params;
-    const res = await prisma.customer.findUnique({
-      where: {
-        userID: customerID,
-      },
-      include: {
-        user: {
-          select: {
-            name: true,
-            address: true,
-            phoneNumber: true,
-            email: true,
-            role: true,
-          },
-        },
-      },
-    });
+    const customer = await getDetailCustomer(customerID);
 
-    if (!res) {
-      return NextResponse.json(
-        {
-          Error: "Customer not found",
-          Message:
-            "The requested customer does not exist in the system. Please verify the user's ID and try again.",
-        },
-        { status: 404 },
-      );
-    }
+    if (!customer) throw new NotFoundError("Customer Not Found!");
 
-    return NextResponse.json(res);
+    return NextResponse.json(
+      { message: "Customer Found", data: customer },
+      { status: 200 },
+    );
   } catch (error) {
-    return NextResponse.json({ error }, { status: 500 });
+    return NextResponse.json(
+      { message: error.message },
+      { status: error.code },
+    );
   }
 }
 
@@ -43,101 +30,75 @@ export async function PUT(req, { params }) {
     const { customerID } = params;
     const { name, address, phoneNumber, email } = await req.json();
 
-    if (!name || !address || !phoneNumber || !email) {
-      return NextResponse.json(
-        {
-          error: "Validation Error",
-          message: "Please fill in all required fields.",
-        },
-        { status: 422 },
-      );
-    }
+    const customer = await getDetailCustomer(customerID);
 
-    const user = await prisma.user.findUnique({
-      where: { userID: customerID },
-    });
+    if (!customer) throw new NotFoundError("Customer Not Found!");
 
-    if (!user) {
-      return NextResponse.json(
-        {
-          error: "Customer not found",
-          message:
-            "The requested customer does not exist in the system. Please verify the user's ID and try again.",
-        },
-        { status: 404 },
-      );
-    }
+    const data = {
+      name,
+      address,
+      phoneNumber,
+      email,
+    };
 
-    const newDataUser = await prisma.user.update({
-      where: {
-        userID: customerID,
+    const newDataCustomer = await updateCustomer(customerID, data);
+
+    return NextResponse.json(
+      {
+        message: "Success",
+        data: newDataCustomer,
       },
-      data: {
-        name: name,
-        address: address,
-        phoneNumber: phoneNumber,
-        email: email,
-      },
-    });
-
-    return NextResponse.json({
-      message: "Success",
-      data: newDataUser,
-    });
+      { status: 200 },
+    );
   } catch (error) {
-    switch (error.code) {
-      case "P2002":
-        return NextResponse.json(
-          {
-            Error: `${error.meta.target[0]} already exists`,
-            Message: `The provided ${error.meta.target[0]} is already associated with another user.`,
-          },
-          { status: 422 },
-        );
-      case "P2025":
-        return NextResponse.json(
-          {
-            Error: "Customer not found",
-            Message:
-              "The requested Customer does not exist in the system. Please verify the user's ID and try again.",
-          },
-          { status: 404 },
-        );
-      default: console.log(error);
-        break;
-    }
+    // switch (error.code) {
+    //   case "P2002":
+    //     return NextResponse.json(
+    //       {
+    //         Error: `${error.meta.target[0]} already exists`,
+    //         Message: `The provided ${error.meta.target[0]} is already associated with another user.`,
+    //       },
+    //       { status: 422 },
+    //     );
+    //   case "P2025":
+    //     return NextResponse.json(
+    //       {
+    //         Error: "Customer not found",
+    //         Message:
+    //           "The requested Customer does not exist in the system. Please verify the user's ID and try again.",
+    //       },
+    //       { status: 404 },
+    //     );
+    //   default:
+    //     console.log(error);
+    //     break;
+    // }
+    return NextResponse.json(
+      { message: error.message },
+      { status: error.code },
+    );
   }
 }
 
 export async function DELETE(req, { params }) {
   try {
     const { customerID } = params;
+    const customer = await getDetailCustomer(customerID);
 
-    const user = await prisma.user.findUnique({
-      where: { userID: customerID },
-    });
+    if (!customer) throw new NotFoundError("Customer Not Found!");
 
-    if (!user) {
-      return NextResponse.json(
-        {
-          error: "Customer not found",
-          message:
-            "The requested customer does not exist in the system. Please verify the user's ID and try again.",
-        },
-        { status: 404 },
-      );
-    }
+    await deleteCustomer(customerID);
 
-    await prisma.user.delete({
-      where: {
-        userID: customerID,
+    return NextResponse.json(
+      {
+        message: "Success delete customer",
       },
-    });
-
-    return NextResponse.json({
-      message: "Success",
-    });
+      { status: 200 },
+    );
   } catch (error) {
-    console.log(error);
+    return NextResponse.json(
+      { message: error.message },
+      { status: error.code },
+    );
   }
 }

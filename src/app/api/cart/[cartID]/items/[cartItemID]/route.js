@@ -19,13 +19,8 @@ export async function PUT(req, { params }) {
     );
   } catch (error) {
     return NextResponse.json(
-      {
-        message: "Cart update failed",
-        error: error.message,
-      },
-      {
-        status: 400,
-      },
+      { message: error.message },
+      { status: error.code },
     );
   }
 }

@@ -13,3 +13,19 @@ export class BadRequestError extends Error {
     this.code = 400;
   }
 }
+
+export class AuthenticationError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "AuthenticationError";
+    this.code = 401;
+  }
+}
+
+export class AuthorizationError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "AuthorizationError";
+    this.code = 403;
+  }
+}

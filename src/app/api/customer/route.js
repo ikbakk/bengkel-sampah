@@ -1,22 +1,13 @@
 import { NextResponse } from "next/server";
-import prisma from "@/utils/prismaClient";
+import bcrypt from "bcrypt";
+import {
+  getAllCustomer,
+  addCustomer,
+} from "@/utils/prismaQueries/customerRoutes";
 
 export async function GET() {
   try {
-    const customers = await prisma.customer.findMany({
-      include: {
-        user: {
-          select: {
-            userID: true,
-            name: true,
-            address: true,
-            phoneNumber: true,
-            email: true,
-            role: true,
-          },
-        },
-      },
-    });
+    const customers = await getAllCustomer();
 
     const res = customers.map((customer) => ({
       customerID: customer.customerID,
@@ -24,9 +15,15 @@ export async function GET() {
       ...customer.user,
     }));
 
-    return NextResponse.json(res);
+    return NextResponse.json(
+      { message: "Success get all customers", data: res },
+      { status: 200 },
+    );
   } catch (error) {
-    return NextResponse(error, { status: 500 });
+    return NextResponse.json(
+      { message: "Internal server error!" },
+      { status: 500 },
+    );
   }
 }
 
@@ -35,44 +32,28 @@ export async function POST(req) {
     const { name, address, phoneNumber, passwordHash, role, balance, email } =
       await req.json();
 
-    if (!name || !address || !phoneNumber || !passwordHash || !role || !email) {
-      return NextResponse.json(
-        {
-          error: "Validation Error",
-          message: "Please fill in all required fields.",
-        },
-        { status: 422 },
-      );
-    }
+    const hashedPassword = await bcrypt.hash(passwordHash, 10);
+    const data = {
+      name,
+      address,
+      phoneNumber,
+      role,
+      balance,
+      email,
+      passwordHash: hashedPassword,
+    };
 
-    const newUser = await prisma.user.create({
-      data: {
-        name: name,
-        address: address,
-        phoneNumber: phoneNumber,
-        passwordHash: passwordHash,
-        email: email,
-        role: role,
-      },
-    });
-
-    const newCustomer = await prisma.customer.create({
-      data: {
-        balance: balance,
-        userID: newUser.userID,
-      },
-    });
+    const newCustomer = await addCustomer(data);
 
     return NextResponse.json({
-      message: "Success",
+      message: "Success create customer",
       data: {
         ...newCustomer,
-        ...newUser,
       },
     });
   } catch (error) {
     return NextResponse.json(
-      { message: "Customer Not Created!" },
+      { message: "Internal server error!" },
       { status: 500 },
     );
   }
