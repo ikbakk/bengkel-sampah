@@ -1,13 +1,15 @@
 import axios from "axios";
 import { useContext, useState } from "react";
 import { SellContext } from "@/context/SellContext";
+import { useRouter } from "next/navigation";
 
 const baseURL = process.env.NEXT_PUBLIC_BASEURL;
 
 const useSellConfirm = () => {
+  const router = useRouter();
   const { cartID, transactionBody, setTransactionBody } =
     useContext(SellContext);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const deleteCartBody = transactionBody.wastes.map((waste) => waste.wasteID);
 
@@ -19,6 +21,7 @@ const useSellConfirm = () => {
   };
 
   const handleDateChange = (e) => {
+    setLoading(true);
     setTransactionBody({
       ...transactionBody,
       transactionDate: new Date(e).toISOString(),
@@ -38,7 +41,14 @@ const useSellConfirm = () => {
             wasteIDs: deleteCartBody,
           },
         })
-        .then(() => setLoading(false));
+        .then(() => {
+          setLoading(false);
+          router.refresh();
+        })
+        .catch(() => {
+          setLoading(false);
+          alert("Pengajuan penjemputan gagal");
+        });
     }
     // console.log({ wasteIDs: deleteCartBody });
   };
