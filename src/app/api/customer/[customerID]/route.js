@@ -5,9 +5,15 @@ import {
   deleteCustomer,
 } from "@/utils/prismaQueries/customerRoutes";
 import { NotFoundError } from "@/utils/errors";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { customerID } = params;
     const customer = await getDetailCustomer(customerID);
 
@@ -27,6 +33,11 @@ export async function GET(req, { params }) {
 
 export async function PUT(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { customerID } = params;
     const { name, address, phoneNumber, email } = await req.json();
 
@@ -82,6 +93,11 @@ export async function PUT(req, { params }) {
 
 export async function DELETE(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { customerID } = params;
     const customer = await getDetailCustomer(customerID);
 

@@ -3,9 +3,15 @@ import {
   createPartner,
   getPartners,
 } from "@/utils/prismaQueries/partnerRoutes";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET() {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const partners = await getPartners();
 
     return NextResponse.json(partners);
@@ -16,6 +22,11 @@ export async function GET() {
 
 export async function POST(req) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { name, phoneNumber, address } = await req.json();
 
     const data = {

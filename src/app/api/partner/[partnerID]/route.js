@@ -5,9 +5,15 @@ import {
   deletePartner,
 } from "@/utils/prismaQueries/partnerRoutes";
 import { NotFoundError } from "@/utils/errors";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { partnerID } = params;
 
     const partner = await getPartner(partnerID);
@@ -29,6 +35,11 @@ export async function GET(req, { params }) {
 
 export async function PUT(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { partnerID } = params;
     const { name, phoneNumber, address } = await req.json();
 
@@ -58,6 +69,11 @@ export async function PUT(req, { params }) {
 
 export async function DELETE(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { partnerID } = params;
 
     const partner = await getPartner(partnerID);

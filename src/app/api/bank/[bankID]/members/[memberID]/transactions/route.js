@@ -3,9 +3,15 @@ import {
   memberDetails,
   getMemberTransactions,
 } from "@/utils/prismaQueries/bankRoutes";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { memberID, bankID } = params;
     const member = await memberDetails(memberID, bankID);
     const transactions = await getMemberTransactions(member.user.userID);

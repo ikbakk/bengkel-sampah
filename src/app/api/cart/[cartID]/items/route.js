@@ -5,9 +5,15 @@ import {
   findCart,
 } from "@/utils/prismaQueries/cartRoutes";
 import { NotFoundError } from "@/utils/errors";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function POST(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { cartID } = params;
     const { wasteID, weight } = await req.json();
 
@@ -35,6 +41,11 @@ export async function POST(req, { params }) {
 
 export async function DELETE(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { cartID } = params;
     const { wasteIDs } = await req.json();
 

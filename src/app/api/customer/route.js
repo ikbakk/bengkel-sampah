@@ -4,9 +4,15 @@ import {
   getAllCustomer,
   addCustomer,
 } from "@/utils/prismaQueries/customerRoutes";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET() {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const customers = await getAllCustomer();
 
     const res = customers.map((customer) => ({
@@ -29,6 +35,11 @@ export async function GET() {
 
 export async function POST(req) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { name, address, phoneNumber, passwordHash, role, balance, email } =
       await req.json();
 

@@ -5,9 +5,15 @@ import {
   updateDriver,
   deleteDriver,
 } from "@/utils/prismaQueries/driverRoutes";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { id } = params;
     const response = await getDriverDetail(id);
 
@@ -27,6 +33,11 @@ export async function GET(req, { params }) {
 
 export async function PUT(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { id } = params;
     const { name, address, phoneNumber, email, driverStatus } =
       await req.json();
@@ -58,6 +69,11 @@ export async function PUT(req, { params }) {
 
 export async function DELETE(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { id } = params;
     const driver = await getDriverDetail(id);
 

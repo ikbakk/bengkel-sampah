@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
 import { updateCartItemWeight } from "@/utils/prismaQueries/cartRoutes";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function PUT(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { cartItemID } = params;
     const { newWeight } = await req.json();
 
