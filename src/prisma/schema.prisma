@@ -135,6 +135,13 @@ model Cart_Item {
   @@unique([cartID, wasteID])
 }
 
+model Token {
+  tokenID Int @id @default(autoincrement())
+  userID  String @unique
+  token   String
+  expDate DateTime
+}
+
 enum Role {
   ADMIN
   CUSTOMER
