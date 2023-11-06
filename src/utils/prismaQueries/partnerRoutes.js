@@ -1,4 +1,5 @@
 import prisma from "../prismaClient";
+import { NotFoundError } from "@/utils/errors";
 
 export const getPartners = async () => {
   const partners = await prisma.partner.findMany({});
@@ -13,11 +14,12 @@ export const getPartner = async (partnerID) => {
     },
   });
 
+  if (!partner) throw new NotFoundError("Partner not found");
+
   return partner;
 };
 
-export const createPartner = async (data) => {
-  const { name, phoneNumber, address } = data;
+export const createPartner = async ({ name, phoneNumber, address = null }) => {
   const newPartner = await prisma.partner.create({
     data: {
       name,

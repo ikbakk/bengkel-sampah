@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
-import { bankDetails } from "@/utils/prismaQueries/bankRoutes";
+import { memberDetails } from "@/utils/prismaQueries/bankRoutes";
 
 export async function GET(req, { params }) {
   try {
-    const { bankID } = params;
-    const bank = await bankDetails(bankID);
+    const { memberID, bankID } = params;
+    const member = await memberDetails(memberID, bankID);
 
     return NextResponse.json({
-      message: "Waste bank found",
-      data: bank,
+      message: "Member found",
+      data: member,
     });
   } catch (error) {
     return NextResponse.json(

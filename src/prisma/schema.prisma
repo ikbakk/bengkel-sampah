@@ -88,7 +88,7 @@ model Waste {
 model Waste_Submission {
   wasteSubmissionID String      @id @default(uuid())
   transactionID     String      
-  transaction       Transaction @relation(fields: [transactionID], references: [transactionID])
+  transaction       Transaction @relation(fields: [transactionID], references: [transactionID], onDelete: Cascade)
   wasteID           String
   waste             Waste       @relation(fields: [wasteID], references: [wasteID])
   totalWeight       Float
@@ -135,6 +135,12 @@ model Cart_Item {
   waste   Waste @relation(fields: [wasteID], references: [wasteID])
 
   @@unique([cartID, wasteID])
+}
+
+model Token {
+  token   String @id
+  userID  String
+  expDate DateTime
 }
 
 enum Role {

@@ -3,14 +3,24 @@ import {
   createPartner,
   getPartners,
 } from "@/utils/prismaQueries/partnerRoutes";
+import { BadRequestError } from "@/utils/errors";
 
 export async function GET() {
   try {
-    const partners = await prisma.partner.findMany();
-
-    return NextResponse.json(partners);
+    const partners = await getPartners();
+    return NextResponse.json({
+      message: "Successfully retrieved partners list",
+      data: partners,
+    });
   } catch (error) {
-    return NextResponse(error, { status: 500 });
+    return NextResponse(
+      {
+        message: error.message,
+      },
+      {
+        status: error.code || 500,
+      },
+    );
   }
 }
 
@@ -18,32 +28,28 @@ export async function POST(req) {
   try {
     const { name, phoneNumber, address } = await req.json();
 
-    if (!name || !address || !phoneNumber) {
-      return NextResponse.json(
-        {
-          error: "Validation Error",
-          message: "Please fill in all required fields.",
-        },
-        { status: 422 },
-      );
-    }
+    if (!name || !phoneNumber)
+      throw new BadRequestError("Missing required field name, phoneNumber");
 
-    const newPartner = await prisma.partner.create({
-      data: {
-        name: name,
-        phoneNumber: phoneNumber,
-        address: address,
+    const newPartner = await createPartner({ name, phoneNumber, address });
+
+    return NextResponse.json(
+      {
+        message: "Partners successfuly created",
+        data: newPartner,
       },
-    });
-
-    return NextResponse.json({
-      message: "Success",
-      data: newPartner,
-    });
+      {
+        status: 201,
+      },
+    );
   } catch (error) {
     return NextResponse.json(
-      { message: "Partner Not Created!" },
-      { status: 500 },
+      {
+        message: error.message,
+      },
+      {
+        status: error.code || 500,
+      },
     );
   }
 }
