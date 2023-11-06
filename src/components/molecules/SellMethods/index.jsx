@@ -1,14 +1,16 @@
 "use client";
 
-import { Button, CardBody } from "@material-tailwind/react";
+import { Button, CardBody, Spinner } from "@material-tailwind/react";
 import SellMethodButton from "@/components/atoms/SellMethodButton";
 import CartHeaderTitle from "@/components/atoms/CartHeaderItem/Title";
 
-import { SellContext } from "@/context/SellContext";
 import { useContext } from "react";
+import { SellContext } from "@/context/SellContext";
+import useSellConfirm from "@/hooks/useSellConfirm";
 
 const SellMethods = () => {
   const { method, setMethod } = useContext(SellContext);
+  const { handleSubmit, loading } = useSellConfirm();
 
   const handleClick = (method) => {
     setMethod(method);
@@ -29,8 +31,12 @@ const SellMethods = () => {
           selected={method === "point" ? true : false}
         />
       </div>
-      <Button fullWidth className="bg-bs-primary py-4 text-lg">
-        Ajukan penjemputan
+      <Button onClick={handleSubmit} fullWidth className="bg-bs-primary py-4">
+        {loading ? (
+          <Spinner className="mx-auto h-4 w-4" />
+        ) : (
+          "Ajukan penjemputan"
+        )}
       </Button>
     </CardBody>
   );

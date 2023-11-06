@@ -11,6 +11,7 @@ export const newTransaction = async ({
   let transactionData = {
     userID,
     source,
+    transactionDate,
   };
 
   if (source === "PARTNER" && partnerID) {

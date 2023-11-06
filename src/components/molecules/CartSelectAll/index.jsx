@@ -1,13 +1,14 @@
 import sameElementCheck from "@/lib/sameElementCheck";
 
+import { Button, Checkbox, Spinner } from "@material-tailwind/react";
+
 import { CartContext } from "@/context/CartContext";
-import { Button, Checkbox } from "@material-tailwind/react";
 import { useContext, useEffect, useState } from "react";
 import useCartItemsDelete from "@/hooks/useCartItemsDelete";
 
 const CartSelectAll = ({ hideButton, onChange, cartID }) => {
-  const { handleDelete } = useCartItemsDelete(cartID);
   const { cartItems, selectedCartItems } = useContext(CartContext);
+  const { handleDelete, loading } = useCartItemsDelete(cartID);
   const [isChecked, setIsChecked] = useState(false);
 
   useEffect(() => {
@@ -38,7 +39,7 @@ const CartSelectAll = ({ hideButton, onChange, cartID }) => {
         <p className="text-bs-font_primary">Pilih Semua</p>
       </div>
       <Button onClick={handleDelete} color="red" className="px-12">
-        Hapus
+        {loading ? <Spinner className="flex h-4 w-4 self-center" /> : "Hapus"}
       </Button>
     </div>
   );

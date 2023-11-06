@@ -1,16 +1,20 @@
-import { useContext } from "react";
 import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useContext, useState } from "react";
 import { CartContext } from "@/context/CartContext";
 
 const baseURL = process.env.NEXT_PUBLIC_BASEURL;
 
 function useCartActions({ wasteID, pricePerUnit, cartID }) {
+  const router = useRouter();
   const { cartItems, setCartItems, setCartTotal } = useContext(CartContext);
+  const [loading, setLoading] = useState(false);
 
   const cartItem = cartItems.find((item) => item?.waste?.wasteID === wasteID);
 
   const updateCartItem = async (newWeight) => {
     try {
+      setLoading(true);
       setCartItems((prevCartItems) =>
         prevCartItems.map((item) => {
           if (item.waste.wasteID === wasteID) {
@@ -29,12 +33,14 @@ function useCartActions({ wasteID, pricePerUnit, cartID }) {
         totalWeight: prevCartTotal.totalWeight + newWeight,
       }));
 
-      await axios.put(
-        `${baseURL}/api/cart/${cartID}/items/${cartItem.cartItemID}`,
-        {
+      await axios
+        .put(`${baseURL}/api/cart/${cartID}/items/${cartItem.cartItemID}`, {
           newWeight: cartItem.weight + newWeight,
-        },
-      );
+        })
+        .then(() => {
+          setLoading(false);
+          router.refresh();
+        });
     } catch (error) {
       console.log(error);
     }
@@ -48,7 +54,7 @@ function useCartActions({ wasteID, pricePerUnit, cartID }) {
     updateCartItem(-1);
   };
 
-  return { handleAdd, handleReduce };
+  return { handleAdd, handleReduce, loading };
 }
 
 export default useCartActions;

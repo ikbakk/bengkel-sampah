@@ -122,7 +122,7 @@ export const newCartItem = async (cartID, wasteID, weight) => {
   const newCartItem = await prisma.cart_Item.create({
     data: {
       cartID,
-      wasteID,
+      wasteID: wasteID,
       price: price * weight,
       weight: weight,
     },
@@ -155,4 +155,14 @@ export const deleteCartItems = async (cartID, wasteIDs) => {
   });
 
   return true;
+};
+
+export const findCart = async (cartID) => {
+  const cart = await prisma.cart.findUnique({
+    where: {
+      cartID: cartID,
+    },
+  });
+
+  return cart;
 };
