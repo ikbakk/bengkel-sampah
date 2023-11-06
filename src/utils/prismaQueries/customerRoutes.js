@@ -1,6 +1,7 @@
 import prisma from "@/utils/prismaClient";
+import { NotFoundError } from "@/utils/errors";
 
-export const getAllCustomer = async () => {
+export const getCustomers = async () => {
   const customers = await prisma.customer.findMany({
     include: {
       user: {
@@ -16,13 +17,19 @@ export const getAllCustomer = async () => {
     },
   });
 
-  return customers;
+  const response = customers.map((customer) => ({
+    customerID: customer.customerID,
+    ...customer.user,
+    balance: customer.balance,
+  }));
+
+  return response;
 };
 
-export const getDetailCustomer = async (customerID) => {
+export const getCustomer = async (customerID) => {
   const customer = await prisma.customer.findUnique({
     where: {
-      userID: customerID,
+      customerID,
     },
     include: {
       user: {
@@ -37,72 +44,50 @@ export const getDetailCustomer = async (customerID) => {
     },
   });
 
-  return customer;
+  if (!customer) throw new NotFoundError("Customer not found");
+
+  return {
+    customerID: customer.customerID,
+    userID: customer.userID,
+    balance: customer.balance,
+    name: customer.user.name,
+    address: customer.user.address,
+    phoneNumber: customer.user.phoneNumber,
+    email: customer.user.email,
+    role: customer.user.role,
+  };
 };
 
-export const addCustomer = async (data) => {
-  const { name, address, phoneNumber, passwordHash, role, balance, email } =
-    data;
-  const customer = await prisma.user.create({
-    data: {
-      name: name,
-      address: address,
-      phoneNumber: phoneNumber,
-      passwordHash: passwordHash,
-      email: email,
-      role: role,
-      customer: {
-        create: {
-          balance: balance,
-        },
-      },
-    },
-    include: {
-      customer: {
-        select: {
-          customerID: true,
-          balance: true,
-          userID: false,
-        },
-      },
-    },
-  });
-
-  return customer;
-};
-
-export const updateCustomer = async (customerID, data) => {
-  const { name, address, phoneNumber, email } = data;
-
-  const newDataCustomer = await prisma.user.update({
+export const updateCustomer = async (
+  userID,
+  { name, address, phoneNumber, email },
+) => {
+  const newUser = await prisma.user.update({
     where: {
-      userID: customerID,
+      userID,
+    },
+    select: {
+      userID: true,
+      name: true,
+      address: true,
+      phoneNumber: true,
+      email: true,
     },
     data: {
-      name: name,
-      address: address,
-      phoneNumber: phoneNumber,
-      email: email,
+      name,
+      address,
+      phoneNumber,
+      email,
     },
   });
 
-  return newDataCustomer;
+  return newUser;
 };
 
-export const deleteCustomer = async (customerID) => {
+export const deleteCustomer = async (userID) => {
   await prisma.user.delete({
     where: {
-      userID: customerID,
+      userID,
     },
   });
-};
-
-export const findCustomer = async (customerID) => {
-  const customer = await prisma.customer.findUnique({
-    where: {
-      userID: customerID,
-    },
-  });
-
-  return customer;
 };

@@ -1,8 +1,13 @@
+import { NotFoundError } from "../errors";
 import prisma from "../prismaClient";
 
-export const newTransaction = async (data) => {
-  const { userID, source, wastes, partnerID, wasteBankID, transactionDate } =
-    data;
+export const newTransaction = async ({
+  userID,
+  source,
+  wastes,
+  partnerID,
+  wasteBankID,
+}) => {
   let transactionData = {
     userID,
     source,
@@ -23,7 +28,7 @@ export const newTransaction = async (data) => {
     };
   }
 
-  const foundWastes = await prisma.waste.findMany({
+  const wastePrice = await prisma.waste.findMany({
     select: {
       wasteID: true,
       price: true,
@@ -39,21 +44,25 @@ export const newTransaction = async (data) => {
     data: transactionData,
   });
 
-  const submissionData = wastes.map((waste) => ({
-    transactionID,
-    wasteID: foundWastes.find((waste) => waste.wasteID === waste.wasteID)
-      .wasteID,
-    totalPrice:
-      foundWastes.find((waste) => waste.wasteID === waste.wasteID).price *
-      waste.totalWeight,
-    totalWeight: waste.totalWeight,
-  }));
+  const submissionData = wastes.map((waste) => {
+    const price = wastePrice.find((p) => p.wasteID === waste.wasteID);
+    const totalPrice = waste.totalWeight * price.price;
+
+    return {
+      transactionID,
+      wasteID: waste.wasteID,
+      totalPrice,
+      totalWeight: waste.totalWeight,
+    };
+  });
 
   const newSubmissions = await prisma.waste_Submission.createMany({
     data: submissionData,
   });
 
-  return newSubmissions;
+  return {
+    totalSubmission: newSubmissions.count,
+  };
 };
 
 export const updateTransactionStatus = async (transactionID, newStatus) => {
@@ -87,6 +96,7 @@ export const getTransactions = async (filterBy, filterValue) => {
       },
       user: {
         select: {
+          userID: true,
           name: true,
           address: true,
           phoneNumber: true,
@@ -149,6 +159,8 @@ export const getTransaction = async (transactionID) => {
       },
     },
   });
+
+  if (!transaction) throw new NotFoundError("Transaction not found");
 
   const response = {
     transactionID: transaction.transactionID,

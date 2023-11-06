@@ -1,60 +1,69 @@
 import { NextResponse } from "next/server";
-import bcrypt from "bcrypt";
-import {
-  getAllCustomer,
-  addCustomer,
-} from "@/utils/prismaQueries/customerRoutes";
+import prisma from "@/utils/prismaClient";
+import { getCustomers } from "@/utils/prismaQueries/customerRoutes";
+import { BadRequestError } from "@/utils/errors";
 
 export async function GET() {
   try {
-    const customers = await getAllCustomer();
-
-    const res = customers.map((customer) => ({
-      customerID: customer.customerID,
-      balance: customer.balance,
-      ...customer.user,
-    }));
-
-    return NextResponse.json(
-      { message: "Success get all customers", data: res },
-      { status: 200 },
-    );
-  } catch (error) {
-    return NextResponse.json(
-      { message: "Internal server error!" },
-      { status: 500 },
-    );
-  }
-}
-
-export async function POST(req) {
-  try {
-    const { name, address, phoneNumber, passwordHash, role, balance, email } =
-      await req.json();
-
-    const hashedPassword = await bcrypt.hash(passwordHash, 10);
-    const data = {
-      name,
-      address,
-      phoneNumber,
-      role,
-      balance,
-      email,
-      passwordHash: hashedPassword,
-    };
-
-    const newCustomer = await addCustomer(data);
+    const customers = await getCustomers();
 
     return NextResponse.json({
-      message: "Success create customer",
-      data: {
-        ...newCustomer,
-      },
+      message: "Successfuly retrieved users",
+      data: customers,
     });
   } catch (error) {
     return NextResponse.json(
-      { message: "Internal server error!" },
-      { status: 500 },
+      {
+        message: error.message,
+      },
+      {
+        status: error.code || 500,
+      },
     );
   }
 }
+
+// TODO : Delete? soalnya di route register udah bisa register customer
+
+// export async function POST(req) {
+//   try {
+//     const { name, address, phoneNumber, password, email } = await req.json();
+
+//     if (!name || !phoneNumber || !password) {
+//       throw new BadRequestError(
+//         'Missing field "name", "phoneNumber", "password',
+//       );
+//     }
+
+//     const newUser = await prisma.user.create({
+//       data: {
+//         name: name,
+//         address: address,
+//         phoneNumber: phoneNumber,
+//         passwordHash: password,
+//         email: email,
+//         role: role,
+//       },
+//     });
+
+//     const newCustomer = await prisma.customer.create({
+//       data: {
+//         balance: balance,
+//         userID: newUser.userID,
+//       },
+//     });
+
+//     return NextResponse.json({
+//       message: "Success",
+//       data: {
+//         ...newCustomer,
+//         ...newUser,
+//       },
+//     });
+//   } catch (error) {
+//     return NextResponse.json(
+//       { message: "Customer Not Created!" },
+//       { status: 500 },
+//     );
+//   }
+// }

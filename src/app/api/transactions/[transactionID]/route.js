@@ -66,10 +66,10 @@ export async function GET(req, { params }) {
   } catch (error) {
     return NextResponse.json(
       {
-        message: "Transaction failed",
+        message: error.message,
       },
       {
-        status: 400,
+        status: error.code || 500,
       },
     );
   }

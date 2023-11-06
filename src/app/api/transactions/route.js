@@ -25,7 +25,7 @@ export async function GET(req) {
         message: "Get transactions failed",
       },
       {
-        status: 400,
+        status: 500,
       },
     );
   }
@@ -33,8 +33,14 @@ export async function GET(req) {
 
 export async function POST(req) {
   try {
-    const body = await req.json();
-    const transaction = await newTransaction(body);
+    const { userID, source, wastes, partnerID, wasteBankID } = await req.json();
+    const transaction = await newTransaction({
+      userID,
+      source,
+      wastes,
+      partnerID,
+      wasteBankID,
+    });
 
     return NextResponse.json(
       {
@@ -46,13 +52,14 @@ export async function POST(req) {
       },
     );
   } catch (error) {
+    console.log(error);
     return NextResponse.json(
       {
         message: "New transaction not created",
         error,
       },
       {
-        status: 400,
+        status: 500,
       },
     );
   }
