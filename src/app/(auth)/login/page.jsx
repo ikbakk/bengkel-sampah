@@ -38,6 +38,7 @@ export default function Login() {
 
       if (callback?.ok && !callback?.error) {
         alert("Logged in successfully!");
+        router.push("/dashboard");
       }
     });
   };

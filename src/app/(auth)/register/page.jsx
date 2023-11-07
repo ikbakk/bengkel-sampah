@@ -33,12 +33,12 @@ export default function SignUp() {
   const registerUser = async (e) => {
     e.preventDefault();
     axios
-      .post("/api/register", data)
+      .post("/api/auth/register", data)
       .then(() => {
         alert("Registered successfully!");
         router.push("/login");
       })
-      .catch(() => alert("Something went wrong!"));
+      .catch((error) => alert("Something went wrong! ", error));
   };
 
   const [isRevealed, setIsRevealed] = useState(false);

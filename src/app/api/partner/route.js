@@ -1,8 +1,10 @@
+import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
 import {
   createPartner,
   getPartners,
 } from "@/utils/prismaQueries/partnerRoutes";
+import { getUserByPhone } from "@/utils/prismaQueries/registerRoutes";
 import { BadRequestError } from "@/utils/errors";
 import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
@@ -37,12 +39,23 @@ export async function POST(req) {
     if (!jwt) {
       return invalidJwtResponse;
     }
-    const { name, phoneNumber, address } = await req.json();
+    const { name, phoneNumber, address, password } = await req.json();
 
-    if (!name || !phoneNumber)
-      throw new BadRequestError("Missing required field name, phoneNumber");
+    if (!name || !phoneNumber || !password)
+      throw new BadRequestError("Missing field");
 
-    const newPartner = await createPartner({ name, phoneNumber, address });
+    const exist = await getUserByPhone(phoneNumber);
+
+    if (exist) throw new BadRequestError("Phone number already used");
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newPartner = await createPartner({
+      name,
+      phoneNumber,
+      address,
+      hashedPassword,
+    });
 
     return NextResponse.json(
       {
@@ -54,7 +67,6 @@ export async function POST(req) {
       },
     );
   } catch (error) {
-    console.error(error);
     return NextResponse.json(
       {
         message: error.message,
