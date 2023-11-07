@@ -47,6 +47,7 @@ export const authOptions = {
           phoneNumber: user.data.phoneNumber,
           role: user.data.role,
           accessToken: user.accessToken,
+          refreshToken: user.refreshToken,
         };
       }
       return token;

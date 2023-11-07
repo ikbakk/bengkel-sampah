@@ -4,17 +4,23 @@ import Cart from "@/components/templates/Cart";
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
-import { fetchItems, fetchItemsWithParams } from "@/utils/fetchItems";
+import { fetchItems, fetchItemsWithOptions } from "@/utils/fetchItems";
 
 export const dynamic = "force-dynamic";
 
 export default async function CartPage() {
   const { user } = await getServerSession(authOptions);
-  const params = {
-    userID: user.id,
+  const fetchOpts = {
+    params: {
+      userID: user.id,
+    },
+    headers: {
+      Authorization: user.accessToken,
+    },
   };
-  const wastes = await fetchItems("/api/waste");
-  const cart = await fetchItemsWithParams("/api/cart", params);
+
+  const wastes = await fetchItems("/api/waste", user.accessToken);
+  const cart = await fetchItemsWithOptions("/api/cart", fetchOpts);
 
   return (
     <CartProvider>
