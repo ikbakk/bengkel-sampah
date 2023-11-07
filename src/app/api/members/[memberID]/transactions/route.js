@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
-import { memberDetails } from "@/utils/prismaQueries/bankRoutes";
+import {
+  memberDetails,
+  getMemberTransactions,
+} from "@/utils/prismaQueries/bankRoutes";
 import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET(req, { params }) {
@@ -11,15 +14,17 @@ export async function GET(req, { params }) {
     }
     const { memberID, bankID } = params;
     const member = await memberDetails(memberID, bankID);
+    const transactions = await getMemberTransactions(member.userID);
 
     const response = {
       memberID: member.memberID,
-      name: member.user.name,
-      address: member.user.address,
-      email: member.user.email,
-      phoneNumber: member.user.phoneNumber,
+      userID: member.userID,
+      name: member.name,
+      address: member.address,
+      email: member.email,
+      phoneNumber: member.phoneNumber,
       balance: member.balance,
-      createdAt: member.user.createdAt,
+      transactions,
     };
 
     return NextResponse.json({
@@ -27,8 +32,13 @@ export async function GET(req, { params }) {
       data: response,
     });
   } catch (error) {
-    return NextResponse.json({
-      message: error.message,
-    });
+    return NextResponse.json(
+      {
+        message: error.message,
+      },
+      {
+        status: error.code,
+      },
+    );
   }
 }

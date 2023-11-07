@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
+import prisma from "@/utils/prismaClient";
 import {
-  getDetailCustomer,
+  getCustomer,
   updateCustomer,
   deleteCustomer,
 } from "@/utils/prismaQueries/customerRoutes";
-import { NotFoundError } from "@/utils/errors";
+
+import { BadRequestError } from "@/utils/errors";
 import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET(req, { params }) {
@@ -15,18 +17,20 @@ export async function GET(req, { params }) {
       return invalidJwtResponse;
     }
     const { customerID } = params;
-    const customer = await getDetailCustomer(customerID);
+    const customer = await getCustomer(customerID);
 
-    if (!customer) throw new NotFoundError("Customer Not Found!");
-
-    return NextResponse.json(
-      { message: "Customer Found", data: customer },
-      { status: 200 },
-    );
+    return NextResponse.json({
+      message: "Successfuly found customer",
+      data: customer,
+    });
   } catch (error) {
     return NextResponse.json(
-      { message: error.message },
-      { status: error.code },
+      {
+        message: error.message,
+      },
+      {
+        status: error.code || 500,
+      },
     );
   }
 }
@@ -41,52 +45,35 @@ export async function PUT(req, { params }) {
     const { customerID } = params;
     const { name, address, phoneNumber, email } = await req.json();
 
-    const customer = await getDetailCustomer(customerID);
+    if (!name || !address || !phoneNumber || !email)
+      throw new BadRequestError(
+        'Missing required field "name" "address" "phoneNumber "email"',
+      );
 
-    if (!customer) throw new NotFoundError("Customer Not Found!");
+    const customer = await getCustomer(customerID);
 
-    const data = {
+    const newUser = await updateCustomer(customer.userID, {
       name,
       address,
       phoneNumber,
       email,
-    };
+    });
 
-    const newDataCustomer = await updateCustomer(customerID, data);
-
+    return NextResponse.json({
+      message: "Successfully updated customer",
+      data: {
+        customerID,
+        ...newUser,
+      },
+    });
+  } catch (error) {
     return NextResponse.json(
       {
-        message: "Success",
-        data: newDataCustomer,
+        message: error.message,
       },
-      { status: 200 },
-    );
-  } catch (error) {
-    // switch (error.code) {
-    //   case "P2002":
-    //     return NextResponse.json(
-    //       {
-    //         Error: `${error.meta.target[0]} already exists`,
-    //         Message: `The provided ${error.meta.target[0]} is already associated with another user.`,
-    //       },
-    //       { status: 422 },
-    //     );
-    //   case "P2025":
-    //     return NextResponse.json(
-    //       {
-    //         Error: "Customer not found",
-    //         Message:
-    //           "The requested Customer does not exist in the system. Please verify the user's ID and try again.",
-    //       },
-    //       { status: 404 },
-    //     );
-    //   default:
-    //     console.log(error);
-    //     break;
-    // }
-    return NextResponse.json(
-      { message: error.message },
-      { status: error.code },
+      {
+        status: error.code || 500,
+      },
     );
   }
 }
@@ -99,22 +86,22 @@ export async function DELETE(req, { params }) {
       return invalidJwtResponse;
     }
     const { customerID } = params;
-    const customer = await getDetailCustomer(customerID);
 
-    if (!customer) throw new NotFoundError("Customer Not Found!");
+    const user = await getCustomer(customerID);
 
-    await deleteCustomer(customerID);
+    await deleteCustomer(user.userID);
 
-    return NextResponse.json(
-      {
-        message: "Success delete customer",
-      },
-      { status: 200 },
-    );
+    return NextResponse.json({
+      message: "Successully deleted customer",
+    });
   } catch (error) {
     return NextResponse.json(
-      { message: error.message },
-      { status: error.code },
+      {
+        message: error.message,
+      },
+      {
+        status: error.code || 500,
+      },
     );
   }
 }

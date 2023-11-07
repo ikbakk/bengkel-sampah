@@ -3,6 +3,7 @@ import {
   createPartner,
   getPartners,
 } from "@/utils/prismaQueries/partnerRoutes";
+import { BadRequestError } from "@/utils/errors";
 import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET() {
@@ -13,10 +14,19 @@ export async function GET() {
       return invalidJwtResponse;
     }
     const partners = await getPartners();
-
-    return NextResponse.json(partners);
+    return NextResponse.json({
+      message: "Successfully retrieved partners list",
+      data: partners,
+    });
   } catch (error) {
-    return NextResponse(error, { status: 500 });
+    return NextResponse(
+      {
+        message: error.message,
+      },
+      {
+        status: error.code || 500,
+      },
+    );
   }
 }
 
@@ -29,26 +39,29 @@ export async function POST(req) {
     }
     const { name, phoneNumber, address } = await req.json();
 
-    const data = {
-      name,
-      phoneNumber,
-      address,
-    };
+    if (!name || !phoneNumber)
+      throw new BadRequestError("Missing required field name, phoneNumber");
 
-    const newPartner = await createPartner(data);
+    const newPartner = await createPartner({ name, phoneNumber, address });
 
     return NextResponse.json(
       {
-        message: "Success created new partner",
+        message: "Partners successfuly created",
         data: newPartner,
       },
-      { status: 201 },
+      {
+        status: 201,
+      },
     );
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { message: error.message },
-      { status: error.code },
+      {
+        message: error.message,
+      },
+      {
+        status: error.code || 500,
+      },
     );
   }
 }

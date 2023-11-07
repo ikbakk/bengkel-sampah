@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { BadRequestError } from "@/utils/errors";
 import {
   updatePartner,
   getPartner,
@@ -18,17 +19,18 @@ export async function GET(req, { params }) {
 
     const partner = await getPartner(partnerID);
 
-    if (!partner) throw new NotFoundError("Partner not found");
-
-    return NextResponse.json(
-      { message: "Success get partner", data: partner },
-      { status: 200 },
-    );
+    return NextResponse.json({
+      message: "Partner found",
+      data: partner,
+    });
   } catch (error) {
-    console.error(error);
     return NextResponse.json(
-      { message: error.message },
-      { status: error.code },
+      {
+        message: error.message,
+      },
+      {
+        status: error.code || 500,
+      },
     );
   }
 }
@@ -43,26 +45,31 @@ export async function PUT(req, { params }) {
     const { partnerID } = params;
     const { name, phoneNumber, address } = await req.json();
 
-    const partner = await getPartner(partnerID);
-    if (!partner) throw new NotFoundError("Partner not found");
+    if (!name || !address || !phoneNumber)
+      throw new BadRequestError(
+        "Missing required field name, address, phoneNumber",
+      );
 
-    const data = {
+    await getPartner(partnerID);
+
+    const newData = await updatePartner(partnerID, {
       name,
-      phoneNumber,
       address,
-    };
-
-    const newData = await updatePartner(partnerID, data);
+      phoneNumber,
+    });
 
     return NextResponse.json({
       message: "Success",
       data: newData,
     });
   } catch (error) {
-    console.error(error);
     return NextResponse.json(
-      { message: error.message },
-      { status: error.code },
+      {
+        message: error.message,
+      },
+      {
+        status: error.code,
+      },
     );
   }
 }
@@ -76,23 +83,21 @@ export async function DELETE(req, { params }) {
     }
     const { partnerID } = params;
 
-    const partner = await getPartner(partnerID);
-
-    if (!partner) throw new NotFoundError("Partner not found");
+    await getPartner(partnerID);
 
     await deletePartner(partnerID);
 
+    return NextResponse.json({
+      message: "Sucessfully deleted partner",
+    });
+  } catch (error) {
     return NextResponse.json(
       {
-        message: "Sucess delete partner",
+        message: error.message,
       },
-      { status: 200 },
-    );
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json(
-      { message: error.message },
-      { status: error.code },
+      {
+        status: error.code,
+      },
     );
   }
 }

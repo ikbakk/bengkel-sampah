@@ -1,4 +1,22 @@
 import prisma from "../prismaClient";
+import { NotFoundError } from "@/utils/errors";
+
+export const getWastes = async () => {
+  const wastes = await prisma.waste.findMany();
+  return wastes;
+};
+
+export const getWaste = async (wasteID) => {
+  const waste = await prisma.waste.findUnique({
+    where: {
+      wasteID,
+    },
+  });
+
+  if (!waste) throw new NotFoundError("Waste not found");
+
+  return waste;
+};
 
 export const newWaste = async (data) => {
   const { name, price, wasteType, unit } = data;
@@ -15,16 +33,6 @@ export const newWaste = async (data) => {
 };
 
 export const updateWastePrice = async (wasteID, price) => {
-  const waste = await prisma.waste.findUnique({
-    where: {
-      wasteID,
-    },
-  });
-
-  if (!waste) {
-    throw new Error("Waste not found");
-  }
-
   const updatedWaste = await prisma.waste.update({
     where: {
       wasteID,
@@ -38,21 +46,9 @@ export const updateWastePrice = async (wasteID, price) => {
 };
 
 export const deleteWaste = async (wasteID) => {
-  const waste = await prisma.waste.findUnique({
-    where: {
-      wasteID,
-    },
-  });
-
-  if (!waste) {
-    throw new Error("Waste not found");
-  }
-
   await prisma.waste.delete({
     where: {
       wasteID,
     },
   });
-
-  return "Deleted waste with ID: " + wasteID;
 };
