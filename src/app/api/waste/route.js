@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
 import { getWastes, newWaste } from "@/utils/prismaQueries/wasteroutes";
 import { BadRequestError } from "@/utils/errors";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET() {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const wastes = await getWastes();
 
     return NextResponse.json({
@@ -24,6 +30,11 @@ export async function GET() {
 
 export async function POST(req) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { name, price, wasteType, unit = "kg" } = await req.json();
 
     if (!name || !price || !wasteType)

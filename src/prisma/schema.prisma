@@ -136,8 +136,9 @@ model Cart_Item {
 }
 
 model Token {
-  token   String @id
-  userID  String
+  tokenID Int @id @default(autoincrement())
+  userID  String @unique
+  token   String
   expDate DateTime
 }
 

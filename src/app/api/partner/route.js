@@ -4,9 +4,15 @@ import {
   getPartners,
 } from "@/utils/prismaQueries/partnerRoutes";
 import { BadRequestError } from "@/utils/errors";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET() {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const partners = await getPartners();
     return NextResponse.json({
       message: "Successfully retrieved partners list",
@@ -26,6 +32,11 @@ export async function GET() {
 
 export async function POST(req) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { name, phoneNumber, address } = await req.json();
 
     if (!name || !phoneNumber)

@@ -1,7 +1,7 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/utils/prismaClient";
-import bcrypt from "bcrypt";
+import axios from "axios";
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
@@ -17,24 +17,17 @@ export const authOptions = {
           throw new Error("Please enter an phone and password");
         }
 
-        const user = await prisma.user.findUnique({
-          where: {
-            phoneNumber: credentials.phone,
-          },
+        const res = await axios.post(`${process.env.AUTH_HOST}/auth/login`, {
+          phoneNumber: credentials.phone,
+          password: credentials.password,
         });
 
-        if (!user || !user.passwordHash) {
+        if (!res) {
           throw new Error("Please enter a valid phone and password");
         }
 
-        const passwordMatch = await bcrypt.compare(
-          credentials.password,
-          user.passwordHash,
-        );
+        const user = res.data;
 
-        if (!passwordMatch) {
-          throw new Error("Incorrect password");
-        }
         return user;
       },
     }),
@@ -48,10 +41,13 @@ export const authOptions = {
       const { token, user } = payload;
       if (user) {
         token.user = {
-          id: user.userID,
-          name: user.name,
-          phone: user.phoneNumber,
-          role: user.role,
+          id: user.data.userID,
+          name: user.data.name,
+          address: user.data.address,
+          phoneNumber: user.data.phoneNumber,
+          role: user.data.role,
+          accessToken: user.accessToken,
+          refreshToken: user.refreshToken,
         };
       }
       return token;

@@ -5,9 +5,15 @@ import {
   deleteNews,
 } from "@/utils/prismaQueries/newsRoutes";
 import { NotFoundError } from "@/utils/errors";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { newsID } = params;
 
     const news = await getNewsDetail(newsID);
@@ -28,6 +34,11 @@ export async function GET(req, { params }) {
 
 export async function PUT(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { newsID } = params;
     const { title, imageUrl, imageDesc, content, author } = await req.json();
 
@@ -72,6 +83,11 @@ export async function PUT(req, { params }) {
 
 export async function DELETE(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { newsID } = params;
 
     const news = await getNewsDetail(newsID);

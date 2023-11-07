@@ -4,10 +4,16 @@ import {
   createBankMember,
 } from "@/utils/prismaQueries/bankRoutes";
 import bcrypt from "bcrypt";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 import { BadRequestError } from "@/utils/errors";
 
 export async function GET(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { bankID } = params;
 
     const members = await bankMembers(bankID);
@@ -30,6 +36,11 @@ export async function GET(req, { params }) {
 
 export async function POST(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { name, address, email, phoneNumber, password } = await req.json();
     const { bankID } = params;
 

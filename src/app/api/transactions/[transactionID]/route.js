@@ -3,9 +3,15 @@ import {
   getTransaction,
   updateTransactionStatus,
 } from "@/utils/prismaQueries/transactionsRoutes";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function PUT(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status");
     const { transactionID } = params;
@@ -45,6 +51,11 @@ export async function PUT(req, { params }) {
 
 export async function GET(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { transactionID } = params;
 
     const transactionDetails = await getTransaction(transactionID);

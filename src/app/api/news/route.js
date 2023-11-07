@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
 import { getNews, createNews } from "@/utils/prismaQueries/newsRoutes";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET() {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const news = await getNews();
 
     return NextResponse.json(
@@ -19,6 +25,11 @@ export async function GET() {
 
 export async function POST(req) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { title, imageUrl, imageDesc, content, author } = await req.json();
 
     // if (!title || !imageUrl || !imageDesc || !content) {

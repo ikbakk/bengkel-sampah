@@ -2,9 +2,16 @@ import { NextResponse } from "next/server";
 import prisma from "@/utils/prismaClient";
 import { createBank, getBankList } from "@/utils/prismaQueries/bankRoutes";
 import { BadRequestError } from "@/utils/errors";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET() {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
+
     const banks = await getBankList();
     return NextResponse.json({
       message: "Waste banks found",
@@ -24,6 +31,12 @@ export async function GET() {
 
 export async function POST(req) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
+
     const { name, address } = await req.json();
 
     if (!name || !address)

@@ -2,9 +2,15 @@ import { NextResponse } from "next/server";
 import { newCart, findCartByUserID } from "@/utils/prismaQueries/cartRoutes";
 import { findCustomer } from "@/utils/prismaQueries/customerRoutes";
 import { NotFoundError } from "@/utils/errors";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET(req) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { searchParams } = new URL(req.url);
     const userID = searchParams.get("userID");
 

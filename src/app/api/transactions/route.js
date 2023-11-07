@@ -3,9 +3,15 @@ import {
   getTransactions,
   newTransaction,
 } from "@/utils/prismaQueries/transactionsRoutes";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET(req) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const searchParams = req.nextUrl.searchParams;
     const filterBy = searchParams.get("filterBy");
     const filterValue = searchParams.get("filterValue");
@@ -33,6 +39,11 @@ export async function GET(req) {
 
 export async function POST(req) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { userID, source, wastes, partnerID, wasteBankID } = await req.json();
     const transaction = await newTransaction({
       userID,

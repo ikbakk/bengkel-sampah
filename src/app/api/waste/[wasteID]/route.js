@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getWaste, deleteWaste } from "@/utils/prismaQueries/wasteroutes";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET(req, { params }) {
   try {
@@ -23,6 +24,11 @@ export async function GET(req, { params }) {
 
 export async function DELETE(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { wasteID } = params;
 
     await getWaste(wasteID);
