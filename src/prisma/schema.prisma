@@ -21,7 +21,8 @@ model User {
   driver       Driver?
   email        String?       @unique
   member       Member?
-  transactions Transaction[]
+  userTransactions Transaction[] @relation("user")
+  partnerTransactions Transaction[] @relation("partner")
   cart         Cart?
   createdAt    DateTime      @default(now())
 }
@@ -40,15 +41,6 @@ model Driver {
   user         User          @relation(fields: [userID], references: [userID], onDelete: Cascade)
 }
 
-model Partner {
-  partnerID   String @id @default(uuid())
-  address     String
-  phoneNumber String @unique
-  name        String
-
-  transactions Transaction[]
-}
-
 model Member {
   memberID    String     @id @default(uuid())
   wasteBankID String
@@ -62,13 +54,13 @@ model Transaction {
   transactionID   String             @id @default(uuid())
   status          Transaction_Status @default(READY)
   userID          String
-  user            User               @relation(fields: [userID], references: [userID], onDelete: Cascade)
+  user            User               @relation("user", fields: [userID], references: [userID], onDelete: Cascade)
   transactionDate DateTime           @default(now())
 
   wasteSubmission Waste_Submission[]
 
   source      Transaction_Source
-  partner     Partner?           @relation(fields: [partnerID], references: [partnerID], onDelete: Cascade)
+  partner     User?           @relation("partner", fields: [partnerID], references: [userID], onDelete: Cascade)
   partnerID   String?
   wasteBank   Waste_Bank?        @relation(fields: [wasteBankID], references: [wasteBankID], onDelete: Cascade)
   wasteBankID String?
@@ -136,9 +128,8 @@ model Cart_Item {
 }
 
 model Token {
-  tokenID Int @id @default(autoincrement())
-  userID  String @unique
-  token   String
+  token   String @id
+  userID  String 
   expDate DateTime
 }
 
