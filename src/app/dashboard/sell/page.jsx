@@ -4,20 +4,25 @@ import { NavTop } from "@/components/molecules/NavTop";
 
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
-import { fetchItemsWithParams, fetchItems } from "@/utils/fetchItems";
+import { fetchItemsWithOptions, fetchItems } from "@/utils/fetchItems";
 
 export default async function SellPage() {
   const { user } = await getServerSession(authOptions);
-  const params = {
-    userID: user.id,
+  const fetchOpts = {
+    params: {
+      userID: user.id,
+    },
+    headers: {
+      Authorization: user.accessToken,
+    },
   };
-  const cart = await fetchItemsWithParams("/api/cart", params);
-  const partners = await fetchItems("/api/partner");
+  const cart = await fetchItemsWithOptions("/api/cart", fetchOpts);
+  const partners = await fetchItems("/api/partner", user.accessToken);
 
   return (
     <SellProvider>
       <NavTop label="Jual Sampah" />
-      <Sell cart={cart.data} userID={user.id} partners={partners} />
+      <Sell cart={cart.data} userID={user.id} partners={partners.data} />
     </SellProvider>
   );
 }

@@ -1,7 +1,13 @@
 import prisma from "../prismaClient";
+import { BadRequestError, NotFoundError } from "@/utils/errors";
+
+export const getBankList = async (bankID) => {
+  const banks = await prisma.waste_Bank.findMany();
+  return banks;
+};
 
 export const bankDetails = async (bankID) => {
-  return await prisma.waste_Bank.findUnique({
+  const bank = await prisma.waste_Bank.findUnique({
     where: {
       wasteBankID: bankID,
     },
@@ -13,12 +19,34 @@ export const bankDetails = async (bankID) => {
       },
     },
   });
+
+  if (!bank) throw new NotFoundError("Waste bank not found");
+
+  const response = {
+    wasteBankID: bank.wasteBankID,
+    name: bank.name,
+    address: bank.address,
+    members: bank._count.members,
+  };
+
+  return response;
 };
 
-export const memberDetails = async (userID, wasteBankID) => {
-  return await prisma.member.findUnique({
+export const createBank = async (address, name) => {
+  const newBank = await prisma.waste_Bank.create({
+    data: {
+      address,
+      name,
+    },
+  });
+
+  return newBank;
+};
+
+export const memberDetails = async (memberID, wasteBankID) => {
+  const member = await prisma.member.findUnique({
     where: {
-      userID,
+      memberID,
       wasteBankID,
     },
     select: {
@@ -37,6 +65,21 @@ export const memberDetails = async (userID, wasteBankID) => {
       },
     },
   });
+
+  if (!member) throw new NotFoundError("Member not found");
+
+  const response = {
+    memberID: member.memberID,
+    userID: member.user.userID,
+    name: member.user.name,
+    address: member.user.address,
+    email: member.user.email,
+    phoneNumber: member.user.phoneNumber,
+    balance: member.balance,
+    createdAt: member.user.createdAt,
+  };
+
+  return response;
 };
 
 export const getMemberTransactions = async (userID) => {
@@ -83,7 +126,7 @@ export const getMemberTransactions = async (userID) => {
 };
 
 export const bankMembers = async (wasteBankID) => {
-  return await prisma.waste_Bank.findUnique({
+  const members = await prisma.waste_Bank.findUnique({
     where: {
       wasteBankID,
     },
@@ -95,6 +138,22 @@ export const bankMembers = async (wasteBankID) => {
       },
     },
   });
+
+  if (!members) throw new NotFoundError("Bank not found");
+
+  const response = members.members.map((member) => {
+    return {
+      userID: member.userID,
+      memberID: member.memberID,
+      name: member.user.name,
+      address: member.user.address,
+      email: member.user.email,
+      phoneNumber: member.user.phoneNumber,
+      balance: member.balance,
+    };
+  });
+
+  return response;
 };
 
 export const createBankMember = async (data, wasteBankID) => {
@@ -118,8 +177,8 @@ export const createBankMember = async (data, wasteBankID) => {
     },
   });
 
-  if (!bankExist) throw new Error("Bank ID not found");
-  if (phoneExist) throw new Error("Phone number already registered");
+  if (!bankExist) throw new NotFoundError("Bank not found");
+  if (phoneExist) throw new BadRequestError("Phone number already registered");
 
   const newUser = await prisma.$transaction(async (prisma) => {
     const user = await prisma.user.create({

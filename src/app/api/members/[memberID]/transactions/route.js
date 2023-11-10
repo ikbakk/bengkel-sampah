@@ -3,19 +3,26 @@ import {
   memberDetails,
   getMemberTransactions,
 } from "@/utils/prismaQueries/bankRoutes";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { memberID, bankID } = params;
     const member = await memberDetails(memberID, bankID);
-    const transactions = await getMemberTransactions(member.user.userID);
+    const transactions = await getMemberTransactions(member.userID);
 
     const response = {
       memberID: member.memberID,
-      name: member.user.name,
-      address: member.user.address,
-      email: member.user.email,
-      phoneNumber: member.user.phoneNumber,
+      userID: member.userID,
+      name: member.name,
+      address: member.address,
+      email: member.email,
+      phoneNumber: member.phoneNumber,
       balance: member.balance,
       transactions,
     };
@@ -25,8 +32,13 @@ export async function GET(req, { params }) {
       data: response,
     });
   } catch (error) {
-    return NextResponse.json({
-      message: error.message,
-    });
+    return NextResponse.json(
+      {
+        message: error.message,
+      },
+      {
+        status: error.code,
+      },
+    );
   }
 }

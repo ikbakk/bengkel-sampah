@@ -1,21 +1,20 @@
 import { NextResponse } from "next/server";
 import { newCart, findCartByUserID } from "@/utils/prismaQueries/cartRoutes";
+import { getCustomer } from "@/utils/prismaQueries/customerRoutes";
+import { NotFoundError } from "@/utils/errors";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET(req) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { searchParams } = new URL(req.url);
     const userID = searchParams.get("userID");
 
-    if (!userID) {
-      return NextResponse.json(
-        {
-          message: "Cart not found",
-        },
-        {
-          status: 404,
-        },
-      );
-    }
+    if (!userID) throw new NotFoundError("Cart not found!");
 
     const cart = await findCartByUserID(userID);
 
@@ -24,19 +23,12 @@ export async function GET(req) {
         message: "Cart found",
         data: cart,
       },
-      {
-        status: 200,
-      },
+      { status: 200 },
     );
   } catch (error) {
     return NextResponse.json(
-      {
-        message: error.name,
-        error: error.message,
-      },
-      {
-        status: 500,
-      },
+      { message: error.message },
+      { status: error.code },
     );
   }
 }
@@ -45,25 +37,22 @@ export async function POST(req) {
   try {
     const { userID } = await req.json();
 
-    await newCart(userID);
+    const customer = await getCustomer(userID);
+    if (!customer) throw new NotFoundError("User not found!");
+
+    const cart = await newCart(userID);
 
     return NextResponse.json(
-      {
-        message: "Cart created",
-      },
+      { message: "Cart created", data: cart },
       { status: 201 },
     );
   } catch (error) {
     console.log(error);
-
     return NextResponse.json(
       {
-        message: "Cart creation failed",
-        error: error.message,
+        message: error.message,
       },
-      {
-        status: 400,
-      },
+      { status: error.code },
     );
   }
 }

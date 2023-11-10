@@ -1,23 +1,30 @@
 import { NextResponse } from "next/server";
 import { getUserTransactions } from "@/utils/prismaQueries/userTransactions";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET(req, { params }) {
-  const { userID } = params;
+  try {
+    const jwt = await jwtVerify();
 
-  const transaction = await getUserTransactions(userID);
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
+    const { userID } = params;
 
-  if (!transaction)
+    const transaction = await getUserTransactions(userID);
+
+    return NextResponse.json({
+      message: "Transaction found",
+      data: transaction,
+    });
+  } catch (error) {
     return NextResponse.json(
       {
-        message: "Transaction not found",
+        message: "Transaction failed",
       },
       {
-        status: 404,
+        status: error.code || 500,
       },
     );
-
-  return NextResponse.json({
-    message: "Transaction found",
-    data: transaction,
-  });
+  }
 }

@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server";
 import { getDrivers, createDriver } from "@/utils/prismaQueries/driverRoutes";
-
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 import bcrypt from "bcrypt";
 
 export async function GET() {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const drivers = await getDrivers();
 
     const response = drivers.map((driver) => ({
@@ -27,6 +32,11 @@ export async function GET() {
 
 export async function POST(req) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { name, address, phoneNumber, password, role, email } =
       await req.json();
 

@@ -1,45 +1,91 @@
 import prisma from "../prismaClient";
+import { NotFoundError } from "@/utils/errors";
 
 export const getPartners = async () => {
-  const partners = await prisma.partner.findMany({});
+  const partners = await prisma.user.findMany({
+    select: {
+      userID: true,
+      phoneNumber: true,
+      name: true,
+      address: true,
+      role: true,
+      email: true,
+    },
+    where: {
+      role: "PARTNER",
+    },
+  });
 
   return partners;
 };
 
 export const getPartner = async (partnerID) => {
-  const partner = await prisma.partner.findUnique({
+  const partner = await prisma.user.findUnique({
+    select: {
+      userID: true,
+      phoneNumber: true,
+      name: true,
+      address: true,
+      role: true,
+      email: true,
+      createdAt: true,
+    },
     where: {
-      partnerID: partnerID,
+      userID: partnerID,
     },
   });
+
+  if (!partner) throw new NotFoundError("Partner not found");
 
   return partner;
 };
 
-export const createPartner = async (data) => {
-  const { name, phoneNumber, address } = data;
-  const newPartner = await prisma.partner.create({
+export const createPartner = async ({
+  name,
+  phoneNumber,
+  address = null,
+  hashedPassword,
+}) => {
+  const newUser = await prisma.user.create({
     data: {
-      name,
-      phoneNumber,
-      address,
+      name: name,
+      phoneNumber: phoneNumber,
+      address: address,
+      passwordHash: hashedPassword,
+      role: "PARTNER",
+    },
+    select: {
+      userID: true,
+      name: true,
+      phoneNumber: true,
+      address: true,
+      email: true,
+      createdAt: true,
     },
   });
 
-  return newPartner;
+  return newUser;
 };
 
 export const updatePartner = async (partnerID, data) => {
   const { name, phoneNumber, address } = data;
 
-  const newData = await prisma.partner.update({
+  const newData = await prisma.user.update({
     where: {
-      partnerID: partnerID,
+      userID: partnerID,
     },
     data: {
       name: name,
       phoneNumber: phoneNumber,
       address: address,
+    },
+    select: {
+      userID: true,
+      phoneNumber: true,
+      name: true,
+      address: true,
+      role: true,
+      email: true,
     },
   });
 
@@ -47,9 +93,9 @@ export const updatePartner = async (partnerID, data) => {
 };
 
 export const deletePartner = async (partnerID) => {
-  await prisma.partner.delete({
+  await prisma.user.delete({
     where: {
-      partnerID: partnerID,
+      userID: partnerID,
     },
   });
 

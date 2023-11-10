@@ -1,49 +1,79 @@
+import bcrypt from "bcrypt";
 import { NextResponse } from "next/server";
 import {
   createPartner,
   getPartners,
 } from "@/utils/prismaQueries/partnerRoutes";
+import { getUserByPhone } from "@/utils/prismaQueries/registerRoutes";
+import { BadRequestError } from "@/utils/errors";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET() {
   try {
-    const partners = await prisma.partner.findMany();
+    const jwt = await jwtVerify();
 
-    return NextResponse.json(partners);
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
+    const partners = await getPartners();
+    return NextResponse.json({
+      message: "Successfully retrieved partners list",
+      data: partners,
+    });
   } catch (error) {
-    return NextResponse(error, { status: 500 });
+    return NextResponse(
+      {
+        message: error.message,
+      },
+      {
+        status: error.code || 500,
+      },
+    );
   }
 }
 
 export async function POST(req) {
   try {
-    const { name, phoneNumber, address } = await req.json();
+    const jwt = await jwtVerify();
 
-    if (!name || !address || !phoneNumber) {
-      return NextResponse.json(
-        {
-          error: "Validation Error",
-          message: "Please fill in all required fields.",
-        },
-        { status: 422 },
-      );
+    if (!jwt) {
+      return invalidJwtResponse;
     }
+    const { name, phoneNumber, address, password } = await req.json();
 
-    const newPartner = await prisma.partner.create({
-      data: {
-        name: name,
-        phoneNumber: phoneNumber,
-        address: address,
+    if (!name || !phoneNumber || !password)
+      throw new BadRequestError("Missing field");
+
+    const exist = await getUserByPhone(phoneNumber);
+
+    if (exist) throw new BadRequestError("Phone number already used");
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newPartner = await createPartner({
+      name,
+      phoneNumber,
+      address,
+      hashedPassword,
+    });
+
+    return NextResponse.json(
+      {
+        message: "Partners successfuly created",
+        data: newPartner,
       },
-    });
-
-    return NextResponse.json({
-      message: "Success",
-      data: newPartner,
-    });
+      {
+        status: 201,
+      },
+    );
   } catch (error) {
     return NextResponse.json(
-      { message: "Partner Not Created!" },
-      { status: 500 },
+      {
+        message: error.message,
+      },
+      {
+        status: error.code || 500,
+      },
     );
   }
 }

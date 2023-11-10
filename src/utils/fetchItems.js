@@ -5,14 +5,16 @@ const baseURL = process.env.BASEURL;
 
 export const revalidate = 0;
 
-export const fetchItems = cache(async (route) => {
-  const { data } = await axios.get(`${baseURL}${route}`);
+export const fetchItems = cache(async (route, token) => {
+  const { data } = await axios.get(`${baseURL}${route}`, {
+    headers: {
+      Authorization: token,
+    },
+  });
   return data;
 });
 
-export const fetchItemsWithParams = cache(async (route, params) => {
-  const { data } = await axios.get(`${baseURL}${route}`, {
-    params,
-  });
+export const fetchItemsWithOptions = cache(async (route, opts) => {
+  const { data } = await axios.get(`${baseURL}${route}`, opts);
   return data;
 });

@@ -1,77 +1,61 @@
 import { NextResponse } from "next/server";
-import prisma from "@/utils/prismaClient";
+import { BadRequestError } from "@/utils/errors";
 import {
   updatePartner,
   getPartner,
   deletePartner,
 } from "@/utils/prismaQueries/partnerRoutes";
+import { NotFoundError } from "@/utils/errors";
+import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { partnerID } = params;
 
+    const partner = await getPartner(partnerID);
 
-    const partner = await prisma.partner.findUnique({
-      where: {
-        partnerID: partnerID,
-      },
+    return NextResponse.json({
+      message: "Partner found",
+      data: partner,
     });
-
-    if (!partner) {
-      return NextResponse.json(
-        {
-          Error: "Partner not found",
-          Message:
-            "The requested partner does not exist in the system. Please verify the partner's ID and try again.",
-        },
-        { status: 404 },
-      );
-    }
-
-    return NextResponse.json(partner);
-  } catch (error) {}
-
+  } catch (error) {
+    return NextResponse.json(
+      {
+        message: error.message,
+      },
+      {
+        status: error.code || 500,
+      },
+    );
+  }
 }
 
 export async function PUT(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { partnerID } = params;
     const { name, phoneNumber, address } = await req.json();
 
-    if (!name || !address || !phoneNumber) {
-      return NextResponse.json(
-        {
-          error: "Validation Error",
-          message: "Please fill in all required fields.",
-        },
-        { status: 422 },
+    if (!name || !address || !phoneNumber)
+      throw new BadRequestError(
+        "Missing required field name, address, phoneNumber",
       );
-    }
 
-    const partner = await prisma.partner.findUnique({
-      where: { partnerID: partnerID },
-    });
+    await getPartner(partnerID);
 
-    if (!partner) {
-      return NextResponse.json(
-        {
-          Error: "Partner not found",
-          Message:
-            "The requested partner does not exist in the system. Please verify the partner's ID and try again.",
-        },
-        { status: 404 },
-      );
-    }
-
-    const newData = await prisma.partner.update({
-      where: {
-        partnerID: partnerID,
-      },
-      data: {
-        name: name,
-        phoneNumber: phoneNumber,
-        address: address,
-      },
+    const newData = await updatePartner(partnerID, {
+      name,
+      address,
+      phoneNumber,
     });
 
     return NextResponse.json({
@@ -79,39 +63,41 @@ export async function PUT(req, { params }) {
       data: newData,
     });
   } catch (error) {
-    console.log(error);    
+    return NextResponse.json(
+      {
+        message: error.message,
+      },
+      {
+        status: error.code,
+      },
+    );
   }
 }
 
 export async function DELETE(req, { params }) {
   try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { partnerID } = params;
 
-    const partner = await prisma.partner.findUnique({
-      where: { partnerID: partnerID },
-    });
+    await getPartner(partnerID);
 
-    if (!partner) {
-      return NextResponse.json(
-        {
-          Error: "Partner not found",
-          Message:
-            "The requested partner does not exist in the system. Please verify the partner's ID and try again.",
-        },
-        { status: 404 },
-      );
-    }
-
-    await prisma.partner.delete({
-      where: {
-        partnerID: partnerID,
-      },
-    });
+    await deletePartner(partnerID);
 
     return NextResponse.json({
-      message: "Sucess delete partner",
+      message: "Sucessfully deleted partner",
     });
   } catch (error) {
-    console.log(error);
+    return NextResponse.json(
+      {
+        message: error.message,
+      },
+      {
+        status: error.code,
+      },
+    );
   }
 }
