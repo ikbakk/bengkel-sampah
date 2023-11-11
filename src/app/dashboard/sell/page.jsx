@@ -22,7 +22,7 @@ export default async function SellPage() {
   return (
     <SellProvider>
       <NavTop label="Jual Sampah" />
-      <Sell cart={cart.data} userID={user.id} partners={partners} />
+      <Sell cart={cart.data} userID={user.id} partners={partners.data} />
     </SellProvider>
   );
 }
