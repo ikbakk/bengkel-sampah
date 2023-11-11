@@ -1,4 +1,4 @@
-// import Datepicker from "react-tailwindcss-datepicker";
+import Datepicker from "react-tailwindcss-datepicker";
 
 const CustomDatePicker = ({ value, onChange }) => {
   return (
