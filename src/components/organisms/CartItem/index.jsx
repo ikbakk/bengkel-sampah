@@ -1,35 +1,41 @@
 "use client";
 
-import { Typography, Card, CardBody, Checkbox } from "@material-tailwind/react";
 import CartQuantityItemCounter from "@/components/molecules/CartQuantityItemCounter";
-import useCartActions from "@/hooks/useCartActions";
+import { CartContext } from "@/context/CartContext";
+import { Typography, Card, CardBody, Checkbox } from "@material-tailwind/react";
+
+import { useContext } from "react";
 
 const CartItem = ({
-  cartID,
+  cartItemID,
   wasteID,
   price,
   pricePerUnit,
   wasteName,
   unit,
-  totalWeight,
-  onSelect,
   selected,
 }) => {
-  const hooksParams = {
-    wasteID,
-    pricePerUnit,
-    cartID,
-  };
+  const { selectCartItem, cartQuery, updateCartItemWeight } =
+    useContext(CartContext);
+  const { data: cart } = cartQuery;
+  const findCartById = cart?.cartItems?.find(
+    (cartItem) => cartItem.cartItemID === cartItemID,
+  );
 
-  const { handleAdd, handleReduce, loading } = useCartActions(hooksParams);
-
-  const handleChange = () => {
-    onSelect(wasteID);
+  const handleWeightChange = (modifier) => {
+    updateCartItemWeight.mutate({
+      cartItemID,
+      newWeight: findCartById.weight + modifier,
+    });
   };
 
   return (
     <div className="flex w-full items-center gap-4">
-      <Checkbox color="red" checked={selected} onChange={handleChange} />
+      <Checkbox
+        color="red"
+        checked={selected}
+        onChange={() => selectCartItem.mutate(wasteID)}
+      />
       <Card className="w-full">
         <CardBody>
           <Typography variant="h5" className="text-md capitalize md:text-xl">
@@ -45,11 +51,9 @@ const CartItem = ({
               </p>
             </div>
             <CartQuantityItemCounter
-              handleAdd={handleAdd}
-              handleReduce={handleReduce}
-              totalWeight={totalWeight}
-              loading={loading}
-              unit={unit}
+              handleChange={handleWeightChange}
+              totalWeight={findCartById.weight}
+              loading={updateCartItemWeight.isPending}
             />
           </section>
         </CardBody>
