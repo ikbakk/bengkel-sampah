@@ -1,18 +1,20 @@
 "use client";
 
-import ContentHeader from "@/components/atoms/ContentHeader";
-import CartHeaderTitle from "@/components/atoms/CartHeaderItem/Title";
-import PriceCard from "@/components/atoms/CartHeaderItem/PriceCard";
-
-import { convertToIDR } from "@/lib/convertToIDR";
-import { useContext } from "react";
-import { CartContext } from "@/context/CartContext";
-import { Card, CardBody } from "@material-tailwind/react";
-import { CiMoneyBill } from "react-icons/ci";
 import { TbWeight } from "react-icons/tb";
+import { CiMoneyBill } from "react-icons/ci";
+import { Card, CardBody } from "@material-tailwind/react";
+import ContentHeader from "@/components/atoms/ContentHeader";
+import PriceCard from "@/components/atoms/CartHeaderItem/PriceCard";
+import CartHeaderTitle from "@/components/atoms/CartHeaderItem/Title";
+
+import { useContext } from "react";
+import { convertToIDR } from "@/lib/convertToIDR";
+import { CartContext } from "@/context/CartContext";
 
 const CartHeader = () => {
-  const { cartTotal } = useContext(CartContext);
+  const { cartQuery } = useContext(CartContext);
+  const { data: cart } = cartQuery;
+
   return (
     <ContentHeader>
       <Card>
@@ -22,12 +24,12 @@ const CartHeader = () => {
             <PriceCard
               title="Berat"
               icon={<TbWeight className="text-bs-secondary" size={24} />}
-              value={`${cartTotal.totalWeight} kg`}
+              value={`${cart?.totalWeight} kg`}
             />
             <PriceCard
               title="Harga"
               icon={<CiMoneyBill className="text-bs-secondary" size={24} />}
-              value={convertToIDR(cartTotal.totalPrice)}
+              value={convertToIDR(cart?.totalPrice)}
             />
           </div>
         </CardBody>

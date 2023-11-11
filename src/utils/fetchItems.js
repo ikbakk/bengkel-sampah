@@ -6,15 +6,23 @@ const baseURL = process.env.BASEURL;
 export const revalidate = 0;
 
 export const fetchItems = cache(async (route, token) => {
-  const { data } = await axios.get(`${baseURL}${route}`, {
-    headers: {
-      Authorization: token,
-    },
-  });
-  return data;
+  try {
+    const { data } = await axios.get(`${baseURL}${route}`, {
+      headers: {
+        Authorization: token,
+      },
+    });
+    return data;
+  } catch (error) {
+    return error.response;
+  }
 });
 
 export const fetchItemsWithOptions = cache(async (route, opts) => {
-  const { data } = await axios.get(`${baseURL}${route}`, opts);
-  return data;
+  try {
+    const { data } = await axios.get(`${baseURL}${route}`, opts);
+    return data;
+  } catch (error) {
+    return error.response;
+  }
 });

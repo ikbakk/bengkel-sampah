@@ -3,12 +3,7 @@
 import { Button, Typography, Spinner } from "@material-tailwind/react";
 import { AiOutlinePlus, AiOutlineMinus } from "react-icons/ai";
 
-const CartQuantityItemCounter = ({
-  totalWeight,
-  handleAdd,
-  handleReduce,
-  loading,
-}) => {
+const CartQuantityItemCounter = ({ totalWeight, handleChange, loading }) => {
   const disableButton =
     (totalWeight <= 0 ? true : false) || (loading ? true : false);
   return (
@@ -17,7 +12,7 @@ const CartQuantityItemCounter = ({
       <div className="flex items-center justify-center gap-4">
         <Button
           disabled={disableButton}
-          onClick={handleReduce}
+          onClick={() => handleChange(-1)}
           size="sm"
           variant="filled"
           className="bg-gray-400"
@@ -30,7 +25,7 @@ const CartQuantityItemCounter = ({
         </Button>
         <p className="font-bold">{totalWeight}</p>
         <Button
-          onClick={handleAdd}
+          onClick={() => handleChange(1)}
           size="sm"
           variant="filled"
           className="bg-bs-primary"

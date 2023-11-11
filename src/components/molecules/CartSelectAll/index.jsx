@@ -1,45 +1,41 @@
-import sameElementCheck from "@/lib/sameElementCheck";
+"use client";
 
 import { Button, Checkbox, Spinner } from "@material-tailwind/react";
 
+import { useState, useContext } from "react";
 import { CartContext } from "@/context/CartContext";
-import { useContext, useEffect, useState } from "react";
-import useCartItemsDelete from "@/hooks/useCartItemsDelete";
+import sameElementCheck from "@/lib/sameElementCheck";
 
-const CartSelectAll = ({ hideButton, onChange, cartID }) => {
-  const { cartItems, selectedCartItems } = useContext(CartContext);
-  const { handleDelete, loading } = useCartItemsDelete(cartID);
+const CartSelectAll = ({ ...props }) => {
   const [isChecked, setIsChecked] = useState(false);
+  const { cartQuery, deleteCartItems, selectAllCartItems, selectedCartItems } =
+    useContext(CartContext);
+  const { data: cart } = cartQuery;
+  const wasteIDs = cart?.cartItems.map((item) => item.waste.wasteID) ?? [];
 
-  useEffect(() => {
-    const wasteIds = cartItems.map((item) => item.waste.wasteID);
-    const isSame = sameElementCheck(wasteIds, selectedCartItems);
-    if (isSame) {
-      setIsChecked(true);
-    } else {
-      setIsChecked(false);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCartItems]);
+  const elementCheck = sameElementCheck(wasteIDs, selectedCartItems);
 
   const handleChange = () => {
-    onChange(isChecked);
+    selectAllCartItems.mutate(isChecked);
     setIsChecked((prev) => !prev);
   };
 
   return (
-    <div
-      className={`${hideButton} flex w-full items-center justify-between gap-4`}
-    >
-      <div
-        onClick={handleChange}
-        className="flex items-center hover:cursor-pointer"
-      >
-        <Checkbox checked={isChecked} onChange={handleChange} color="red" />
+    <div {...props}>
+      <div className="flex items-center hover:cursor-pointer">
+        <Checkbox onChange={handleChange} checked={elementCheck} color="red" />
         <p className="text-bs-font_primary">Pilih Semua</p>
       </div>
-      <Button onClick={handleDelete} color="red" className="px-12">
-        {loading ? <Spinner className="flex h-4 w-4 self-center" /> : "Hapus"}
+      <Button
+        onClick={() => deleteCartItems.mutate()}
+        color="red"
+        className="px-12"
+      >
+        {deleteCartItems.isPending ? (
+          <Spinner className="flex h-4 w-4 self-center" />
+        ) : (
+          "Hapus"
+        )}
       </Button>
     </div>
   );

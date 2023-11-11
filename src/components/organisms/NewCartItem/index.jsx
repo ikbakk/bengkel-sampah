@@ -11,24 +11,29 @@ import {
 } from "@material-tailwind/react";
 import CartQuantityItemCounter from "@/components/molecules/CartQuantityItemCounter";
 
-import useCartAddItem from "@/hooks/useCartAddItem";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { CartContext } from "@/context/CartContext";
 
-const NewCartItem = ({ wastes, cartID }) => {
-  const { cartItems } = useContext(CartContext);
-  const filteredWaste = wastes.filter(
-    (waste) => !cartItems.some((item) => item.waste.wasteID === waste.wasteID),
+const NewCartItem = ({ wastes }) => {
+  const [newItem, setNewItem] = useState({
+    wasteID: "",
+    weight: 0,
+  });
+  const { cartQuery, addCartItem } = useContext(CartContext);
+  const { data: cart } = cartQuery;
+  const filteredWaste = wastes?.filter(
+    (waste) =>
+      !cart?.cartItems?.some((item) => item.waste.wasteID === waste.wasteID),
   );
 
-  const {
-    handleAdd,
-    handleChange,
-    handleReduce,
-    handleSubmit,
-    newCartItem,
-    loading,
-  } = useCartAddItem(wastes, cartID);
+  const handleWeightChange = (modifier) => {
+    setNewItem((prev) => ({ ...prev, weight: prev.weight + modifier }));
+  };
+
+  const handleSubmit = () => {
+    addCartItem.mutate(newItem);
+  };
+
   return (
     <Card>
       <CardBody className="flex flex-col gap-8">
@@ -36,7 +41,7 @@ const NewCartItem = ({ wastes, cartID }) => {
           Tambahkan sampah anda
         </Typography>
         <Select
-          onChange={(e) => handleChange(e)}
+          onChange={(e) => setNewItem({ ...newItem, wasteID: e })}
           className="capitalize"
           label="Pilih jenis sampah"
         >
@@ -53,16 +58,16 @@ const NewCartItem = ({ wastes, cartID }) => {
           })}
         </Select>
         <CartQuantityItemCounter
-          handleAdd={handleAdd}
-          handleReduce={handleReduce}
-          totalWeight={newCartItem.totalWeight}
+          totalWeight={newItem.weight}
+          handleChange={handleWeightChange}
+          loading={false}
         />
 
         <Button
           onClick={handleSubmit}
           className="flex w-full justify-center bg-bs-primary"
         >
-          {loading ? <Spinner className="h-4 w-4" /> : "Submit"}
+          {addCartItem.isPending ? <Spinner className="h-4 w-4" /> : "Submit"}
         </Button>
       </CardBody>
     </Card>
