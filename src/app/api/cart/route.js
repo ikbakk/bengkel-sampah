@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { newCart, findCartByUserID } from "@/utils/prismaQueries/cartRoutes";
-import { findCustomer } from "@/utils/prismaQueries/customerRoutes";
+import { getCustomer } from "@/utils/prismaQueries/customerRoutes";
 import { NotFoundError } from "@/utils/errors";
 import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
@@ -37,7 +37,7 @@ export async function POST(req) {
   try {
     const { userID } = await req.json();
 
-    const customer = await findCustomer(userID);
+    const customer = await getCustomer(userID);
     if (!customer) throw new NotFoundError("User not found!");
 
     const cart = await newCart(userID);
