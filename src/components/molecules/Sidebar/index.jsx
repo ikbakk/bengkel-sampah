@@ -4,7 +4,6 @@ import SidebarItem from "@/components/atoms/SidebarItem";
 import { ADMIN_NAVBAR_ITEM, NAVBAR_ITEM } from "@/utils/constant/navbar";
 import { usePathname } from "next/navigation";
 import React from "react";
-import { MdSpaceDashboard } from "react-icons/md";
 
 const Sidebar = () => {
   const pathName = usePathname();

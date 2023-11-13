@@ -1,12 +1,11 @@
 import Sidebar from "@/components/molecules/Sidebar";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import React from "react";
 
 const LayoutAdmin = ({ children }) => {
   return (
     <div className="grid h-screen grid-cols-10">
-      <div className="max-h-screen col-span-2 overflow-y-scroll bg-bs-tertiary">
+      <div className="col-span-2 max-h-screen overflow-y-scroll bg-bs-tertiary">
         <div className="flex items-center justify-center">
           <Image
             src="/logo-bs.png"
@@ -20,7 +19,7 @@ const LayoutAdmin = ({ children }) => {
           <Sidebar />
         </div>
       </div>
-      <div className="max-h-screen col-span-8 px-10 overflow-y-scroll">
+      <div className="col-span-8 max-h-screen overflow-y-scroll px-10">
         {children}
       </div>
     </div>
