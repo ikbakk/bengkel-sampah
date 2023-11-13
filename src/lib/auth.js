@@ -16,7 +16,6 @@ export const authOptions = {
         if (!credentials.phone || !credentials.password) {
           throw new Error("Please enter an phone and password");
         }
-
         const res = await axios.post(`${process.env.AUTH_HOST}/auth/login`, {
           phoneNumber: credentials.phone,
           password: credentials.password,

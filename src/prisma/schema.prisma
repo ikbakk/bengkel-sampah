@@ -57,6 +57,9 @@ model Transaction {
   user            User               @relation("user", fields: [userID], references: [userID], onDelete: Cascade)
   transactionDate DateTime           @default(now())
 
+  description String?
+  address     String
+
   wasteSubmission Waste_Submission[]
 
   source      Transaction_Source
@@ -150,6 +153,7 @@ enum Transaction_Status {
   READY
   PROCESSING
   COMPLETED
+  CANCELED
 }
 
 enum Transaction_Source {
