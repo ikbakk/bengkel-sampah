@@ -72,10 +72,8 @@ const ProfileMenu = () => {
                 onClick={
                   isLastItem
                     ? () => {
-                        console.log("awww");
                         signOut({
-                          callbackUrl:
-                            process.env.NEXT_PUBLIC_BASEURL + "/login",
+                          callbackUrl: "/login",
                         });
                       }
                     : null
