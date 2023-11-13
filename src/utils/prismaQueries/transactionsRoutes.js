@@ -7,11 +7,14 @@ export const newTransaction = async ({
   wastes,
   partnerID,
   wasteBankID,
+  description = "",
+  address,
 }) => {
   let transactionData = {
     userID,
     source,
-    transactionDate,
+  description,
+    address,
   };
 
   if (source === "PARTNER" && partnerID) {
