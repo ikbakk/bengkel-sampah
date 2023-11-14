@@ -53,16 +53,6 @@ export const NAVBAR_ITEM = [
     href: "/dashboard/history",
   },
   {
-    icon: <SiSimpleanalytics size={20} />,
-    label: "Analisis",
-    href: "/dashboard/analytic",
-  },
-  {
-    icon: <BsFillCalendar2CheckFill size={20} />,
-    label: "Jadwal",
-    href: "/dashboard/jadwal",
-  },
-  {
     icon: <FiMapPin size={20} />,
     label: "Peta",
     href: "/dashboard/map",
