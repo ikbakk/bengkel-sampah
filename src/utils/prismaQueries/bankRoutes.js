@@ -2,8 +2,23 @@ import prisma from "../prismaClient";
 import { BadRequestError, NotFoundError } from "@/utils/errors";
 
 export const getBankList = async (bankID) => {
-  const banks = await prisma.waste_Bank.findMany();
-  return banks;
+  const banks = await prisma.waste_Bank.findMany({
+    include: {
+      _count: {
+        select: {
+          members: true,
+        },
+      },
+    },
+  });
+  return banks.map((bank) => {
+    return {
+      wasteBankID: bank.wasteBankID,
+      name: bank.name,
+      address: bank.address,
+      members: bank._count.members,
+    };
+  });
 };
 
 export const bankDetails = async (bankID) => {
@@ -32,11 +47,11 @@ export const bankDetails = async (bankID) => {
   return response;
 };
 
-export const createBank = async (address, name) => {
+export const createBank = async (name, address) => {
   const newBank = await prisma.waste_Bank.create({
     data: {
-      address,
       name,
+      address,
     },
   });
 
@@ -208,4 +223,22 @@ export const createBankMember = async (data, wasteBankID) => {
     address: newUser.address,
     email: newUser.email,
   };
+};
+
+export const deleteBank = async (wasteBankID) => {
+  const bank = await prisma.waste_Bank.findUnique({
+    where: {
+      wasteBankID,
+    },
+  });
+
+  if (!bank) throw new NotFoundError("Bank not found");
+
+  const deletedBank = await prisma.waste_Bank.delete({
+    where: {
+      wasteBankID,
+    },
+  });
+
+  return deletedBank;
 };
