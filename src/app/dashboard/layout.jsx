@@ -2,8 +2,6 @@ import Sidebar from "@/components/molecules/Sidebar";
 import Image from "next/image";
 import React from "react";
 import QueryProvider from "@/components/templates/QueryProvider";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
 
 const LayoutAdmin = async ({ children }) => {
   return (
