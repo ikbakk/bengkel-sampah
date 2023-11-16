@@ -41,7 +41,7 @@ export const bankDetails = async (bankID) => {
     wasteBankID: bank.wasteBankID,
     name: bank.name,
     address: bank.address,
-    members: bank._count.members,
+    member: bank._count.members,
   };
 
   return response;
@@ -241,4 +241,66 @@ export const deleteBank = async (wasteBankID) => {
   });
 
   return deletedBank;
+};
+
+export const deleteBanks = async (wasteBankIDs) => {
+  const banks = await prisma.waste_Bank.findMany({
+    where: {
+      wasteBankID: {
+        in: wasteBankIDs,
+      },
+    },
+  });
+
+  if (!banks) throw new NotFoundError("Bank not found");
+
+  const deletedBanks = await prisma.waste_Bank.deleteMany({
+    where: {
+      wasteBankID: {
+        in: wasteBankIDs,
+      },
+    },
+  });
+
+  return deletedBanks;
+};
+
+export const deleteMember = async (memberID) => {
+  const member = await prisma.member.findUnique({
+    where: {
+      memberID,
+    },
+  });
+
+  if (!member) throw new NotFoundError("Member not found");
+
+  const deletedMember = await prisma.member.delete({
+    where: {
+      memberID,
+    },
+  });
+
+  return deletedMember;
+};
+
+export const deleteMembers = async (memberIDs) => {
+  const members = await prisma.member.findMany({
+    where: {
+      memberID: {
+        in: memberIDs,
+      },
+    },
+  });
+
+  if (!members) throw new NotFoundError("Member not found");
+
+  const deletedMembers = await prisma.member.deleteMany({
+    where: {
+      memberID: {
+        in: memberIDs,
+      },
+    },
+  });
+
+  return deletedMembers;
 };

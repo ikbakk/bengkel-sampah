@@ -7,28 +7,7 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Bank from "@/components/templates/Bank";
 
-const DummyData = [
-  {
-    id: "Bank001",
-    name: "Waste Bank 01",
-    members: 10,
-    adress: "Jl. Kemana Kita hari ini",
-  },
-  {
-    id: "Bank002",
-    name: "Waste Bank 02",
-    members: 10,
-    adress: "Jl. Kemana Kita hari ini",
-  },
-  {
-    id: "Bank003",
-    name: "Waste Bank 03",
-    members: 10,
-    adress: "Jl. Kemana Kita hari ini",
-  },
-];
-
-const DashboardProfile = async () => {
+const BankLayout = async () => {
   const { user } = await getServerSession(authOptions);
 
   const bank = await fetchItems("/api/bank", user.accessToken);
@@ -40,9 +19,9 @@ const DashboardProfile = async () => {
   return (
     <BankProvider initialBank={bank?.data} token={user?.accessToken}>
       <NavTop label={"Bank"} />
-      {bank && <Bank initialData={bank?.data} />}
+      {bank && <Bank />}
     </BankProvider>
   );
 };
 
-export default DashboardProfile;
+export default BankLayout;

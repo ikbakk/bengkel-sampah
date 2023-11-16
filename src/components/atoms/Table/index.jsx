@@ -19,16 +19,27 @@ const Table = ({ children }) => {
   });
 
   return (
-    <section className="container mx-auto mt-5 font-mono">
-      <div className="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
+    <section className="font-mono container mx-auto mt-5">
+      <div className="mb-8 w-full overflow-hidden rounded-lg shadow-lg">
         <div className="w-full overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="tracking-wide text-left bg-gray-100 border-b border-gray-600 text-md text-bs-font_primary">
+              <tr className="text-md border-b border-gray-600 bg-gray-100 text-left tracking-wide text-bs-font_primary">
                 {heads}
               </tr>
             </thead>
-            <tbody className="bg-white">{bodies}</tbody>
+            <tbody className="bg-white">
+              {bodies.length === 0 && data.length === 0 ? (
+                <tr>
+                  <td colSpan={heads.length} className="py-4 text-center">
+                    Data tidak ditemukan
+                  </td>
+                </tr>
+              ) : (
+                ""
+              )}
+              {bodies}
+            </tbody>
           </table>
         </div>
       </div>
@@ -49,7 +60,7 @@ const TableBody = ({ children }) => {
 };
 
 const TableData = ({ children }) => {
-  return <td className="px-4 py-3 border">{children}</td>;
+  return <td className="border px-4 py-3">{children}</td>;
 };
 
 // Set display name for identification

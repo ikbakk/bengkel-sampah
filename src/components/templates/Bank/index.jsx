@@ -2,9 +2,10 @@
 import Table from "@/components/atoms/Table";
 import AddBankModal from "@/components/organisms/AddBankModal";
 import { Button, Checkbox, Input } from "@material-tailwind/react";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaExternalLinkAlt } from "react-icons/fa";
 import { useContext, useState } from "react";
 import { BankContext } from "@/context/BankContext";
+import Link from "next/link";
 
 const Bank = () => {
   const {
@@ -13,8 +14,9 @@ const Bank = () => {
     bankQuery,
     selectedBankItems,
     deleteBank,
-    selectAllBankItems,
+    deleteAllBankItems,
     selectBankItem,
+    selectAllBankItems,
   } = useContext(BankContext);
 
   const bankData = bankQuery.data;
@@ -80,7 +82,7 @@ const Bank = () => {
             {filteredBankData.length > 0 && isSelectedAll && (
               <Button
                 onClick={() => {
-                  deleteBank();
+                  deleteAllBankItems();
                 }}
                 color="red"
                 size="sm"
@@ -98,6 +100,7 @@ const Bank = () => {
           </div>
         </Table.Head>
         <Table.Head>Alamat</Table.Head>
+        <Table.Head></Table.Head>
         {filteredBankData &&
           filteredBankData.map((data, index) => {
             let isChecked = isSelected(data.wasteBankID);
@@ -135,6 +138,11 @@ const Bank = () => {
                 </Table.Data>
                 <Table.Data>
                   <p>{data.address}</p>
+                </Table.Data>
+                <Table.Data>
+                  <Link href={`/admin/bank/${data.wasteBankID}`}>
+                    <FaExternalLinkAlt />
+                  </Link>
                 </Table.Data>
               </Table.Body>
             );

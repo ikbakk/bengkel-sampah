@@ -1,5 +1,5 @@
 "use client";
-import { addItem, deleteItem } from "../utils/queryFn/bank";
+import { addItem, deleteItem, deleteItems } from "../utils/queryFn/bank";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useState, createContext } from "react";
 import { getItemsWithOptions } from "@/utils/queryFn/getItemsWithOptions";
@@ -42,8 +42,8 @@ export const BankProvider = ({ children, initialBank, token }) => {
   });
 
   const deleteBankItem = useMutation({
-    mutationFn: (bankID) =>
-      deleteItem(`bank`, bankID, {
+    mutationFn: (wasteBankID) =>
+      deleteItem(`bank`, wasteBankID, {
         headers: {
           Authorization: token,
         },
@@ -54,28 +54,28 @@ export const BankProvider = ({ children, initialBank, token }) => {
     },
   });
 
-  // const deleteBankItems = useMutation({
-  //   mutationFn: () =>
-  //     deleteItems(`bank`, {
-  //       data: {
-  //         bankIDs: selectedBankItems,
-  //       },
-  //       headers: {
-  //         Authorization: token,
-  //       },
-  //     }),
-  //   onSuccess: () => {
-  //     queryClient.setQueryData(["selectedBankItems"], []);
-  //     bankQuery.refetch();
-  //   },
-  // });
+  const deleteBankItems = useMutation({
+    mutationFn: () =>
+      deleteItems("bank", {
+        data: {
+          bankIDs: selectedBankItems,
+        },
+        headers: {
+          Authorization: token,
+        },
+      }),
+    onSuccess: () => {
+      queryClient.setQueryData(["selectedBankItems"], []);
+      bankQuery.refetch();
+    },
+  });
 
   const selectAllBankItems = useMutation({
     mutationFn: (isChecked) => {
       if (isChecked) {
         queryClient.setQueryData(
           ["selectedBankItems"],
-          bankQuery.data.map((data) => data.bankID),
+          bankQuery.data.map((data) => data.wasteBankID),
         );
         setIsSelectedAll(true);
       } else {
@@ -86,16 +86,16 @@ export const BankProvider = ({ children, initialBank, token }) => {
   });
 
   const selectBankItem = useMutation({
-    mutationFn: (bankID) => {
+    mutationFn: (wasteBankID) => {
       if (isSelectedAll) setIsSelectedAll(false);
 
-      if (selectedBankItems.includes(bankID)) {
+      if (selectedBankItems.includes(wasteBankID)) {
         queryClient.setQueryData(
           ["selectedBankItems"],
-          selectedBankItems.filter((id) => id !== bankID),
+          selectedBankItems.filter((id) => id !== wasteBankID),
         );
       } else {
-        queryClient.setQueryData(["selectedBankItems"], [bankID]);
+        queryClient.setQueryData(["selectedBankItems"], [wasteBankID]);
         setIsSelectedAll(false);
       }
     },
@@ -112,8 +112,9 @@ export const BankProvider = ({ children, initialBank, token }) => {
     selectedBankItems,
     addBank: addBankItem.mutateAsync,
     deleteBank: deleteBankItem.mutateAsync,
-    selectAllBankItems: selectAllBankItems.mutateAsync,
+    deleteAllBankItems: deleteBankItems.mutateAsync,
     selectBankItem: selectBankItem.mutateAsync,
+    selectAllBankItems: selectAllBankItems.mutateAsync,
   };
 
   return <BankContext.Provider value={value}>{children}</BankContext.Provider>;
