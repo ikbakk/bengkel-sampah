@@ -81,3 +81,31 @@ export async function POST(req, { params }) {
     );
   }
 }
+
+export async function DELETE(req, { params }) {
+  try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
+    const { memberID } = params;
+
+    await deleteMember(memberID);
+
+    return NextResponse.json({
+      message: "Member successfuly deleted",
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        message: error.message,
+      },
+      {
+        status: error.code,
+      },
+    );
+  }
+}
+
+

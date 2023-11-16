@@ -14,6 +14,7 @@ export const fetchItems = cache(async (route, token) => {
     });
     return data;
   } catch (error) {
+    console.log(error);
     return error.response;
   }
 });

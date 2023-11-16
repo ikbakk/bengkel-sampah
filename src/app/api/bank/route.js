@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
-import prisma from "@/utils/prismaClient";
-import { createBank, getBankList } from "@/utils/prismaQueries/bankRoutes";
+import {
+  createBank,
+  getBankList,
+  deleteBanks,
+} from "@/utils/prismaQueries/bankRoutes";
 import { BadRequestError } from "@/utils/errors";
 import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
@@ -57,6 +60,35 @@ export async function POST(req) {
     return NextResponse.json(
       {
         message: error.message || "Waste banks not created",
+      },
+      {
+        status: error.code || 500,
+      },
+    );
+  }
+}
+
+export async function DELETE(req) {
+  try {
+    const jwt = await jwtVerify();
+
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
+
+    const { bankIDs } = await req.json();
+
+    if (!bankIDs) throw new BadRequestError(`Missing field "bankIDs"`);
+
+    await deleteBanks(bankIDs);
+
+    return NextResponse.json({
+      message: "Waste banks successfuly deleted",
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        message: error.message || "Waste banks not deleted",
       },
       {
         status: error.code || 500,
