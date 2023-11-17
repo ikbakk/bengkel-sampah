@@ -15,7 +15,7 @@ import Link from "next/link";
 import logo from "public/logo-bengkel-sampah-warna.png";
 import Image from "next/image";
 
-export default function SignUp() {
+export default function SignUp({ apiRoute }) {
   const session = useSession();
   const router = useRouter();
 
@@ -26,19 +26,22 @@ export default function SignUp() {
 
   const [data, setData] = useState({
     name: "",
-    phone: "",
+    phoneNumber: "",
     password: "",
+    address: "",
   });
 
   const registerUser = async (e) => {
     e.preventDefault();
-    axios
-      .post("/api/auth/register", data)
+    await axios
+      .post(apiRoute, data)
       .then(() => {
         alert("Registered successfully!");
         router.push("/login");
       })
-      .catch((error) => alert("Something went wrong! ", error));
+      .catch((error) => {
+        alert("Something went wrong! ", error);
+      });
   };
 
   const [isRevealed, setIsRevealed] = useState(false);
@@ -112,7 +115,28 @@ export default function SignUp() {
               labelProps={{
                 className: "before:content-none after:content-none hidden",
               }}
-              onChange={(e) => setData({ ...data, phone: e.target.value })}
+              onChange={(e) =>
+                setData({ ...data, phoneNumber: e.target.value })
+              }
+              required
+            />
+            <label
+              className="-mb-3 font-bold text-blue-gray-800"
+              htmlFor="phone"
+            >
+              Address
+            </label>
+            <Input
+              id="address"
+              name="address"
+              size="lg"
+              type="text"
+              placeholder="Jl. Alamat No. 0"
+              className=" !border-t-blue-gray-200 focus:!border-t-gray-900"
+              labelProps={{
+                className: "before:content-none after:content-none hidden",
+              }}
+              onChange={(e) => setData({ ...data, address: e.target.value })}
               required
             />
             <label

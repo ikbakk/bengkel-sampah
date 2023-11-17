@@ -9,9 +9,9 @@ import {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { name, phone, password } = body;
+    const { name, phoneNumber, password, address } = body;
 
-    if (!name || !phone || !password)
+    if (!name || !phoneNumber || !password)
       throw new BadRequestError("Missing field");
 
     const exist = await getUserByPhone(phone);
@@ -19,7 +19,12 @@ export async function POST(request) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await registerCustomer({ name, phone, hashedPassword });
+    const newUser = await registerCustomer({
+      name,
+      phone,
+      hashedPassword,
+      address,
+    });
 
     return NextResponse.json(
       {

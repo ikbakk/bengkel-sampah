@@ -34,11 +34,6 @@ export async function GET() {
 
 export async function POST(req) {
   try {
-    const jwt = await jwtVerify();
-
-    if (!jwt) {
-      return invalidJwtResponse;
-    }
     const { name, phoneNumber, address, password } = await req.json();
 
     if (!name || !phoneNumber || !password)

@@ -18,13 +18,19 @@ export const getUserByPhone = async (phone) => {
   return user;
 };
 
-export const registerCustomer = async ({ name, phone, hashedPassword }) => {
+export const registerCustomer = async ({
+  name,
+  phone,
+  hashedPassword,
+  address,
+}) => {
   const User = await prisma.$transaction(async () => {
     const newUser = await prisma.user.create({
       data: {
         name: name,
         phoneNumber: phone,
         passwordHash: hashedPassword,
+        address,
       },
       select: {
         userID: true,
