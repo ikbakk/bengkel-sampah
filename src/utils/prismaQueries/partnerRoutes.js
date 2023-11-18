@@ -101,3 +101,15 @@ export const deletePartner = async (partnerID) => {
 
   return true;
 };
+
+export const deleteAllPartner = async (partnersID) => {
+  await prisma.user.deleteMany({
+    where: {
+      userID: {
+        in: partnersID,
+      },
+    },
+  });
+
+  return true;
+};
