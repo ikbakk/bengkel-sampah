@@ -14,14 +14,14 @@ export async function POST(request) {
     if (!name || !phoneNumber || !password)
       throw new BadRequestError("Missing field");
 
-    const exist = await getUserByPhone(phone);
+    const exist = await getUserByPhone(phoneNumber);
     if (exist) throw new BadRequestError("Phone number already used");
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const newUser = await registerCustomer({
       name,
-      phone,
+      phone: phoneNumber,
       hashedPassword,
       address,
     });
