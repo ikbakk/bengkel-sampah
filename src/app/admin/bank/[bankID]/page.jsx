@@ -26,6 +26,8 @@ const BankDetailLayout = async ({ params }) => {
     return <NavTop label={"Loading..."} />;
   }
 
+  console.log(memberData, params.bankID, user?.accessToken);
+
   return (
     <>
       <MemberProvider
