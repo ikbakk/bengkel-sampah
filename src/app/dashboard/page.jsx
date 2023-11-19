@@ -9,9 +9,9 @@ import { redirect } from "next/navigation";
 
 const DashboardPage = async () => {
   const session = await getServerSession(authOptions);
-  const data = await fetchItems("/api/news", session.user.accessToken);
+  const { status, data } = await fetchItems("/api/news", session.accessToken);
 
-  if (data.status === 401) {
+  if (status === 401) {
     redirect("/unauthorized");
   }
 
