@@ -7,6 +7,7 @@ const nextConfig = {
   env: {
     BASEURL: process.env.BASEURL,
   },
+  output: "standalone",
 };
 
 module.exports = nextConfig;
