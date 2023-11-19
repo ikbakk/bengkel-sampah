@@ -16,8 +16,8 @@ const SellSelectDestination = ({ partners }) => {
         return (
           <Option
             className="capitalize"
-            value={partner.partnerID}
-            key={partner.partnerID}
+            value={partner.userID}
+            key={partner.userID}
           >
             {partner.name}
           </Option>
