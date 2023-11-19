@@ -19,7 +19,7 @@ const Sell = ({ cart, partners, userID }) => {
   });
 
   const partnerDetails = partners.find(
-    (partner) => partner.partnerID === transactionBody.partnerID,
+    (partner) => partner.userID === transactionBody.partnerID,
   );
 
   useEffect(() => {
