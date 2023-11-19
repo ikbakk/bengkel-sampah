@@ -2,26 +2,27 @@
 
 import ModalComponent from "@/components/molecules/Modal";
 import { NavTop } from "@/components/molecules/NavTop";
+import EditForm from "./EditForm";
 import {
   Button,
+  Input,
+  Option,
+  Select,
   Card,
   Dialog,
   DialogBody,
   DialogFooter,
   DialogHeader,
-  Input,
-  Textarea,
   Typography,
 } from "@material-tailwind/react";
 import axios from "axios";
 import { useFormik } from "formik";
 import { useSession } from "next-auth/react";
 import React, { useState } from "react";
-import EditForm from "./EditForm";
 
-const TABLE_HEAD = ["Name", "Role", "Phone Number", "Address", ""];
+const TABLE_HEAD = ["Name", "Price", "Waste Type", "Unit", ""];
 
-const CustomerTemplate = ({ data }) => {
+const DaftarSampahTemplate = ({ data }) => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(!open);
   const session = useSession();
@@ -34,14 +35,14 @@ const CustomerTemplate = ({ data }) => {
   const formik = useFormik({
     initialValues: {
       name: "",
-      phoneNumber: "",
-      password: "",
-      address: "",
+      price: parseFloat(0),
+      wasteType: "",
+      unit: "",
     },
     onSubmit: async (values, actions) => {
       actions.setSubmitting(true);
       try {
-        await axios.post("/api/auth/register", values).then(() => {
+        await axios.post("/api/waste", values).then(() => {
           window.location.reload();
         });
       } catch (error) {
@@ -56,7 +57,7 @@ const CustomerTemplate = ({ data }) => {
   const handleDelete = async (id) => {
     try {
       axios
-        .delete(`/api/customer/${id}`, {
+        .delete(`/api/waste/${id}`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${session.data.user.accessToken}`,
@@ -72,17 +73,17 @@ const CustomerTemplate = ({ data }) => {
 
   return (
     <div>
-      <NavTop label={"Kustomer"} />
+      <NavTop label={"Daftar Sampah"} />
       <div className="flex flex-col justify-between gap-2 md:flex-row lg:items-center">
         <h2 className="text-xl font-bold text-bs-font_primary">
-          Kustomer Bengkel Sampah
+          Daftar Sampah di Bengkel Sampah
         </h2>
         <Button
           onClick={handleOpen}
           className="max-w-max bg-bs-primary"
           size="sm"
         >
-          Tambahkan Kustomer
+          Tambahkan Daftar Sampah
         </Button>
       </div>
       <div className="mt-5 lg:w-64">
@@ -137,7 +138,7 @@ const CustomerTemplate = ({ data }) => {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {item.role}
+                        {item.price}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -146,7 +147,7 @@ const CustomerTemplate = ({ data }) => {
                         color="blue-gray"
                         className="font-normal"
                       >
-                        {item.phoneNumber}
+                        {item.wasteType}
                       </Typography>
                     </td>
                     <td className={classes}>
@@ -157,13 +158,13 @@ const CustomerTemplate = ({ data }) => {
                         color="blue-gray"
                         className="font-medium"
                       >
-                        {item.address == null ? "-" : item.address}
+                        {item.unit == null ? "-" : item.unit}
                       </Typography>
                     </td>
                     <td className={classes}>
                       <Button
                         variant="filled"
-                        onClick={() => handleOpenDelete(item.customerID)}
+                        onClick={() => handleOpenDelete(item.wasteID)}
                         color="red"
                       >
                         Delete
@@ -171,16 +172,14 @@ const CustomerTemplate = ({ data }) => {
                       <Button
                         variant="filled"
                         className="ms-3"
-                        onClick={() =>
-                          handleOpenDelete("edit_" + item.customerID)
-                        }
+                        onClick={() => handleOpenDelete("edit_" + item.wasteID)}
                         color="blue"
                       >
                         Edit
                       </Button>
                       <Dialog
-                        open={openDelete === item.customerID}
-                        handler={() => handleOpenDelete(item.customerID)}
+                        open={openDelete === item.wasteID}
+                        handler={() => handleOpenDelete(item.wasteID)}
                       >
                         <DialogHeader>
                           Yakin ingin menghapus {item.name}
@@ -201,7 +200,7 @@ const CustomerTemplate = ({ data }) => {
                           </Button>
                           <Button
                             variant="gradient"
-                            onClick={() => handleDelete(item.customerID)}
+                            onClick={() => handleDelete(item.wasteID)}
                             color="green"
                           >
                             <span>Confirm</span>
@@ -210,10 +209,8 @@ const CustomerTemplate = ({ data }) => {
                       </Dialog>
                       <Dialog
                         size="xl"
-                        open={openDelete === "edit_" + item.customerID}
-                        handler={() =>
-                          handleOpenDelete("edit_" + item.customerID)
-                        }
+                        open={openDelete === "edit_" + item.wasteID}
+                        handler={() => handleOpenDelete("edit_" + item.wasteID)}
                       >
                         <DialogHeader>
                           Yakin ingin menghapus {item.name}
@@ -247,43 +244,48 @@ const CustomerTemplate = ({ data }) => {
       {/* End of Table */}
 
       <ModalComponent handlerOpen={handleOpen} open={open}>
-        <div className="m-3 flex flex-col gap-3 text-black">
+        <div className="m-3 flex flex-col gap-3 p-8 text-black">
           <form
             onSubmit={formik.handleSubmit}
-            className="grid grid-cols-1 place-items-center gap-4 md:grid-cols-3"
+            className="grid grid-cols-1 place-items-center gap-8 md:grid-cols-2"
           >
             <Input
               type="text"
-              label="Nama Customer"
+              label="Nama Sampah"
               name="name"
               value={formik.values.name}
               onChange={formik.handleChange}
             />
             <Input
-              type="text"
-              label="Nomor Telepon"
-              name="phoneNumber"
-              value={formik.values.phoneNumber}
+              type="number"
+              label="Harga"
+              name="price"
+              value={formik.values.price}
               onChange={formik.handleChange}
             />
             <Input
-              type="password"
-              label="Password"
-              name="password"
-              value={formik.values.password}
+              type="text"
+              label="Jumlah Unit"
+              name="unit"
+              value={formik.values.unit}
               onChange={formik.handleChange}
             />
-            <div className="w-full md:col-span-3">
-              <Textarea
-                label="Alamat Customer"
-                name="address"
-                value={formik.values.address}
-                onChange={formik.handleChange}
-              />
-            </div>
-            <div className="w-full max-w-sm md:col-span-3">
+            {/* <Select
+              name="wasteType"
+              label="Tipe sampah"
+              value={formik.values.wasteType}
+              onChange={formik.handleChange}
+            >
+              <Option value="ORGANIC">ORGANIC</Option>
+              <Option value="INORGANIC">INORGANIC</Option>
+            </Select> */}
+            <select name="wasteType" onChange={formik.handleChange} id="select">
+              <option value="ORGANIC">ORGANIC</option>
+              <option value="INORGANIC">INORGANIC</option>
+            </select>
+            <div className="w-full max-w-sm md:col-span-2">
               <Button type="submit" color="green" fullWidth={true}>
-                {formik.isSubmitting ? "Loading..." : "Submit"}
+                Submit
               </Button>
             </div>
           </form>
@@ -293,4 +295,4 @@ const CustomerTemplate = ({ data }) => {
   );
 };
 
-export default CustomerTemplate;
+export default DaftarSampahTemplate;
