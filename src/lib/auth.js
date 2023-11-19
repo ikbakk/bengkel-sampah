@@ -18,9 +18,6 @@ async function refreshAccessToken(token) {
       throw accessToken;
     }
 
-    console.log("Refreshed access token");
-    console.log(accessToken);
-
     return {
       ...token,
       accessToken: accessToken.data.accessToken,
@@ -72,7 +69,7 @@ export const authOptions = {
   callbacks: {
     jwt: async (payload) => {
       const { token, user, account } = payload;
-      console.log(user, account);
+
       if (account && user) {
         return {
           ...token,
@@ -92,8 +89,6 @@ export const authOptions = {
       if (Date.now() < token.exp * 1000) {
         return token;
       }
-
-      console.log("Access token has expired, trying to refresh it");
 
       return refreshAccessToken(token);
     },
