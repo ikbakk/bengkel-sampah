@@ -1,7 +1,7 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import Partner from "@/components/templates/admin/partner";
+import Partner from "@/components/templates/partner";
 import { NavTop } from "@/components/molecules/NavTop";
 import { authOptions } from "@/lib/auth";
 import { fetchItems } from "@/utils/fetchItems";
