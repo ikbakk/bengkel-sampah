@@ -22,7 +22,7 @@ const DashboardPage = async () => {
       <section className="text-bs-font_primary">
         <h1 className="my-10 text-xl font-semibold">Baru di Bank Sampah</h1>
         <div className="grid grid-cols-1 gap-3">
-          {data.data.map((item) => (
+          {data?.map((item) => (
             <CardNews
               key={item.newsID}
               title={item.title}
