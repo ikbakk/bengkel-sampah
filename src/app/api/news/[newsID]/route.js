@@ -94,7 +94,7 @@ export async function DELETE(req, { params }) {
 
     if (!news) throw new NotFoundError("News not found!");
 
-    const deletedNews = await deleteNews(newsID);
+    await deleteNews(newsID);
 
     return NextResponse.json(
       {

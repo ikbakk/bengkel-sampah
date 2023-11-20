@@ -11,5 +11,5 @@ export function konversiTanggalIndonesia(tanggalISO) {
 }
 
 // Contoh penggunaan:
-const tanggalISO = "2023-11-13T08:21:15.793Z";
-const tanggalIndonesia = konversiTanggalIndonesia(tanggalISO);
+// const tanggalISO = "2023-11-13T08:21:15.793Z";
+// const tanggalIndonesia = konversiTanggalIndonesia(tanggalISO);

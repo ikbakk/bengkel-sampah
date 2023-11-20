@@ -1,9 +1,7 @@
 import SignUpMember from "@/components/molecules/RegisterFormMember";
-import { fetchItems } from "@/utils/fetchItems";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
-import axios from "axios";
 
 const PartnerRegisterPage = async () => {
   const session = await getServerSession(authOptions);

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import axios from "axios";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import {
   Card,
@@ -16,7 +15,6 @@ import logo from "public/logo-bengkel-sampah-warna.png";
 import Image from "next/image";
 
 export default function SignUp({ apiRoute }) {
-  const session = useSession();
   const router = useRouter();
 
   const [data, setData] = useState({

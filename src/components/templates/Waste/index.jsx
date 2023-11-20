@@ -1,12 +1,14 @@
 "use client";
 import Table from "@/components/atoms/Table";
-import { Button, Checkbox, Input, Spinner } from "@material-tailwind/react";
+import { Button, Input, Spinner } from "@material-tailwind/react";
 import React, { useState, useContext } from "react";
 import { WasteContext } from "@/context/WasteContext";
 import AddWasteModal from "@/components/organisms/AddWasteModal";
 
 const Waste = () => {
   const { isLoaded, wasteQuery } = useContext(WasteContext);
+  const [open, setOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   if (!wasteQuery.data)
     return (
@@ -14,9 +16,6 @@ const Waste = () => {
         <Spinner className="h-12 w-12" color={"amber"} />
       </div>
     );
-
-  const [open, setOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
 
   const handleOpen = () => {
     setOpen(!open);
