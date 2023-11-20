@@ -8,10 +8,9 @@ import {
   BsBagPlusFill,
   BsCartPlus,
   BsClockHistory,
-  BsFillCalendar2CheckFill,
   BsBarChart,
 } from "react-icons/bs";
-import { SiSimpleanalytics } from "react-icons/si";
+
 import { FiMapPin } from "react-icons/fi";
 import { PiCarDuotone } from "react-icons/pi";
 import { RiStore3Fill } from "react-icons/ri";

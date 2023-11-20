@@ -5,7 +5,6 @@ import {
   getPartner,
   deletePartner,
 } from "@/utils/prismaQueries/partnerRoutes";
-import { NotFoundError } from "@/utils/errors";
 import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET(req, { params }) {

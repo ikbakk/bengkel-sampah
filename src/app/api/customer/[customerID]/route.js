@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server";
-import prisma from "@/utils/prismaClient";
 import {
   getCustomer,
   updateCustomer,
   deleteCustomer,
 } from "@/utils/prismaQueries/customerRoutes";
 
-import { BadRequestError } from "@/utils/errors";
 import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET(req, { params }) {

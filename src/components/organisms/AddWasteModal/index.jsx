@@ -1,13 +1,11 @@
 "use client";
 import React from "react";
 import ModalComponent from "@/components/molecules/Modal";
-import { Button, Input, Select, Option, input } from "@material-tailwind/react";
+import { Button, Input, Select, Option } from "@material-tailwind/react";
 import { useContext, useState } from "react";
 import { WasteContext } from "@/context/WasteContext";
 
 const AddBankModal = ({ open = false, handleOpen }) => {
-  if (!open) return null;
-
   const { addWaste } = useContext(WasteContext);
 
   const [error, setError] = useState(null);
@@ -20,6 +18,8 @@ const AddBankModal = ({ open = false, handleOpen }) => {
       wasteType: "",
     },
   ]);
+
+  if (!open) return null;
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();

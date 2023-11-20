@@ -1,4 +1,4 @@
-import { Button, Input } from "@material-tailwind/react";
+import { Button } from "@material-tailwind/react";
 import React from "react";
 import InputLabel from "@/components/atoms/InputLabel";
 

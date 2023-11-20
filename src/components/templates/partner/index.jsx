@@ -18,6 +18,8 @@ const Partner = () => {
     deleteAllPartner,
   } = useContext(PartnerContext);
 
+  const [searchTerm, setSearchTerm] = useState("");
+
   const partnerData = partnerQuery?.data;
 
   if (!partnerData)
@@ -26,8 +28,6 @@ const Partner = () => {
         <h1 className="text-4xl font-bold text-bs-primary">Loading Data...</h1>
       </div>
     );
-
-  const [searchTerm, setSearchTerm] = useState("");
 
   const isSelected = (userID) => selectedPartnerItems.includes(userID);
 

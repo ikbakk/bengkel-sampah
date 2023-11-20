@@ -1,6 +1,5 @@
 "use client";
 
-import CardNews from "@/components/molecules/CardNews";
 import ModalComponent from "@/components/molecules/Modal";
 import { NavTop } from "@/components/molecules/NavTop";
 import { Button, Checkbox, Input, Textarea } from "@material-tailwind/react";
@@ -71,8 +70,6 @@ const DashboardProfile = () => {
     event.preventDefault();
 
     const newName = event.target.elements.name.value;
-    const newTel = event.target.elements.tel.value;
-    const newAddress = event.target.elements.address.value;
 
     const newDriver = {
       id: `Driver00${driverData.length + 1}`,

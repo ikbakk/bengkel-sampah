@@ -1,11 +1,9 @@
 "use client";
 import Table from "@/components/atoms/Table";
-import AddBankModal from "@/components/organisms/AddBankModal";
 import { Button, Checkbox, Input } from "@material-tailwind/react";
-import { FaSearch, FaExternalLinkAlt } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import { useContext, useState } from "react";
 import { MemberContext } from "@/context/MemberContext";
-import Link from "next/link";
 import Image from "next/image";
 
 const BankDetails = ({ data }) => {
@@ -19,13 +17,13 @@ const BankDetails = ({ data }) => {
     selectAllMemberItems,
   } = useContext(MemberContext);
 
+  const [searchTerm, setSearchTerm] = useState("");
+
   let members = memberQuery.data;
 
   if (!members) {
     return <p>Loading...</p>;
   }
-
-  const [searchTerm, setSearchTerm] = useState("");
 
   const isSelected = (bankID) => selectedMemberItems.includes(bankID);
 
