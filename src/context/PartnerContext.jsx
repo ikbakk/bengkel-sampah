@@ -31,7 +31,7 @@ export const PartnerProvider = ({ children, initialPartner, token }) => {
   });
 
   const deletePartner = useMutation({
-    mutationFn: (partnerID) => deletePartnerItem("/partner", partnerID, token),
+    mutationFn: (partnerID) => deletePartnerItem("partner", partnerID, token),
     onSuccess: () => {
       queryClient.setQueryData(["selectedPartnerItems"], []);
       queryClient.invalidateQueries(["partners"]);
@@ -40,7 +40,7 @@ export const PartnerProvider = ({ children, initialPartner, token }) => {
 
   const deleteAllPartner = useMutation({
     mutationFn: () =>
-      deleteAllPartnerItems("/partner", {
+      deleteAllPartnerItems("partner", {
         data: {
           partnersID: selectedPartnerItems,
         },
