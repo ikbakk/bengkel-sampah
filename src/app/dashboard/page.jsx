@@ -15,6 +15,10 @@ const DashboardPage = async () => {
     redirect("/unauthorized");
   }
 
+  if (session.user.role === "ADMIN") {
+    redirect("/admin");
+  }
+
   return (
     <>
       <NavTop label="Dashboard" />

@@ -1,15 +1,11 @@
-"use client";
 import { NavTop } from "@/components/molecules/NavTop";
-import { Button } from "@material-tailwind/react";
-import Image from "next/image";
 import React from "react";
-import CardBeritaDashboard from "@/components/organisms/CardBeritaDashboard";
-import { LiaShippingFastSolid } from "react-icons/lia";
 import CardNews from "@/components/molecules/CardNews";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { fetchItems } from "@/utils/fetchItems";
 import { redirect } from "next/navigation";
+import CardBeritaDashboard from "@/components/organisms/CardBeritaDashboard";
 
 const DashboardPage = async () => {
   const session = await getServerSession(authOptions);
@@ -19,9 +15,13 @@ const DashboardPage = async () => {
     redirect("/unauthorized");
   }
 
+  if (session.user.role === "USER") {
+    redirect("/dashboard");
+  }
+
   return (
     <>
-      <NavTop label="Admin Dashboard" />
+      <NavTop label="Dashboard" />
       <CardBeritaDashboard />
       <section className="text-bs-font_primary">
         <h1 className="my-10 text-xl font-semibold">Baru di Bank Sampah</h1>

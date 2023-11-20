@@ -19,11 +19,6 @@ export default function SignUp({ apiRoute }) {
   const session = useSession();
   const router = useRouter();
 
-  // push to dashboard view after authehticated
-  if (session.status === "authenticated") {
-    router.push("/dashboard");
-  }
-
   const [data, setData] = useState({
     name: "",
     phoneNumber: "",
@@ -195,6 +190,17 @@ export default function SignUp({ apiRoute }) {
             </Link>
           </Typography>
         </form>
+        <Typography
+          color="gray"
+          className="mt-4 text-center text-xs font-normal"
+        >
+          <Link
+            href="/register/member"
+            className="font-medium text-gray-900 hover:underline"
+          >
+            Register sebagai member bank sampah
+          </Link>
+        </Typography>
       </Card>
     </section>
   );

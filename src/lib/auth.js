@@ -69,7 +69,6 @@ export const authOptions = {
   callbacks: {
     jwt: async (payload) => {
       const { token, user, account } = payload;
-
       if (account && user) {
         return {
           ...token,
@@ -95,7 +94,7 @@ export const authOptions = {
     session: async (payload) => {
       let { session, token } = payload;
 
-      session = { ...token };
+      session = { ...session, ...token };
 
       return session;
     },
