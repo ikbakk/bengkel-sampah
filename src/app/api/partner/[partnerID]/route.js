@@ -76,6 +76,7 @@ export async function PUT(req, { params }) {
 
 export async function DELETE(req, { params }) {
   try {
+    console.log("DELETE");
     const jwt = await jwtVerify();
 
     if (!jwt) {

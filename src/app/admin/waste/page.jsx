@@ -7,13 +7,13 @@ import Waste from "@/components/templates/Waste";
 import { WasteProvider } from "@/context/WasteContext";
 
 const AdminWaste = async () => {
-  const { user } = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-  const waste = await fetchItems("/api/waste", user.accessToken);
+  const waste = await fetchItems("/api/waste", session?.accessToken);
 
   return (
     <>
-      <WasteProvider initialWaste={waste?.data} token={user?.accessToken}>
+      <WasteProvider initialWaste={waste?.data} token={session?.accessToken}>
         <NavTop label={"Waste"} />
         {waste && <Waste />}
       </WasteProvider>

@@ -7,12 +7,15 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 const BankDetailLayout = async ({ params }) => {
-  const { user } = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-  const bank = await fetchItems(`/api/bank/${params.bankID}`, user.accessToken);
+  const bank = await fetchItems(
+    `/api/bank/${params.bankID}`,
+    session?.accessToken,
+  );
   const members = await fetchItems(
     `/api/bank/${params.bankID}/members`,
-    user.accessToken,
+    session?.accessToken,
   );
 
   if (bank.status === 401 || members.status === 401) {
@@ -26,14 +29,12 @@ const BankDetailLayout = async ({ params }) => {
     return <NavTop label={"Loading..."} />;
   }
 
-  console.log(memberData, params.bankID, user?.accessToken);
-
   return (
     <>
       <MemberProvider
         initialMember={memberData}
         bankID={params.bankID}
-        token={user?.accessToken}
+        token={session?.accessToken}
       >
         <NavTop label={`Detail Bank`} />
         <BankDetails data={bankData} />

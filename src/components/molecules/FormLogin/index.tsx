@@ -23,10 +23,10 @@ const FormLogin = () => {
   });
 
   useEffect(() => {
-    if (session?.status === "authenticated") {
+    if (session.status === "authenticated") {
       router.push("/dashboard");
     }
-  });
+  }, []);
 
   const loginUser = async (e) => {
     e.preventDefault();
@@ -149,6 +149,7 @@ const FormLogin = () => {
 };
 
 export default FormLogin;
+
 const RevealIcon = ({ onClick }) => {
   return (
     <button role="show-password" onClick={onClick}>

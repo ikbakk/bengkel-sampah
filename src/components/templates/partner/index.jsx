@@ -79,8 +79,8 @@ const Partner = () => {
           </div>
         </Table.Head>
         <Table.Head>Nama Mitra</Table.Head>
-        <Table.Head>Total Terima</Table.Head>
-        <Table.Head>Status</Table.Head>
+        <Table.Head>Nomor HP</Table.Head>
+        <Table.Head>Alamat</Table.Head>
         {filteredPartnerData &&
           filteredPartnerData.map((data, index) => (
             <Table.Body key={index}>
@@ -104,21 +104,9 @@ const Partner = () => {
                     )}
                 </div>
               </Table.Data>
-              <Table.Data>
-                <p>{data.name}</p>
-              </Table.Data>
-              <Table.Data>{data.totalReceived}</Table.Data>
-              <Table.Data>
-                <span
-                  className={`rounded-lg border px-4 py-1 text-xs font-semibold leading-tight ${
-                    data.status === "Online"
-                      ? "border-green-500 text-green-500"
-                      : "border-red-500 text-red-500"
-                  }`}
-                >
-                  {data.status}
-                </span>
-              </Table.Data>
+              <Table.Data>{data.name}</Table.Data>
+              <Table.Data>{data.phoneNumber}</Table.Data>
+              <Table.Data>{data.address}</Table.Data>
             </Table.Body>
           ))}
       </Table>
