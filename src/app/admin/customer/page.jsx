@@ -6,7 +6,8 @@ import { fetchItems } from "@/utils/fetchItems";
 
 const Customer = async () => {
   const session = await getServerSession(authOptions);
-  const data = await fetchItems("/api/customer", session.user?.accessToken);
+  const data = await fetchItems("/api/customer", session?.accessToken);
+
   return <CustomerTemplate data={data.data} />;
 };
 

@@ -71,6 +71,16 @@ const CustomerTemplate = ({ data }) => {
     }
   };
 
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
+  };
+
+  const filteredData = data.filter((item) => {
+    return item.name.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+
   return (
     <div>
       <NavTop label={"Kustomer"} />
@@ -87,7 +97,7 @@ const CustomerTemplate = ({ data }) => {
         </Button>
       </div>
       <div className="mt-5 lg:w-64">
-        <Input label="Search ..." icon={".."} />
+        <Input label="Search User ..." icon={".."} onChange={handleSearch} />
       </div>
 
       {/* Table */}
@@ -112,11 +122,11 @@ const CustomerTemplate = ({ data }) => {
             </tr>
           </thead>
           <tbody>
-            {data
+            {filteredData
               .slice(0)
               .reverse()
               .map((item, index) => {
-                const isLast = index === data.length - 1;
+                const isLast = index === filteredData.length - 1;
                 const classes = isLast
                   ? "p-4"
                   : "p-4 border-b border-blue-gray-50";
@@ -220,10 +230,7 @@ const CustomerTemplate = ({ data }) => {
                           Yakin ingin menghapus {item.name}
                         </DialogHeader>
                         <DialogBody>
-                          <EditForm
-                            token={session.data?.user?.accessToken}
-                            data={item}
-                          />
+                          <EditForm token={session?.accessToken} data={item} />
                         </DialogBody>
                         <DialogFooter>
                           <Button

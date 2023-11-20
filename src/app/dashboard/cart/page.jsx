@@ -10,17 +10,17 @@ import { redirect } from "next/navigation";
 export const dynamic = "force-dynamic";
 
 export default async function CartPage() {
-  const { user } = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
   const fetchOpts = {
     params: {
-      userID: user.id,
+      userID: session.user.userID,
     },
     headers: {
-      Authorization: user.accessToken,
+      Authorization: session.accessToken,
     },
   };
 
-  const wastes = await fetchItems("/api/waste", user.accessToken);
+  const wastes = await fetchItems("/api/waste", session.accessToken);
   const cart = await fetchItemsWithOptions("/api/cart", fetchOpts);
 
   if (wastes.status === 401 || cart.status === 401) {
@@ -29,13 +29,13 @@ export default async function CartPage() {
 
   return (
     <CartProvider
-      token={user.accessToken}
-      userID={user.id}
+      token={session.accessToken}
+      userID={session.user.userID}
       initialCart={cart.data}
     >
       <NavTop label="Keranjang Sampah" />
       <Cart
-        userID={user.id}
+        userID={session.user.userID}
         initialData={cart?.data}
         wastes={wastes?.data}
         // cartID={cart.data.cartID}

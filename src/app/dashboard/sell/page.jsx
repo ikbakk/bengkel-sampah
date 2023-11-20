@@ -7,22 +7,26 @@ import { getServerSession } from "next-auth";
 import { fetchItemsWithOptions, fetchItems } from "@/utils/fetchItems";
 
 export default async function SellPage() {
-  const { user } = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
   const fetchOpts = {
     params: {
-      userID: user.id,
+      userID: session.user.userID,
     },
     headers: {
-      Authorization: user.accessToken,
+      Authorization: session.accessToken,
     },
   };
   const cart = await fetchItemsWithOptions("/api/cart", fetchOpts);
-  const partners = await fetchItems("/api/partner", user.accessToken);
+  const partners = await fetchItems("/api/partner", session.accessToken);
 
   return (
     <SellProvider>
       <NavTop label="Jual Sampah" />
-      <Sell cart={cart.data} userID={user.id} partners={partners.data} />
+      <Sell
+        cart={cart.data}
+        userID={session.user.userID}
+        partners={partners.data}
+      />
     </SellProvider>
   );
 }
