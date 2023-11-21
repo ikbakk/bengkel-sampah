@@ -14,7 +14,9 @@ const useSellConfirm = () => {
     useContext(SellContext);
   const [loading, setLoading] = useState(false);
 
-  const deleteCartBody = transactionBody.wastes.map((waste) => waste.wasteID);
+  const deleteCartBody =
+    transactionBody.wastes &&
+    transactionBody.wastes.map((waste) => waste.wasteID);
 
   const handleDestinationChange = (e) => {
     setTransactionBody({

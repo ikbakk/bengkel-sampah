@@ -8,15 +8,17 @@ import { SellContext } from "@/context/SellContext";
 
 const Sell = ({ cart, partners, userID }) => {
   const [loading, setLoading] = useState(true);
-  const { totalPrice, totalWeight, cartID } = cart;
+  const { totalPrice, totalWeight, cartID } = cart || {};
   const { transactionBody, setTransactionBody, setCartID } =
     useContext(SellContext);
-  const cartItems = cart.cartItems.map((item) => {
-    return {
-      wasteID: item.waste.wasteID,
-      totalWeight: item.weight,
-    };
-  });
+  const cartItems =
+    cart &&
+    cart.cartItems.map((item) => {
+      return {
+        wasteID: item.waste.wasteID,
+        totalWeight: item.weight,
+      };
+    });
 
   const partnerDetails = partners.find(
     (partner) => partner.userID === transactionBody.partnerID,
@@ -50,7 +52,7 @@ const Sell = ({ cart, partners, userID }) => {
         phoneNumber={partnerDetails?.phoneNumber ?? ""}
         bgImage="/assets/images/dummy.png"
       />
-      <div className="mt-4 flex flex-col justify-between gap-2 lg:mt-20 lg:flex-row-reverse lg:gap-4">
+      <div className="flex flex-col justify-between gap-2 mt-4 lg:mt-20 lg:flex-row-reverse lg:gap-4">
         <SellConfirm totalPrice={totalPrice} totalWeight={totalWeight} />
         <SellForm partners={partners} />
       </div>
