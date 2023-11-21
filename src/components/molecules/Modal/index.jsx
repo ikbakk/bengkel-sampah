@@ -3,7 +3,7 @@ import React from "react";
 
 const ModalComponent = ({ open, handlerOpen, children }) => {
   return (
-    <Dialog open={open} onScroll size="lg" handler={handlerOpen}>
+    <Dialog open={open} size="lg" handler={handlerOpen}>
       <DialogBody className="max-h-[80vh] overflow-y-scroll">
         {children}
       </DialogBody>

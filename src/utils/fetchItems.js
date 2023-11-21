@@ -7,12 +7,12 @@ export const revalidate = 0;
 
 export const fetchItems = cache(async (route, token) => {
   try {
-    const { data } = await axios.get(`${baseURL}${route}`, {
+    const { status, data } = await axios.get(`${baseURL}${route}`, {
       headers: {
         Authorization: token,
       },
     });
-    return data;
+    return { status, data: data.data };
   } catch (error) {
     return error.response;
   }

@@ -1,7 +1,5 @@
 import { NextResponse } from "next/server";
-import prisma from "@/utils/prismaClient";
 import { getCustomers } from "@/utils/prismaQueries/customerRoutes";
-import { BadRequestError } from "@/utils/errors";
 import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET() {

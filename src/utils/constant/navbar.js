@@ -1,6 +1,6 @@
 // const { MdSpaceDashboard } = require("react-icons/md");
 import { MdSpaceDashboard } from "react-icons/md";
-import { FaUser } from "react-icons/fa";
+import { FaUser, FaRecycle } from "react-icons/fa";
 import { BiNews, BiSolidGroup, BiWalletAlt } from "react-icons/bi";
 import { CiBank } from "react-icons/ci";
 import { IoNotifications } from "react-icons/io5";
@@ -8,10 +8,9 @@ import {
   BsBagPlusFill,
   BsCartPlus,
   BsClockHistory,
-  BsFillCalendar2CheckFill,
   BsBarChart,
 } from "react-icons/bs";
-import { SiSimpleanalytics } from "react-icons/si";
+
 import { FiMapPin } from "react-icons/fi";
 import { PiCarDuotone } from "react-icons/pi";
 import { RiStore3Fill } from "react-icons/ri";
@@ -93,5 +92,10 @@ export const ADMIN_NAVBAR_ITEM = [
     icon: <BsBarChart size={20} />,
     label: "Analisis",
     href: "/admin/analysis",
+  },
+  {
+    icon: <FaRecycle size={20} />,
+    label: "Waste",
+    href: "/admin/waste",
   },
 ];

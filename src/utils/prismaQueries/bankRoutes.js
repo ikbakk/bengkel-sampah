@@ -1,7 +1,7 @@
 import prisma from "../prismaClient";
 import { BadRequestError, NotFoundError } from "@/utils/errors";
 
-export const getBankList = async (bankID) => {
+export const getBankList = async () => {
   const banks = await prisma.waste_Bank.findMany({
     include: {
       _count: {

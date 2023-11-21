@@ -8,13 +8,16 @@ import { fetchItems } from "@/utils/fetchItems";
 import { PartnerProvider } from "@/context/PartnerContext";
 
 const PartnerLayout = async () => {
-  const { user } = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-  const partner = await fetchItems("/api/partner", user.accessToken);
+  const partner = await fetchItems("/api/partner", session.accessToken);
 
   if (partner.status === 401) redirect("/login");
   return (
-    <PartnerProvider initialPartner={partner?.data} token={user?.accessToken}>
+    <PartnerProvider
+      initialPartner={partner?.data}
+      token={session?.accessToken}
+    >
       <NavTop label={"Mitra"} />
       {partner && <Partner />}
     </PartnerProvider>

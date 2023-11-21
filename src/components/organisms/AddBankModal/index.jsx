@@ -6,8 +6,6 @@ import { useContext, useState } from "react";
 import { BankContext } from "@/context/BankContext";
 
 const AddBankModal = ({ open = false, handleOpen }) => {
-  if (!open) return null;
-
   const { addBank } = useContext(BankContext);
 
   const [error, setError] = useState(null);
@@ -18,6 +16,8 @@ const AddBankModal = ({ open = false, handleOpen }) => {
       address: "",
     },
   ]);
+
+  if (!open) return null;
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
