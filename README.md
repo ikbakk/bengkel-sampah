@@ -99,3 +99,12 @@ docker build -t bengkel-sampah-app .
 ```bash
 docker run -p 3000:3000 bengkel-sampah-app
 ```
+
+## Authors
+
+-   Timothy Aurelio Cannavaro [@varomnrg](https://www.github.com/varomnrg)
+-   Muhammad Iqbal Firdaus [@ikbakk](https://github.com/ikbakk)
+-   Farrely Firenza [@Farrely-F](https://github.com/Farrely-F)
+-   Agus Dwi Milniadi [@agusdwimilniadi](https://github.com/agusdwimilniadi)
+-   Samuel Kurniago [@samuelkurniargo](https://github.com/samuelkurniargo)
+-   Muhammad Samy Syafta [@Argonaut-ss](https://github.com/Argonaut-ss)
