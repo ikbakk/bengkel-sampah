@@ -6,7 +6,7 @@ import { fetchItems } from "@/utils/fetchItems";
 
 const Driver = async () => {
   const session = await getServerSession(authOptions);
-  const token = session.user.accessToken;
+  const token = session.accessToken;
   // console.log(session);
 
   const { data } = await fetchItems("/api/driver", token);

@@ -34,11 +34,11 @@ export async function GET() {
 
 export async function POST(req) {
   try {
-    // const jwt = await jwtVerify();
+    const jwt = await jwtVerify();
 
-    // if (!jwt) {
-    //   return invalidJwtResponse;
-    // }
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
     const { name, price, wasteType, unit = "kg" } = await req.json();
 
     if (!name || !price || !wasteType)
