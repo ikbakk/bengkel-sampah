@@ -19,6 +19,9 @@ const Bank = () => {
     selectAllBankItems,
   } = useContext(BankContext);
 
+  const [open, setOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
   const bankData = bankQuery.data;
 
   if (!bankData)
@@ -27,9 +30,6 @@ const Bank = () => {
         <h1 className="text-4xl font-bold text-bs-primary">Loading...</h1>
       </div>
     );
-
-  const [open, setOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
 
   const handleOpen = () => {
     setOpen(!open);

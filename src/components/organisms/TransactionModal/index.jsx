@@ -27,8 +27,8 @@ const TransactionModal = ({
         </div>
         <p className="text-xl font-bold">Jenis Sampah :</p>
         <div className="ml-20 mr-10">
-          {transaction?.wastes?.map((waste) => (
-            <WasteItem waste={waste} />
+          {transaction?.wastes?.map((index, waste) => (
+            <WasteItem key={index} waste={waste} />
           ))}
           <hr className="my-5 " />
           <div className="flex justify-end text-lg font-bold">

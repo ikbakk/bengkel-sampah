@@ -8,16 +8,16 @@ import { redirect } from "next/navigation";
 import Bank from "@/components/templates/Bank";
 
 const BankLayout = async () => {
-  const { user } = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-  const bank = await fetchItems("/api/bank", user.accessToken);
+  const bank = await fetchItems("/api/bank", session?.accessToken);
 
   if (bank.status === 401) {
     redirect("/login");
   }
 
   return (
-    <BankProvider initialBank={bank?.data} token={user?.accessToken}>
+    <BankProvider initialBank={bank?.data} token={session?.accessToken}>
       <NavTop label={"Bank"} />
       {bank && <Bank />}
     </BankProvider>

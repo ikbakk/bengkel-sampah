@@ -5,7 +5,6 @@ import {
   getPartner,
   deletePartner,
 } from "@/utils/prismaQueries/partnerRoutes";
-import { NotFoundError } from "@/utils/errors";
 import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET(req, { params }) {
@@ -76,6 +75,7 @@ export async function PUT(req, { params }) {
 
 export async function DELETE(req, { params }) {
   try {
+    console.log("DELETE");
     const jwt = await jwtVerify();
 
     if (!jwt) {

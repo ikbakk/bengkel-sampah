@@ -3,6 +3,35 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "@/utils/prismaClient";
 import axios from "axios";
 
+async function refreshAccessToken(token) {
+  console.log("Refreshing access token", token);
+  try {
+    const url = `${process.env.AUTH_HOST}/auth/refreshtoken`;
+
+    const response = await axios.post(url, {
+      refreshToken: token.refreshToken,
+    });
+
+    const accessToken = await response.data;
+
+    if (!response.ok) {
+      throw accessToken;
+    }
+
+    return {
+      ...token,
+      accessToken: accessToken.data.accessToken,
+    };
+  } catch (error) {
+    console.log(error);
+
+    return {
+      ...token,
+      error: "RefreshAccessTokenError",
+    };
+  }
+}
+
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -27,6 +56,8 @@ export const authOptions = {
 
         const user = res.data;
 
+        delete user.message;
+
         return user;
       },
     }),
@@ -37,23 +68,34 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     jwt: async (payload) => {
-      const { token, user } = payload;
-      if (user) {
-        token.user = {
-          id: user.data.userID,
-          name: user.data.name,
-          address: user.data.address,
-          phoneNumber: user.data.phoneNumber,
-          role: user.data.role,
+      const { token, user, account } = payload;
+      if (account && user) {
+        return {
+          ...token,
           accessToken: user.accessToken,
           refreshToken: user.refreshToken,
+          user: {
+            userID: user.data.userID,
+            phoneNumber: user.data.phoneNumber,
+            name: user.data.name,
+            address: user.data.address,
+            role: user.data.role,
+            email: user.data.email,
+          },
         };
       }
-      return token;
+
+      if (Date.now() < token.exp * 1000) {
+        return token;
+      }
+
+      return refreshAccessToken(token);
     },
     session: async (payload) => {
-      const { session, token } = payload;
-      session.user = token.user;
+      let { session, token } = payload;
+
+      session = { ...session, ...token };
+
       return session;
     },
   },

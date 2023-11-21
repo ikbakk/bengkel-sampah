@@ -9,12 +9,6 @@ import { jwtVerify, invalidJwtResponse } from "@/utils/jwtVerify";
 
 export async function GET() {
   try {
-    const jwt = await jwtVerify();
-
-    if (!jwt) {
-      return invalidJwtResponse;
-    }
-
     const banks = await getBankList();
     return NextResponse.json({
       message: "Waste banks found",

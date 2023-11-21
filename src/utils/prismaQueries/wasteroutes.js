@@ -52,3 +52,13 @@ export const deleteWaste = async (wasteID) => {
     },
   });
 };
+
+export const deleteWastes = async (wasteIDs) => {
+  await prisma.waste.deleteMany({
+    where: {
+      wasteID: {
+        in: wasteIDs,
+      },
+    },
+  });
+};

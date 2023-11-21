@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import {
   createPartner,
   getPartners,
+  deleteAllPartner,
 } from "@/utils/prismaQueries/partnerRoutes";
 import { getUserByPhone } from "@/utils/prismaQueries/registerRoutes";
 import { BadRequestError } from "@/utils/errors";
@@ -65,6 +66,31 @@ export async function POST(req) {
     return NextResponse.json(
       {
         message: error.message,
+      },
+      {
+        status: error.code || 500,
+      },
+    );
+  }
+}
+
+export async function DELETE(req) {
+  try {
+    const jwt = await jwtVerify();
+    if (!jwt) {
+      return invalidJwtResponse;
+    }
+    const { partnersID } = await req.json();
+    if (!partnersID) throw new BadRequestError(`Missing field "partnersID"`);
+
+    await deleteAllPartner(partnersID);
+    return NextResponse.json({
+      message: "Partner successfuly deleted",
+    });
+  } catch (error) {
+    return NextResponse.json(
+      {
+        message: error.message || "Partner not deleted",
       },
       {
         status: error.code || 500,

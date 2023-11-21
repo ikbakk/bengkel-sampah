@@ -2,10 +2,13 @@ import axios from "axios";
 import { useContext, useState } from "react";
 import { SellContext } from "@/context/SellContext";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 const baseURL = process.env.NEXT_PUBLIC_BASEURL;
 
 const useSellConfirm = () => {
+  const session = useSession();
+
   const router = useRouter();
   const { cartID, transactionBody, setTransactionBody } =
     useContext(SellContext);
@@ -34,11 +37,19 @@ const useSellConfirm = () => {
     const res = await axios.post(
       `${baseURL}/api/transactions`,
       transactionBody,
+      {
+        headers: {
+          Authorization: session.data?.accessToken,
+        },
+      },
     );
 
     if (res.status === 201) {
       await axios
         .delete(`${baseURL}/api/cart/${cartID}/items`, {
+          headers: {
+            Authorization: session.data?.accessToken,
+          },
           data: {
             wasteIDs: deleteCartBody,
           },
@@ -52,7 +63,6 @@ const useSellConfirm = () => {
           alert("Pengajuan penjemputan gagal");
         });
     }
-    // console.log({ wasteIDs: deleteCartBody });
   };
 
   return {

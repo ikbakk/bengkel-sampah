@@ -4,11 +4,21 @@ import CardNews from "@/components/molecules/CardNews";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { fetchItems } from "@/utils/fetchItems";
-import CardBeritaDashboard from "@/components/organisms/CardBeritaDashboard/index.jsx";
+import { redirect } from "next/navigation";
+import CardBeritaDashboard from "@/components/organisms/CardBeritaDashboard";
 
 const DashboardPage = async () => {
   const session = await getServerSession(authOptions);
-  const { data } = await fetchItems("/api/news", session.user.accessToken);
+  const { status, data } = await fetchItems("/api/news", session.accessToken);
+
+  if (status === 401) {
+    redirect("/unauthorized");
+  }
+
+  if (session.user.role === "ADMIN") {
+    redirect("/admin");
+  }
+
   return (
     <>
       <NavTop label="Dashboard" />

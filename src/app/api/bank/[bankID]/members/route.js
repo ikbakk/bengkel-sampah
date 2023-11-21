@@ -36,11 +36,6 @@ export async function GET(req, { params }) {
 
 export async function POST(req, { params }) {
   try {
-    const jwt = await jwtVerify();
-
-    if (!jwt) {
-      return invalidJwtResponse;
-    }
     const { name, address, email, phoneNumber, password } = await req.json();
     const { bankID } = params;
 
@@ -107,5 +102,3 @@ export async function DELETE(req, { params }) {
     );
   }
 }
-
-
