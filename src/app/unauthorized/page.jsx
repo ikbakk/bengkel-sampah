@@ -10,7 +10,7 @@ const UnauthorizedPage = () => {
       <h3>You are unauthorized</h3>
       <Button
         onClick={signOut({
-          callbackUrl: "/login",
+          callbackUrl: "/",
         })}
       >
         Go Back

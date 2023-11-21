@@ -7,15 +7,15 @@ const EditForm = ({ data, token }) => {
   const formik = useFormik({
     initialValues: {
       name: data.name,
-      phoneNumber: data.phoneNumber,
-      password: "",
-      address: data.address,
+      price: data.price,
+      wasteType: data.wasteType,
+      unit: data.unit,
     },
     onSubmit: async (values, actions) => {
       actions.setSubmitting(true);
       try {
         await axios
-          .put(`/api/customer/${data.customerID}`, values, {
+          .put(`/api/customer/${data.wasteID}`, values, {
             "Content Type": "application/json",
             headers: {
               Authorization: `${token}`,

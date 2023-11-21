@@ -82,7 +82,7 @@ model Waste {
 
 model Waste_Submission {
   wasteSubmissionID String      @id @default(uuid())
-  transactionID     String      
+  transactionID     String
   transaction       Transaction @relation(fields: [transactionID], references: [transactionID], onDelete: Cascade)
   wasteID           String
   waste             Waste       @relation(fields: [wasteID], references: [wasteID])
@@ -124,7 +124,7 @@ model Cart_Item {
   weight     Float
   createdAt  DateTime @default(now())
 
-  wasteID String 
+  wasteID String
   waste   Waste @relation(fields: [wasteID], references: [wasteID])
 
   @@unique([cartID, wasteID])
@@ -132,7 +132,7 @@ model Cart_Item {
 
 model Token {
   token   String @id
-  userID  String 
+  userID  String
   expDate DateTime
 }
 
