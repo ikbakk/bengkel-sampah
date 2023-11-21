@@ -45,6 +45,9 @@ const useSellConfirm = () => {
     if (res.status === 201) {
       await axios
         .delete(`${baseURL}/api/cart/${cartID}/items`, {
+          headers: {
+            Authorization: session.data?.accessToken,
+          },
           data: {
             wasteIDs: deleteCartBody,
           },
@@ -58,7 +61,6 @@ const useSellConfirm = () => {
           alert("Pengajuan penjemputan gagal");
         });
     }
-    // console.log({ wasteIDs: deleteCartBody });
   };
 
   return {

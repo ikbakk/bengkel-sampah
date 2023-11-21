@@ -6,7 +6,6 @@ export const SellContext = createContext(null);
 
 export const SellProvider = ({ children }) => {
   const [cartID, setCartID] = useState("");
-  const [address, setAddress] = useState("");
   const [method, setMethod] = useState("cash");
 
   const dateIso = new Date().toISOString();
@@ -17,13 +16,12 @@ export const SellProvider = ({ children }) => {
     partnerID: "",
     wastes: [],
     transactionDate: dateIso,
+    address: "",
   });
 
   const value = {
     cartID,
     setCartID,
-    address,
-    setAddress,
     method,
     setMethod,
     transactionBody,
