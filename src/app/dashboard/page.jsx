@@ -16,15 +16,21 @@ const DashboardPage = async () => {
       <section className="text-bs-font_primary">
         <h1 className="my-10 text-xl font-semibold">Baru di Bank Sampah</h1>
         <div className="grid grid-cols-1 gap-3">
-          {data.map((item) => (
-            <CardNews
-              key={item.newsID}
-              title={item.title}
-              image={item.imageUrl}
-              content={item.content}
-              date={item.createdAt}
-            />
-          ))}
+          {data &&
+            data.map((item) => (
+              <CardNews
+                key={item.newsID}
+                title={item.title}
+                image={item.imageUrl}
+                content={item.content}
+                date={item.createdAt}
+              />
+            ))}
+          {data == null || data.length < 1 ? (
+            <p>Belum ada berita terbaru</p>
+          ) : (
+            ""
+          )}
         </div>
       </section>
     </>

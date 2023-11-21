@@ -1,7 +1,6 @@
 "use client";
 
 import Table from "@/components/atoms/Table";
-import CardNews from "@/components/molecules/CardNews";
 import ModalComponent from "@/components/molecules/Modal";
 import { NavTop } from "@/components/molecules/NavTop";
 import { Button, Checkbox, Input, Textarea } from "@material-tailwind/react";

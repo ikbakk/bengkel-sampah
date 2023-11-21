@@ -195,9 +195,9 @@ const DashboardProfile = () => {
       {/* End of Table */}
 
       <ModalComponent handlerOpen={handleOpen} open={open}>
-        <div className="m-3 flex flex-col gap-3 p-8 text-black">
+        <div className="flex flex-col gap-3 p-8 m-3 text-black">
           <form
-            className="grid grid-cols-1 place-items-center gap-8 md:grid-cols-2"
+            className="grid grid-cols-1 gap-8 place-items-center md:grid-cols-2"
             onSubmit={handleFormSubmit}
           >
             <Input
