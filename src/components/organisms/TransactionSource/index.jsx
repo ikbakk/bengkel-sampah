@@ -27,7 +27,7 @@ const TransactionSource = ({ source, id }) => {
     <p className="capitalize">
       {isLoading
         ? "Loading..."
-        : `${data.data.name} (${data.data.phoneNumber})`}
+        : `${data.data.data.name} (${data.data.data.phoneNumber})`}
     </p>
   );
 };
