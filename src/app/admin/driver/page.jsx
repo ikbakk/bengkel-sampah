@@ -6,12 +6,10 @@ import { fetchItems } from "@/utils/fetchItems";
 
 const Driver = async () => {
   const session = await getServerSession(authOptions);
-  const token = session.user.accessToken;
-  // console.log(session);
+  const token = session.accessToken;
 
   const { data } = await fetchItems("/api/driver", token);
-  // console.log(data);
-  // console.log(session);
+
   return (
     <>
       <DashboardDriver token={token} data={data} />
