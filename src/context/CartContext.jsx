@@ -20,7 +20,7 @@ export const CartProvider = ({ children, initialCart, token, userID }) => {
 
   const cartQuery = useQuery({
     queryKey: ["cart"],
-    queryFn: async () => await getItemsWithOptions("cart", fetchOptions),
+    queryFn: async () => await getItemsWithOptions("/api/cart", fetchOptions),
     staleTime: 0,
     initialData: initialCart,
   });
@@ -33,7 +33,7 @@ export const CartProvider = ({ children, initialCart, token, userID }) => {
   const addCartItem = useMutation({
     mutationFn: ({ wasteID, weight }) =>
       addItem(
-        `cart/${cartQuery.data.cartID}/items`,
+        `/api/cart/${cartQuery.data.cartID}/items`,
         {
           wasteID,
           weight,
@@ -47,7 +47,7 @@ export const CartProvider = ({ children, initialCart, token, userID }) => {
 
   const deleteCartItems = useMutation({
     mutationFn: () =>
-      deleteItems(`cart/${cartQuery.data.cartID}/items`, {
+      deleteItems(`/api/cart/${cartQuery.data.cartID}/items`, {
         data: {
           wasteIDs: selectedCartItems,
         },
@@ -64,7 +64,7 @@ export const CartProvider = ({ children, initialCart, token, userID }) => {
   const updateCartItemWeight = useMutation({
     mutationFn: ({ cartItemID, newWeight }) =>
       updateItem(
-        `cart/${cartQuery.data.cartID}/items/${cartItemID}`,
+        `/api/cart/${cartQuery.data.cartID}/items/${cartItemID}`,
         { newWeight },
         token,
       ),
