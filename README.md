@@ -2,11 +2,12 @@
 
 ## Description
 
-The purpose of making this project is, to make it easier for Bengkel Sampah to manage waste banks in every village and school, with an integrated system between waste reports, financial reports, customer reel reports and the number of customers. as well as making the Bengkel Sampah service booking system digital either through an application or web that is easy to use. 
+The purpose of making this project is, to make it easier for Bengkel Sampah to manage waste banks in every village and school, with an integrated system between waste reports, financial reports, customer reel reports and the number of customers. as well as making the Bengkel Sampah service booking system digital either through an application or web that is easy to use.
 
 ## Features
 
 1. Admin
+
    - Dashboard Admin
    - Add waste
    - Add bank sampah
@@ -20,24 +21,43 @@ The purpose of making this project is, to make it easier for Bengkel Sampah to m
    - Register Admin
 
 2. User
+
    - Dashboard User
    - Sell Waste
    - Add waste to cart
    - Login customer
    - Register Customer
 
+## Technology
+
+- Next.js
+- Express
+- Prisma
+- PostgreSQL
+
+## API Routes
+
+[Postman API Collection](https://drive.google.com/file/d/1MVuvsmGEdctQhzwGNuBI0Y0vHCKEmjyw/view?usp=sharing)
+
+## Other Repo
+
+Because we want to expose the API to the public for Mobile Engineering team to use the API and realized later on that next-auth can only be used for the app only, we have created a separate repository for the authentication.
+
+[Bengkel sampah auth](https://github.com/varomnrg/bengkel-sampah-be)
+
 ## Getting Started
+
 ### Run Locally
 
 1. Clone the repository
 
-```bash 
+```bash
 git clone https://github.com/ikbakk/bengkel-sampah.git
 ```
 
 2. Install dependencies
 
-```bash 
+```bash
 cd bengkel-sampah
 npm install
 # or
@@ -50,7 +70,7 @@ bun install
 
 3. Add the .env file
 
-```bash 
+```bash
 env file
 ```
 
@@ -65,4 +85,17 @@ pnpm dev
 # or
 bun dev
 ```
+
 ### Run the Container
+
+1. Build docker image
+
+```bash
+docker build -t bengkel-sampah-app .
+```
+
+2. Run docker image
+
+```bash
+docker run -p 3000:3000 bengkel-sampah-app
+```
