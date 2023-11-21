@@ -20,7 +20,7 @@ export const CartProvider = ({ children, initialCart, token, userID }) => {
 
   const cartQuery = useQuery({
     queryKey: ["cart"],
-    queryFn: async () => await getItemsWithOptions("/api/cart", fetchOptions),
+    queryFn: async () => await getItemsWithOptions("/cart", fetchOptions),
     staleTime: 0,
     initialData: initialCart,
   });
